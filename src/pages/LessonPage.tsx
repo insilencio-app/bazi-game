@@ -361,14 +361,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
 
       {currentStep?.type === 'mcq' && (
         <div className="mb-8">
-          <h2 className="text-4xl font-bold mb-6 text-gray-800">{currentStep.question}</h2>
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
           <div className="space-y-3 mb-6">
             {currentStep.options.map((option, idx) => (
               <button
                 key={idx}
                 onClick={() => setSelectedAnswer(idx)}
                 disabled={answered}
-                className={`w-full p-5 text-left rounded-lg border-2 transition-all text-xl ${
+                className={`w-full p-3 sm:p-5 text-left rounded-lg border-2 transition-all text-sm sm:text-base lg:text-lg ${
                   selectedAnswer === idx
                     ? idx === currentStep.correct
                       ? 'border-green-500 bg-green-50'
@@ -384,11 +384,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
           </div>
 
           {showFeedback && (
-            <div className={`p-5 rounded-lg text-lg ${selectedAnswer === currentStep.correct ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
-              <p className="font-semibold mb-2 text-xl">
+            <div className={`p-3 sm:p-5 rounded-lg text-sm sm:text-base lg:text-lg ${selectedAnswer === currentStep.correct ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
+              <p className="font-semibold mb-2 text-base sm:text-lg">
                 {selectedAnswer === currentStep.correct ? '✓ 正確!' : '✗ 錯誤'}
               </p>
-              <p className="text-gray-700">{currentStep.explanation}</p>
+              <p className="text-gray-700 text-sm sm:text-base">{currentStep.explanation}</p>
             </div>
           )}
         </div>
@@ -396,12 +396,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
 
       {currentStep?.type === 'truefalse' && (
         <div className="mb-8">
-          <h2 className="text-4xl font-bold mb-6 text-gray-800">{currentStep.question}</h2>
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
             <button
               onClick={() => setSelectedAnswer(1)}
               disabled={answered}
-              className={`p-6 rounded-lg border-2 transition-all ${
+              className={`p-3 sm:p-6 rounded-lg border-2 transition-all ${
                 selectedAnswer === 1
                   ? currentStep.correct === true
                     ? 'border-green-500 bg-green-50'
@@ -412,15 +412,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
               } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="text-center">
-                <div className="text-5xl mb-2">✓</div>
-                <div className="text-3xl font-bold">正確</div>
-                <div className="text-lg text-gray-600">True</div>
+                <div className="text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2">✓</div>
+                <div className="text-lg sm:text-2xl lg:text-3xl font-bold">正確</div>
+                <div className="text-xs sm:text-sm lg:text-base text-gray-600">True</div>
               </div>
             </button>
             <button
               onClick={() => setSelectedAnswer(0)}
               disabled={answered}
-              className={`p-6 rounded-lg border-2 transition-all ${
+              className={`p-3 sm:p-6 rounded-lg border-2 transition-all ${
                 selectedAnswer === 0
                   ? currentStep.correct === false
                     ? 'border-green-500 bg-green-50'
@@ -431,9 +431,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
               } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="text-center">
-                <div className="text-5xl mb-2">✗</div>
-                <div className="text-3xl font-bold">錯誤</div>
-                <div className="text-lg text-gray-600">False</div>
+                <div className="text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2">✗</div>
+                <div className="text-lg sm:text-2xl lg:text-3xl font-bold">錯誤</div>
+                <div className="text-xs sm:text-sm lg:text-base text-gray-600">False</div>
               </div>
             </button>
           </div>
@@ -451,8 +451,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
 
       {currentStep?.type === 'match' && (
         <div className="mb-8">
-          <h2 className="text-4xl font-bold mb-4 text-gray-800">{currentStep.prompt}</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800">{currentStep.prompt}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               {currentStep.pairs.map((pair) => {
                 const isMatched = matchedPairs.some((mp) => mp[0] === pair.left);
@@ -461,7 +461,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
                     key={pair.left}
                     onClick={() => handleMatchLeft(pair.left)}
                     disabled={isMatched}
-                    className={`w-full p-3 rounded-lg border-2 text-left transition-all text-lg font-semibold ${
+                    className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed'
                         : selectedLeft === pair.left
@@ -482,7 +482,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
                     key={`${item.right}-${item.originalIndex}`}
                     onClick={() => handleMatchRight(item)}
                     disabled={isMatched}
-                    className={`w-full p-3 rounded-lg border-2 text-left transition-all text-lg font-semibold ${
+                    className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed'
                         : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
@@ -495,11 +495,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
             </div>
           </div>
           {matchMessage && (
-            <p className={`mt-4 text-lg font-semibold ${matchMessage.startsWith('✓') ? 'text-green-700' : 'text-red-700'}`}>
+            <p className={`mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg font-semibold ${matchMessage.startsWith('✓') ? 'text-green-700' : 'text-red-700'}`}>
               {matchMessage}
             </p>
           )}
-          <p className="mt-4 text-base text-gray-600">已完成 {matchedCount}/{currentStep.pairs.length}</p>
+          <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-600">已完成 {matchedCount}/{currentStep.pairs.length}</p>
         </div>
       )}
 
@@ -508,7 +508,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
         <button
           onClick={handleCheck}
           disabled={selectedAnswer === null}
-          className={`w-full font-bold py-4 rounded-lg transition-colors text-xl ${
+          className={`w-full font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-lg lg:text-xl ${
             selectedAnswer === null
               ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
               : 'bg-blue-600 text-white hover:bg-blue-700'
@@ -521,7 +521,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
         <button
           onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
+          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
         >
           繼續
         </button>
@@ -536,7 +536,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
             }
             handleNext();
           }}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
+          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
         >
           繼續
         </button>
@@ -545,7 +545,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
       {currentStep?.type === 'content' && (
         <button
           onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
+          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
         >
           繼續
         </button>
@@ -554,11 +554,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
       {currentStep?.type === 'cards' && (
         <button
           onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
+          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
         >
           繼續
         </button>
-      )}
+      )}}
     </div>
   );
 };
