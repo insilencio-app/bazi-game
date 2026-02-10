@@ -132,7 +132,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [finished, setFinished] = useState(false);
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
-  const [matchedLeft, setMatchedLeft] = useState<Record<string, string>>({});
+  const [matchedPairs, setMatchedPairs] = useState<Array<[string, string]>>([]);
   const [matchMessage, setMatchMessage] = useState<string | null>(null);
 
   if (!lesson) {
@@ -147,18 +147,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
     setAnswered(false);
     setShowFeedback(false);
     setSelectedLeft(null);
-    setMatchedLeft({});
+    setMatchedPairs([]);
     setMatchMessage(null);
   }, [currentStepIndex]);
 
   const shuffledRights = useMemo(() => {
     if (!currentStep || currentStep.type !== 'match') return [];
-    const rights = currentStep.pairs.map((pair) => pair.right);
-    for (let i = rights.length - 1; i > 0; i -= 1) {
+    const rightsWithIndex = currentStep.pairs.map((pair, idx) => ({ right: pair.right, originalIndex: idx }));
+    for (let i = rightsWithIndex.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
-      [rights[i], rights[j]] = [rights[j], rights[i]];
+      [rightsWithIndex[i], rightsWithIndex[j]] = [rightsWithIndex[j], rightsWithIndex[i]];
     }
-    return rights;
+    return rightsWithIndex;
   }, [currentStepIndex]);
 
   const handleCheck = () => {
@@ -200,18 +200,19 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
 
   const handleMatchLeft = (value: string) => {
     if (currentStep?.type !== 'match') return;
-    if (matchedLeft[value]) return;
+    const isAlreadyMatched = matchedPairs.some((pair) => pair[0] === value);
+    if (isAlreadyMatched) return;
     setSelectedLeft(value);
     setMatchMessage(null);
   };
 
-  const handleMatchRight = (value: string) => {
+  const handleMatchRight = (rightWithIndex: { right: string; originalIndex: number }) => {
     if (currentStep?.type !== 'match') return;
     if (!selectedLeft) return;
 
     const correctRight = currentStep.pairs.find((pair) => pair.left === selectedLeft)?.right;
-    if (correctRight === value) {
-      setMatchedLeft((prev) => ({ ...prev, [selectedLeft]: value }));
+    if (correctRight === rightWithIndex.right) {
+      setMatchedPairs((prev) => [...prev, [selectedLeft, rightWithIndex.right]]);
       setSelectedLeft(null);
       setMatchMessage('✓ 正確配對');
     } else {
@@ -219,7 +220,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
     }
   };
 
-  const matchedCount = currentStep?.type === 'match' ? Object.keys(matchedLeft).length : 0;
+  const matchedCount = currentStep?.type === 'match' ? matchedPairs.length : 0;
   const isMatchComplete = currentStep?.type === 'match' && matchedCount === currentStep.pairs.length;
 
   if (finished) {
@@ -453,29 +454,33 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
           <h2 className="text-4xl font-bold mb-4 text-gray-800">{currentStep.prompt}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              {currentStep.pairs.map((pair) => (
-                <button
-                  key={pair.left}
-                  onClick={() => handleMatchLeft(pair.left)}
-                  className={`w-full p-3 rounded-lg border-2 text-left transition-all text-lg font-semibold ${
-                    matchedLeft[pair.left]
-                      ? 'border-green-500 bg-green-50 text-green-700'
-                      : selectedLeft === pair.left
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
-                  }`}
-                >
-                  {pair.left}
-                </button>
-              ))}
-            </div>
-            <div className="space-y-2">
-              {shuffledRights.map((right) => {
-                const isMatched = Object.values(matchedLeft).includes(right);
+              {currentStep.pairs.map((pair) => {
+                const isMatched = matchedPairs.some((mp) => mp[0] === pair.left);
                 return (
                   <button
-                    key={right}
-                    onClick={() => handleMatchRight(right)}
+                    key={pair.left}
+                    onClick={() => handleMatchLeft(pair.left)}
+                    disabled={isMatched}
+                    className={`w-full p-3 rounded-lg border-2 text-left transition-all text-lg font-semibold ${
+                      isMatched
+                        ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed'
+                        : selectedLeft === pair.left
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+                    }`}
+                  >
+                    {pair.left}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="space-y-2">
+              {shuffledRights.map((item) => {
+                const isMatched = matchedPairs.some((mp) => mp[1] === item.right && currentStep.pairs[item.originalIndex].right === item.right);
+                return (
+                  <button
+                    key={`${item.right}-${item.originalIndex}`}
+                    onClick={() => handleMatchRight(item)}
                     disabled={isMatched}
                     className={`w-full p-3 rounded-lg border-2 text-left transition-all text-lg font-semibold ${
                       isMatched
@@ -483,7 +488,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
                         : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
                     }`}
                   >
-                    {right}
+                    {item.right}
                   </button>
                 );
               })}
