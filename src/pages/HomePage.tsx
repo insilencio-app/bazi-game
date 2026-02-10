@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockElements, mockHeavenlySteams, mockEarthlyBranches, mockTenGods, mockLessons, mockQuizzes } from '../data/mockData';
+import { mockElements, mockHeavenlySteams, mockEarthlyBranches, mockTenGods, mockLessons } from '../data/mockData';
 import { ElementCard } from '../components/ElementCard';
 import { ElementWheel } from '../components/ElementWheel';
 import { LessonPage } from './LessonPage';
@@ -28,7 +28,7 @@ export const HomePage: React.FC = () => {
     setCurrentMode('lessons');
   };
 
-  const handleLessonComplete = (lessonId: number, score: number, totalQuestions: number) => {
+  const handleLessonComplete = (_lessonId: number, score: number, totalQuestions: number) => {
     setUserProgress({
       ...userProgress,
       lessonsCompleted: userProgress.lessonsCompleted + 1,
@@ -38,10 +38,7 @@ export const HomePage: React.FC = () => {
     setCurrentMode('menu');
   };
 
-  const handleQuizStart = (quizId: number) => {
-    setSelectedQuiz(quizId);
-    setCurrentMode('quiz');
-  };
+
 
   const handleQuizComplete = (score: number) => {
     setUserProgress({
