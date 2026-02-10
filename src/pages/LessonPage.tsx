@@ -558,7 +558,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
         >
           繼續
         </button>
-      )}}
+      )}
     </div>
   );
 };
