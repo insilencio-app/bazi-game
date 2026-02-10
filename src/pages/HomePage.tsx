@@ -3,14 +3,12 @@ import { mockElements, mockHeavenlySteams, mockEarthlyBranches, mockTenGods, moc
 import { ElementCard } from '../components/ElementCard';
 import { ElementWheel } from '../components/ElementWheel';
 import { LessonPage } from './LessonPage';
-import { QuizPage } from './QuizPage';
 
-type GameMode = 'menu' | 'elements' | 'lessons' | 'quiz' | 'stems' | 'branches' | 'gods';
+type GameMode = 'menu' | 'elements' | 'lessons' | 'stems' | 'branches' | 'gods';
 
 export const HomePage: React.FC = () => {
   const [currentMode, setCurrentMode] = useState<GameMode>('menu');
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
-  const [selectedQuiz, setSelectedQuiz] = useState<number | null>(null);
   const [selectedElement, setSelectedElement] = useState<any>(null);
   const [userProgress, setUserProgress] = useState({
     lessonsCompleted: 0,
@@ -33,17 +31,6 @@ export const HomePage: React.FC = () => {
       ...userProgress,
       lessonsCompleted: userProgress.lessonsCompleted + 1,
       quizzesCompleted: totalQuestions > 0 ? userProgress.quizzesCompleted + 1 : userProgress.quizzesCompleted,
-      totalScore: userProgress.totalScore + score,
-    });
-    setCurrentMode('menu');
-  };
-
-
-
-  const handleQuizComplete = (score: number) => {
-    setUserProgress({
-      ...userProgress,
-      quizzesCompleted: userProgress.quizzesCompleted + 1,
       totalScore: userProgress.totalScore + score,
     });
     setCurrentMode('menu');
@@ -297,21 +284,6 @@ export const HomePage: React.FC = () => {
             ))}
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // Quiz View
-  if (currentMode === 'quiz' && selectedQuiz) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <button
-          onClick={() => setCurrentMode('menu')}
-          className="mb-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-        >
-          ← 返回菜單
-        </button>
-        <QuizPage quizId={selectedQuiz} onComplete={handleQuizComplete} />
       </div>
     );
   }
