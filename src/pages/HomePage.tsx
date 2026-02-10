@@ -183,14 +183,18 @@ export const HomePage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <header className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6">
-          <h1 className="text-4xl font-bold">五行基礎</h1>
-          <p className="text-lg opacity-90 mt-2">Five Elements: Wood, Fire, Earth, Metal, Water</p>
-          <button
-            onClick={() => setCurrentMode('menu')}
-            className="mt-4 bg-white text-green-600 px-4 py-2 rounded hover:bg-green-50 font-semibold"
-          >
-            ← 返回菜單
-          </button>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold">五行基礎</h1>
+              <p className="text-lg opacity-90 mt-2">Five Elements: Wood, Fire, Earth, Metal, Water</p>
+            </div>
+            <button
+              onClick={() => setCurrentMode('menu')}
+              className="bg-red-500 text-white px-8 py-4 rounded-lg hover:bg-red-600 font-bold text-lg transition-all hover:scale-105"
+            >
+              🏠 返回菜單
+            </button>
+          </div>
         </header>
 
         <div className="max-w-6xl mx-auto p-6">
@@ -259,13 +263,15 @@ export const HomePage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <header className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-6">
-          <h1 className="text-4xl font-bold">課程與測驗</h1>
-          <button
-            onClick={() => setCurrentMode('menu')}
-            className="mt-4 bg-white text-yellow-600 px-4 py-2 rounded hover:bg-yellow-50 font-semibold"
-          >
-            ← 返回菜單
-          </button>
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl font-bold">課程與測驗</h1>
+            <button
+              onClick={() => setCurrentMode('menu')}
+              className="bg-red-500 text-white px-8 py-4 rounded-lg hover:bg-red-600 font-bold text-lg transition-all hover:scale-105"
+            >
+              🏠 返回菜單
+            </button>
+          </div>
         </header>
 
         <div className="max-w-6xl mx-auto p-6">
@@ -293,13 +299,15 @@ export const HomePage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 pb-12">
         <header className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 sticky top-0 z-10">
-          <h1 className="text-4xl font-bold">天干地支</h1>
-          <button
-            onClick={() => setCurrentMode('menu')}
-            className="mt-4 bg-white text-blue-600 px-4 py-2 rounded hover:bg-blue-50 font-semibold"
-          >
-            ← 返回菜單
-          </button>
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl font-bold">天干地支</h1>
+            <button
+              onClick={() => setCurrentMode('menu')}
+              className="bg-red-500 text-white px-8 py-4 rounded-lg hover:bg-red-600 font-bold text-lg transition-all hover:scale-105"
+            >
+              🏠 返回菜單
+            </button>
+          </div>
         </header>
 
         <div className="max-w-7xl mx-auto p-6">
@@ -350,13 +358,15 @@ export const HomePage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 pb-12">
         <header className="bg-gradient-to-r from-red-600 to-pink-600 text-white p-6 sticky top-0 z-10">
-          <h1 className="text-4xl font-bold">十神詳解</h1>
-          <button
-            onClick={() => setCurrentMode('menu')}
-            className="mt-4 bg-white text-red-600 px-4 py-2 rounded hover:bg-red-50 font-semibold"
-          >
-            ← 返回菜單
-          </button>
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl font-bold">十神詳解</h1>
+            <button
+              onClick={() => setCurrentMode('menu')}
+              className="bg-red-500 text-white px-8 py-4 rounded-lg hover:bg-red-600 font-bold text-lg transition-all hover:scale-105"
+            >
+              🏠 返回菜單
+            </button>
+          </div>
         </header>
 
         <div className="max-w-7xl mx-auto p-6">
