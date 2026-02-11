@@ -62,11 +62,20 @@ type LessonMatch = {
 interface LessonProps {
   lessonId: number;
   onComplete: (lessonId: number, score: number, totalQuestions: number) => void;
+  onExit: () => void;
 }
 
-export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
+export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit }) => {
   const lesson = mockLessons.find((l) => l.id === lessonId);
   const baseSteps = (lesson?.steps ?? []) as LessonStep[];
+
+  const lessonBanks = useMemo(() => {
+    return {
+      questionBank: ((lesson as any)?.questionBank ?? []) as LessonQuestion[],
+      trueFalseBank: ((lesson as any)?.trueFalseBank ?? []) as LessonTrueFalse[],
+      matchBank: ((lesson as any)?.matchBank ?? []) as LessonMatch[],
+    };
+  }, [lessonId]);
 
   const shuffled = <T,>(items: T[]) => {
     const copy = [...items];
@@ -78,15 +87,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
   };
 
   const quizSteps = useMemo(() => {
-    const questionBank = ((lesson as any)?.questionBank ?? []) as LessonQuestion[];
-    const trueFalseBank = ((lesson as any)?.trueFalseBank ?? []) as LessonTrueFalse[];
-    const matchBank = ((lesson as any)?.matchBank ?? []) as LessonMatch[];
-    const mcqCount = Math.min(10, questionBank.length);
-    const tfCount = Math.min(6, trueFalseBank.length);
-    const matchCount = Math.min(4, matchBank.length);
-    const selectedQuestions = shuffled(questionBank).slice(0, mcqCount);
-    const selectedTrueFalse = shuffled(trueFalseBank).slice(0, tfCount);
-    const selectedMatches = shuffled(matchBank).slice(0, matchCount);
+    const mcqCount = Math.min(10, lessonBanks.questionBank.length);
+    const tfCount = Math.min(6, lessonBanks.trueFalseBank.length);
+    const matchCount = Math.min(4, lessonBanks.matchBank.length);
+    const selectedQuestions = shuffled(lessonBanks.questionBank).slice(0, mcqCount);
+    const selectedTrueFalse = shuffled(lessonBanks.trueFalseBank).slice(0, tfCount);
+    const selectedMatches = shuffled(lessonBanks.matchBank).slice(0, matchCount);
     const steps: LessonStep[] = [];
 
     selectedQuestions.forEach((q, index) => {
@@ -120,7 +126,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
     });
 
     return steps;
-  }, [lessonId]);
+  }, [lessonBanks, lessonId]);
 
   const steps = useMemo(() => [...baseSteps, ...quizSteps], [baseSteps, quizSteps]);
   const totalQuestions = steps.filter((step) => step.type === 'mcq' || step.type === 'truefalse' || step.type === 'match').length;
@@ -153,13 +159,30 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
 
   const shuffledRights = useMemo(() => {
     if (!currentStep || currentStep.type !== 'match') return [];
-    const rightsWithIndex = currentStep.pairs.map((pair, idx) => ({ right: pair.right, originalIndex: idx }));
+
+    const extraRightCount = 2;
+    const currentRights = currentStep.pairs.map((pair, idx) => ({ right: pair.right, originalIndex: idx }));
+    const currentRightSet = new Set(currentStep.pairs.map((pair) => pair.right));
+    const samePromptMatch = lessonBanks.matchBank.find((match) => match.prompt === currentStep.prompt);
+    const samePromptRights = samePromptMatch ? samePromptMatch.pairs.map((pair) => pair.right) : [];
+    const allRights = lessonBanks.matchBank.flatMap((match) => match.pairs.map((pair) => pair.right));
+    const samePromptDistractors = Array.from(
+      new Set(samePromptRights.filter((right) => !currentRightSet.has(right)))
+    );
+    const allDistractors = Array.from(new Set(allRights.filter((right) => !currentRightSet.has(right))));
+    const uniqueDistractors = samePromptDistractors.length >= extraRightCount ? samePromptDistractors : allDistractors;
+
+    const distractors = shuffled(uniqueDistractors)
+      .slice(0, extraRightCount)
+      .map((right) => ({ right, originalIndex: -1 }));
+
+    const rightsWithIndex = [...currentRights, ...distractors];
     for (let i = rightsWithIndex.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       [rightsWithIndex[i], rightsWithIndex[j]] = [rightsWithIndex[j], rightsWithIndex[i]];
     }
     return rightsWithIndex;
-  }, [currentStepIndex]);
+  }, [currentStepIndex, lessonBanks.matchBank]);
 
   const handleCheck = () => {
     if (!currentStep) return;
@@ -260,15 +283,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
             </svg>
           </button>
           <div className="flex-1">
-            <h1 className="text-5xl font-bold text-gray-800">{lesson.title_cn}</h1>
-            <p className="text-2xl text-gray-600">{lesson.title_en}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{lesson.title_cn}</h1>
+            <p className="text-sm sm:text-lg text-gray-600">{lesson.title_en}</p>
           </div>
           <button
-            onClick={() => onComplete(lessonId, score, totalQuestions)}
-            className="text-gray-600 hover:text-gray-800 transition-colors"
+            onClick={onExit}
+            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 transition-colors"
             title="返回主菜單"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z" />
             </svg>
           </button>
@@ -476,7 +499,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete }) => {
             </div>
             <div className="space-y-2">
               {shuffledRights.map((item) => {
-                const isMatched = matchedPairs.some((mp) => mp[1] === item.right && currentStep.pairs[item.originalIndex].right === item.right);
+                const isMatched = matchedPairs.some((mp) => mp[1] === item.right);
                 return (
                   <button
                     key={`${item.right}-${item.originalIndex}`}

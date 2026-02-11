@@ -4,17 +4,60 @@ import { ElementCard } from '../components/ElementCard';
 import { ElementWheel } from '../components/ElementWheel';
 import { LessonPage } from './LessonPage';
 
-type GameMode = 'menu' | 'elements' | 'lessons' | 'stems' | 'branches' | 'gods';
+type GameMode = 'menu' | 'elements' | 'lessons' | 'stems' | 'branches' | 'gods' | 'total-quiz';
 
 export const HomePage: React.FC = () => {
   const [currentMode, setCurrentMode] = useState<GameMode>('menu');
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [selectedElement, setSelectedElement] = useState<any>(null);
+  const [completedLessonIds, setCompletedLessonIds] = useState<Set<number>>(new Set());
   const [userProgress, setUserProgress] = useState({
     lessonsCompleted: 0,
-    quizzesCompleted: 0,
     totalScore: 0,
   });
+  // Quiz state
+  const [quizIndex, setQuizIndex] = useState(0);
+  const [quizScore, setQuizScore] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const [isQuizFinished, setIsQuizFinished] = useState(false);
+  const [randomQuestions, setRandomQuestions] = useState<any[]>([]);
+
+  // Generate random questions when in quiz mode
+  React.useEffect(() => {
+    if (currentMode === 'total-quiz' && randomQuestions.length === 0) {
+      const allQuestions = mockLessons.flatMap((lesson) => 
+        ((lesson as any)?.questionBank ?? []).map((q: any) => ({
+          ...q,
+          lessonId: lesson.id,
+          lessonTitle: lesson.title_cn,
+        }))
+      );
+
+      const shuffled = <T,>(items: T[]) => {
+        const copy = [...items];
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      };
+
+      setRandomQuestions(shuffled(allQuestions).slice(0, 20));
+    }
+  }, [currentMode]);
+
+  // Reset quiz when leaving total-quiz mode
+  React.useEffect(() => {
+    if (currentMode !== 'total-quiz') {
+      setRandomQuestions([]);
+      setQuizIndex(0);
+      setQuizScore(0);
+      setSelectedAnswer(null);
+      setAnswered(false);
+      setIsQuizFinished(false);
+    }
+  }, [currentMode]);
 
   const handleElementClick = (element: string) => {
     const el = mockElements.find((e) => e.name_cn === element);
@@ -26,13 +69,18 @@ export const HomePage: React.FC = () => {
     setCurrentMode('lessons');
   };
 
-  const handleLessonComplete = (_lessonId: number, score: number, totalQuestions: number) => {
-    setUserProgress({
-      ...userProgress,
-      lessonsCompleted: userProgress.lessonsCompleted + 1,
-      quizzesCompleted: totalQuestions > 0 ? userProgress.quizzesCompleted + 1 : userProgress.quizzesCompleted,
-      totalScore: userProgress.totalScore + score,
-    });
+  const handleLessonComplete = (lessonId: number, score: number, totalQuestions: number) => {
+    const isNewCompletion = !completedLessonIds.has(lessonId);
+    
+    if (isNewCompletion) {
+      setCompletedLessonIds((prev) => new Set(prev).add(lessonId));
+      setUserProgress({
+        ...userProgress,
+        lessonsCompleted: userProgress.lessonsCompleted + 1,
+        totalScore: userProgress.totalScore + score,
+      });
+    }
+    
     setCurrentMode('menu');
   };
 
@@ -66,39 +114,48 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 4,
+      title: '節氣與月份計算',
+      subtitle: '太陽曆節氣與八字月份劃分',
+      emoji: '🌱',
+      accent: 'from-lime-500 to-green-400',
+      chip: '初級',
+      onClick: () => handleLessonStart(4),
+    },
+    {
+      id: 5,
       title: '十神詳解',
       subtitle: '官殺財印食傷比劫',
       emoji: '👥',
       accent: 'from-rose-500 to-pink-400',
       chip: '中級',
-      onClick: () => handleLessonStart(4),
+      onClick: () => handleLessonStart(5),
     },
     {
-      id: 5,
+      id: 6,
       title: '十二地支藏干',
       subtitle: '地支內的隱藏天干',
       emoji: '🌪️',
       accent: 'from-purple-500 to-indigo-400',
       chip: '中級',
-      onClick: () => handleLessonStart(5),
+      onClick: () => handleLessonStart(6),
     },
     {
-      id: 6,
+      id: 7,
       title: '地支關係',
       subtitle: '三合六合刑沖破害',
       emoji: '⚡',
       accent: 'from-orange-500 to-red-400',
       chip: '高級',
-      onClick: () => handleLessonStart(6),
+      onClick: () => handleLessonStart(7),
     },
     {
-      id: 7,
-      title: '全部課程',
-      subtitle: '查看完整課程清單',
-      emoji: '📚',
+      id: 8,
+      title: '總測驗',
+      subtitle: '所有課程的綜合測驗',
+      emoji: '🎯',
       accent: 'from-amber-500 to-yellow-400',
-      chip: '導航',
-      onClick: () => setCurrentMode('lessons'),
+      chip: '綜合',
+      onClick: () => setCurrentMode('total-quiz'),
     },
   ];
 
@@ -114,14 +171,10 @@ export const HomePage: React.FC = () => {
 
         {/* User Stats */}
         <div className="max-w-6xl mx-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600">{userProgress.lessonsCompleted}</div>
               <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">已完成課程</p>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600">{userProgress.quizzesCompleted}</div>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">已完成測驗</p>
             </div>
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-600">{userProgress.totalScore}</div>
@@ -256,6 +309,7 @@ export const HomePage: React.FC = () => {
         <LessonPage
           lessonId={selectedLesson}
           onComplete={handleLessonComplete}
+          onExit={() => setCurrentMode('menu')}
         />
       );
     }
@@ -349,6 +403,150 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Total Quiz View
+  if (currentMode === 'total-quiz') {
+    // Return loading if no questions yet
+    if (randomQuestions.length === 0) {
+      return (
+        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
+          <h2 className="text-3xl font-bold text-gray-800">總測驗</h2>
+          <p className="text-gray-600 mt-4">加載測驗中...</p>
+        </div>
+      );
+    }
+
+    const currentQuestion = randomQuestions[quizIndex];
+    const progress = randomQuestions.length ? ((quizIndex + 1) / randomQuestions.length) * 100 : 0;
+
+    if (isQuizFinished) {
+      return (
+        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
+          <h2 className="text-5xl font-bold mb-4">綜合測驗完成！</h2>
+          <p className="text-xl text-gray-600 mb-6">你已完成綜合測驗。</p>
+          <div className="bg-blue-50 rounded-lg p-8 mb-6">
+            <p className="text-5xl font-bold text-blue-700 mb-2">{quizScore} / {randomQuestions.length}</p>
+            <p className="text-xl text-gray-700">答對題數</p>
+            <p className="text-2xl font-bold text-blue-700 mt-2">{Math.round((quizScore / randomQuestions.length) * 100)}%</p>
+          </div>
+          <button
+            onClick={() => setCurrentMode('menu')}
+            className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
+          >
+            返回主菜單
+          </button>
+        </div>
+      );
+    }
+
+    const handleCheck = () => {
+      if (selectedAnswer === null || answered) return;
+      setAnswered(true);
+      if (selectedAnswer === currentQuestion.correct) {
+        setQuizScore((prev) => prev + 1);
+      }
+    };
+
+    const handleNext = () => {
+      if (quizIndex < randomQuestions.length - 1) {
+        setQuizIndex((prev) => prev + 1);
+        setSelectedAnswer(null);
+        setAnswered(false);
+      } else {
+        setIsQuizFinished(true);
+      }
+    };
+
+    return (
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h1>
+            <button
+              onClick={() => setCurrentMode('menu')}
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 transition-colors"
+              title="返回主菜單"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z" />
+              </svg>
+            </button>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <div className="text-base text-gray-500 mt-2">
+            <span className="font-semibold">第 {quizIndex + 1}/{randomQuestions.length} 題</span>
+          </div>
+        </div>
+
+        {/* Question */}
+        <div className="mb-8">
+          <p className="text-sm text-gray-500 mb-2">課程: {currentQuestion.lessonTitle}</p>
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">{currentQuestion.question}</h2>
+
+          {/* Options */}
+          <div className="space-y-3 mb-6">
+            {currentQuestion.options.map((option: string, idx: number) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedAnswer(idx)}
+                disabled={answered}
+                className={`w-full p-3 sm:p-4 text-left rounded-lg border-2 transition-all text-sm sm:text-base ${
+                  selectedAnswer === idx
+                    ? idx === currentQuestion.correct
+                      ? 'border-green-500 bg-green-50'
+                      : answered
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-blue-500 bg-blue-50'
+                    : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+                } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <span className="font-semibold">{String.fromCharCode(65 + idx)}.</span> {option}
+              </button>
+            ))}
+          </div>
+
+          {answered && (
+            <div className={`p-4 rounded-lg ${selectedAnswer === currentQuestion.correct ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
+              <p className="font-semibold mb-2">
+                {selectedAnswer === currentQuestion.correct ? '✓ 正確!' : '✗ 錯誤'}
+              </p>
+              <p className="text-gray-700">{currentQuestion.explanation}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        {!answered && (
+          <button
+            onClick={handleCheck}
+            disabled={selectedAnswer === null}
+            className={`w-full font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-lg ${
+              selectedAnswer === null
+                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            檢查
+          </button>
+        )}
+
+        {answered && (
+          <button
+            onClick={handleNext}
+            className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg"
+          >
+            {quizIndex === randomQuestions.length - 1 ? '完成' : '繼續'}
+          </button>
+        )}
       </div>
     );
   }
