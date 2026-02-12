@@ -161,7 +161,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     if (!currentStep || currentStep.type !== 'match') return [];
 
     const extraRightCount = 2;
-    const currentRights = currentStep.pairs.map((pair, idx) => ({ right: pair.right, originalIndex: idx }));
+    const currentRights = currentStep.pairs.map((pair, idx) => ({ 
+      right: pair.right, 
+      originalIndex: idx,
+      id: `correct-${idx}-${pair.right}` 
+    }));
     const currentRightSet = new Set(currentStep.pairs.map((pair) => pair.right));
     const samePromptMatch = lessonBanks.matchBank.find((match) => match.prompt === currentStep.prompt);
     const samePromptRights = samePromptMatch ? samePromptMatch.pairs.map((pair) => pair.right) : [];
@@ -174,7 +178,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
     const distractors = shuffled(uniqueDistractors)
       .slice(0, extraRightCount)
-      .map((right) => ({ right, originalIndex: -1 }));
+      .map((right, idx) => ({ 
+        right, 
+        originalIndex: -1,
+        id: `distractor-${idx}-${right}` 
+      }));
 
     const rightsWithIndex = [...currentRights, ...distractors];
     for (let i = rightsWithIndex.length - 1; i > 0; i -= 1) {
@@ -230,7 +238,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setMatchMessage(null);
   };
 
-  const handleMatchRight = (rightWithIndex: { right: string; originalIndex: number }) => {
+  const handleMatchRight = (rightWithIndex: { right: string; originalIndex: number; id: string }) => {
     if (currentStep?.type !== 'match') return;
     if (!selectedLeft) return;
 
@@ -241,10 +249,13 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       return;
     }
 
-    // Extract the original value from the unique key (remove the index part)
-    const selectedValue = selectedLeft.split('-')[0];
-    const correctPair = currentStep.pairs.find((pair) => pair.left === selectedValue);
+    // Extract the index from the unique key to find the correct pair
+    const selectedIndex = parseInt(selectedLeft.split('-')[1]);
+    
+    // Find the correct right option for the selected left item using the index
+    const correctPair = currentStep.pairs[selectedIndex];
     const correctRight = correctPair?.right;
+    
     if (correctRight === rightWithIndex.right) {
       setMatchedPairs((prev) => [...prev, [selectedLeft, rightWithIndex.right]]);
       setSelectedLeft(null);
@@ -518,7 +529,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 const isDisabled = isMatched || !selectedLeft;
                 return (
                   <button
-                    key={`${item.right}-${item.originalIndex}`}
+                    key={item.id}
                     onClick={() => handleMatchRight(item)}
                     disabled={isDisabled}
                     className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
