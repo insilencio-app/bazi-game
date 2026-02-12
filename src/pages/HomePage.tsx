@@ -69,7 +69,7 @@ export const HomePage: React.FC = () => {
     setCurrentMode('lessons');
   };
 
-  const handleLessonComplete = (lessonId: number, score: number, totalQuestions: number) => {
+  const handleLessonComplete = (lessonId: number, score: number) => {
     const isNewCompletion = !completedLessonIds.has(lessonId);
     
     if (isNewCompletion) {
