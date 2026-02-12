@@ -160,12 +160,24 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const shuffledRights = useMemo(() => {
     if (!currentStep || currentStep.type !== 'match') return [];
 
+    // Count how many times each right value appears in the pairs
+    const rightValueCounts = new Map<string, number>();
+    currentStep.pairs.forEach(pair => {
+      rightValueCounts.set(pair.right, (rightValueCounts.get(pair.right) || 0) + 1);
+    });
+
+    // Create the correct number of instances for each right value
+    const currentRights: Array<{ right: string; originalIndex: number; id: string }> = [];
+    currentStep.pairs.forEach((pair, idx) => {
+      currentRights.push({
+        right: pair.right, 
+        originalIndex: idx,
+        id: `correct-${idx}-${pair.right}` 
+      });
+    });
+
+    // Add distractors
     const extraRightCount = 2;
-    const currentRights = currentStep.pairs.map((pair, idx) => ({ 
-      right: pair.right, 
-      originalIndex: idx,
-      id: `correct-${idx}-${pair.right}` 
-    }));
     const currentRightSet = new Set(currentStep.pairs.map((pair) => pair.right));
     const samePromptMatch = lessonBanks.matchBank.find((match) => match.prompt === currentStep.prompt);
     const samePromptRights = samePromptMatch ? samePromptMatch.pairs.map((pair) => pair.right) : [];
@@ -185,6 +197,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       }));
 
     const rightsWithIndex = [...currentRights, ...distractors];
+    
+    // Shuffle the options
     for (let i = rightsWithIndex.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       [rightsWithIndex[i], rightsWithIndex[j]] = [rightsWithIndex[j], rightsWithIndex[i]];
@@ -242,8 +256,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     if (currentStep?.type !== 'match') return;
     if (!selectedLeft) return;
 
-    // Check if this right option is already matched
-    const isAlreadyMatched = matchedPairs.some((pair) => pair[1] === rightWithIndex.right);
+    // Check if this specific right option instance is already matched
+    const isAlreadyMatched = matchedPairs.some((pair) => pair[1] === rightWithIndex.id);
     if (isAlreadyMatched) {
       setMatchMessage('✗ 該選項已被配對');
       return;
@@ -257,7 +271,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     const correctRight = correctPair?.right;
     
     if (correctRight === rightWithIndex.right) {
-      setMatchedPairs((prev) => [...prev, [selectedLeft, rightWithIndex.right]]);
+      // Store the match using the unique IDs instead of just the right value
+      setMatchedPairs((prev) => [...prev, [selectedLeft, rightWithIndex.id]]);
       setSelectedLeft(null);
       setMatchMessage('✓ 正確配對');
     } else {
@@ -525,19 +540,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             <div className="space-y-2">
               <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">配對選項：</h3>
               {shuffledRights.map((item) => {
-                const isMatched = matchedPairs.some((mp) => mp[1] === item.right);
-                const isDisabled = isMatched || !selectedLeft;
+                const isMatched = matchedPairs.some((mp) => mp[1] === item.id);
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleMatchRight(item)}
-                    disabled={isDisabled}
+                    disabled={isMatched}
                     className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
                         : selectedLeft
                         ? 'border-gray-300 hover:border-blue-500 hover:bg-blue-50 cursor-pointer'
-                        : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50 cursor-pointer'
                     }`}
                   >
                     {isMatched && '✓ '}{item.right}
