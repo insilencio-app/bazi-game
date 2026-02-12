@@ -233,6 +233,13 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     if (currentStep?.type !== 'match') return;
     if (!selectedLeft) return;
 
+    // Check if this right option is already matched
+    const isAlreadyMatched = matchedPairs.some((pair) => pair[1] === rightWithIndex.right);
+    if (isAlreadyMatched) {
+      setMatchMessage('✗ 該選項已被配對');
+      return;
+    }
+
     const correctRight = currentStep.pairs.find((pair) => pair.left === selectedLeft)?.right;
     if (correctRight === rightWithIndex.right) {
       setMatchedPairs((prev) => [...prev, [selectedLeft, rightWithIndex.right]]);
@@ -475,8 +482,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {currentStep?.type === 'match' && (
         <div className="mb-8">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800">{currentStep.prompt}</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-4">先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">選擇項目：</h3>
               {currentStep.pairs.map((pair) => {
                 const isMatched = matchedPairs.some((mp) => mp[0] === pair.left);
                 return (
@@ -486,32 +495,36 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     disabled={isMatched}
                     className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
-                        ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed'
+                        ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
                         : selectedLeft === pair.left
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
                     }`}
                   >
-                    {pair.left}
+                    {isMatched && '✓ '}{pair.left}
                   </button>
                 );
               })}
             </div>
             <div className="space-y-2">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">配對選項：</h3>
               {shuffledRights.map((item) => {
                 const isMatched = matchedPairs.some((mp) => mp[1] === item.right);
+                const isDisabled = isMatched || !selectedLeft;
                 return (
                   <button
                     key={`${item.right}-${item.originalIndex}`}
                     onClick={() => handleMatchRight(item)}
-                    disabled={isMatched}
+                    disabled={isDisabled}
                     className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
-                        ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed'
-                        : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+                        ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
+                        : selectedLeft
+                        ? 'border-gray-300 hover:border-blue-500 hover:bg-blue-50 cursor-pointer'
+                        : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
                     }`}
                   >
-                    {item.right}
+                    {isMatched && '✓ '}{item.right}
                   </button>
                 );
               })}
@@ -522,7 +535,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               {matchMessage}
             </p>
           )}
-          <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-600">已完成 {matchedCount}/{currentStep.pairs.length}</p>
+          <div className="mt-3 sm:mt-4 flex justify-between items-center">
+            <p className="text-xs sm:text-sm text-gray-600">已完成 {matchedCount}/{currentStep.pairs.length}</p>
+            {selectedLeft && (
+              <p className="text-xs sm:text-sm text-blue-600 font-medium">已選擇: {selectedLeft} → 請選擇配對選項</p>
+            )}
+          </div>
         </div>
       )}
 
