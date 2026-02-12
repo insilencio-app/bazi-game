@@ -221,11 +221,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     }
   };
 
-  const handleMatchLeft = (value: string) => {
+  const handleMatchLeft = (value: string, index: number) => {
     if (currentStep?.type !== 'match') return;
-    const isAlreadyMatched = matchedPairs.some((pair) => pair[0] === value);
+    const uniqueKey = `${value}-${index}`;
+    const isAlreadyMatched = matchedPairs.some((pair) => pair[0] === uniqueKey);
     if (isAlreadyMatched) return;
-    setSelectedLeft(value);
+    setSelectedLeft(uniqueKey);
     setMatchMessage(null);
   };
 
@@ -240,7 +241,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       return;
     }
 
-    const correctRight = currentStep.pairs.find((pair) => pair.left === selectedLeft)?.right;
+    // Extract the original value from the unique key (remove the index part)
+    const selectedValue = selectedLeft.split('-')[0];
+    const correctPair = currentStep.pairs.find((pair) => pair.left === selectedValue);
+    const correctRight = correctPair?.right;
     if (correctRight === rightWithIndex.right) {
       setMatchedPairs((prev) => [...prev, [selectedLeft, rightWithIndex.right]]);
       setSelectedLeft(null);
@@ -486,17 +490,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">選擇項目：</h3>
-              {currentStep.pairs.map((pair) => {
-                const isMatched = matchedPairs.some((mp) => mp[0] === pair.left);
+              {currentStep.pairs.map((pair, index) => {
+                const uniqueKey = `${pair.left}-${index}`;
+                const isMatched = matchedPairs.some((mp) => mp[0] === uniqueKey);
                 return (
                   <button
-                    key={pair.left}
-                    onClick={() => handleMatchLeft(pair.left)}
+                    key={uniqueKey}
+                    onClick={() => handleMatchLeft(pair.left, index)}
                     disabled={isMatched}
                     className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
-                        : selectedLeft === pair.left
+                        : selectedLeft === uniqueKey
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
                     }`}
@@ -538,7 +543,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <div className="mt-3 sm:mt-4 flex justify-between items-center">
             <p className="text-xs sm:text-sm text-gray-600">已完成 {matchedCount}/{currentStep.pairs.length}</p>
             {selectedLeft && (
-              <p className="text-xs sm:text-sm text-blue-600 font-medium">已選擇: {selectedLeft} → 請選擇配對選項</p>
+              <p className="text-xs sm:text-sm text-blue-600 font-medium">已選擇: {selectedLeft.split('-')[0]} → 請選擇配對選項</p>
             )}
           </div>
         </div>
