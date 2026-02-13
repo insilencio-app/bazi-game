@@ -702,6 +702,20 @@ export const mockLessons = [
           '記憶口訣：單數為陽，雙數為陰',
         ],
       },
+      {
+        id: 8,
+        type: 'content',
+        title: '天干五合',
+        paragraphs: ['天干五合是天干之間的配對關係，常用來觀察命局中是否有合作、牽引與變化的傾向。'],
+        bullets: [
+          '甲己合土',
+          '乙庚合金',
+          '丙辛合水',
+          '丁壬合木',
+          '戊癸合火',
+          '判讀時要配合全局強弱與季節，不是見合就一定化。',
+        ],
+      },
     ],
     questionBank: [
       {
@@ -809,6 +823,55 @@ export const mockLessons = [
         correct: 2,
         explanation: '庚辛皆為金。',
       },
+      {
+        id: 16,
+        question: '天干五合中，甲與哪一個天干相合？',
+        options: ['乙', '己', '庚', '癸'],
+        correct: 1,
+        explanation: '甲己合土。',
+      },
+      {
+        id: 17,
+        question: '乙庚相合後對應哪一種五行？',
+        options: ['木', '火', '金', '水'],
+        correct: 2,
+        explanation: '乙庚合金。',
+      },
+      {
+        id: 18,
+        question: '以下哪一組是正確的天干五合？',
+        options: ['丙壬合火', '丁癸合木', '丙辛合水', '戊壬合土'],
+        correct: 2,
+        explanation: '天干五合之一是丙辛合水。',
+      },
+      {
+        id: 19,
+        question: '丁壬合對應的五行是？',
+        options: ['木', '火', '土', '金'],
+        correct: 0,
+        explanation: '丁壬合木。',
+      },
+      {
+        id: 20,
+        question: '戊癸合的正確說法是？',
+        options: ['戊癸合金', '戊癸合火', '戊癸合木', '戊癸合水'],
+        correct: 1,
+        explanation: '戊癸合火。',
+      },
+      {
+        id: 21,
+        question: '下列哪一項完整列出天干五合的一組？',
+        options: ['甲己、乙庚、丙辛、丁壬、戊癸', '甲庚、乙辛、丙壬、丁癸、戊己', '甲乙、丙丁、戊己、庚辛、壬癸', '甲丁、乙戊、丙己、庚壬、辛癸'],
+        correct: 0,
+        explanation: '天干五合依序為甲己、乙庚、丙辛、丁壬、戊癸。',
+      },
+      {
+        id: 22,
+        question: '關於「見合就一定化」的說法，下列何者正確？',
+        options: ['正確，任何情況都一定化', '錯誤，仍需配合全局與時令判斷', '只要有甲己就一定化土', '只有冬季才會化'],
+        correct: 1,
+        explanation: '判讀五合需看命局整體強弱與季節，不是見合就一定化。',
+      },
     ],
     trueFalseBank: [
       {
@@ -859,6 +922,30 @@ export const mockLessons = [
         correct: false,
         explanation: '錯誤！癸是陰水，壬才是陽水。',
       },
+      {
+        id: 9,
+        question: '甲己合土屬於天干五合之一。',
+        correct: true,
+        explanation: '正確！甲己合土是天干五合的第一組。',
+      },
+      {
+        id: 10,
+        question: '乙辛合金是正確的天干五合。',
+        correct: false,
+        explanation: '錯誤！正確是乙庚合金。',
+      },
+      {
+        id: 11,
+        question: '丙辛合水、丁壬合木都屬於天干五合。',
+        correct: true,
+        explanation: '正確！這兩組都在天干五合中。',
+      },
+      {
+        id: 12,
+        question: '看到五合就一定會化，不需要看其他條件。',
+        correct: false,
+        explanation: '錯誤！仍需結合命局全局與時令判斷是否能化。',
+      },
     ],
     matchBank: [
       {
@@ -905,6 +992,17 @@ export const mockLessons = [
           { left: '壬', right: '水' },
         ],
       },
+      {
+        id: 5,
+        prompt: '配對天干五合',
+        pairs: [
+          { left: '甲', right: '己合土' },
+          { left: '乙', right: '庚合金' },
+          { left: '丙', right: '辛合水' },
+          { left: '丁', right: '壬合木' },
+          { left: '戊', right: '癸合火' },
+        ],
+      },
     ],
     content: `
       <h2>什麼是天干？</h2>
@@ -915,6 +1013,15 @@ export const mockLessons = [
         <li><strong>陰陽：</strong>甲丙戊庚壬為陽，乙丁己辛癸為陰</li>
         <li><strong>五行：</strong>每個天干對應一種五行屬性</li>
       </ul>
+      <h3>天干五合</h3>
+      <ul>
+        <li><strong>甲己合土</strong></li>
+        <li><strong>乙庚合金</strong></li>
+        <li><strong>丙辛合水</strong></li>
+        <li><strong>丁壬合木</strong></li>
+        <li><strong>戊癸合火</strong></li>
+      </ul>
+      <p>五合需配合命局整體與時令判斷，不是出現就一定化。</p>
     `,
     duration: 12,
   },
@@ -1816,221 +1923,319 @@ export const mockLessons = [
           '兩者都與日主同類，屬於比劫類',
         ],
       },
+      {
+        id: 7,
+        type: 'content',
+        title: '十神判定規則（以日主為中心）',
+        bullets: [
+          '同我（同五行）：同陰陽為比肩，異陰陽為劫財',
+          '我生（洩我）：同陰陽為食神，異陰陽為傷官',
+          '我剋：同陰陽為偏財，異陰陽為正財',
+          '剋我：同陰陽為偏官（七殺），異陰陽為正官',
+          '生我：同陰陽為偏印，異陰陽為正印',
+        ],
+      },
+      {
+        id: 8,
+        type: 'content',
+        title: '十日主速查（十天干→十神）',
+        bullets: [
+          '甲日主：甲比肩、乙劫財｜乙日主：乙比肩、甲劫財',
+          '丙日主：丙比肩、丁劫財｜丁日主：丁比肩、丙劫財',
+          '戊日主：戊比肩、己劫財｜己日主：己比肩、戊劫財',
+          '庚日主：庚比肩、辛劫財｜辛日主：辛比肩、庚劫財',
+          '壬日主：壬比肩、癸劫財｜癸日主：癸比肩、壬劫財',
+          '先判斷五行生剋，再用陰陽決定正偏（同陰陽偏、異陰陽正；比劫相反）',
+        ],
+      },
     ],
     questionBank: [
       {
         id: 1,
-        question: '正官與偏官屬於哪一類？',
-        options: ['印星', '官殺', '財星', '食傷'],
+        question: '日主甲木時，乙木是什麼十神？',
+        options: ['比肩', '劫財', '食神', '正印'],
         correct: 1,
-        explanation: '正官與偏官屬於官殺類。',
+        explanation: '甲木與乙木同五行、異陰陽，因此是劫財。',
       },
       {
         id: 2,
-        question: '正財與偏財屬於哪一類？',
-        options: ['財星', '印星', '比劫', '食傷'],
-        correct: 0,
-        explanation: '正財與偏財屬於財星類。',
+        question: '日主乙木時，甲木是什麼十神？',
+        options: ['比肩', '劫財', '食神', '正印'],
+        correct: 1,
+        explanation: '乙木與甲木同五行、異陰陽，因此是劫財。',
       },
       {
         id: 3,
-        question: '食神與傷官屬於哪一類？',
-        options: ['官殺', '食傷', '印星', '比劫'],
+        question: '日主丙火時，丁火是什麼十神？',
+        options: ['比肩', '劫財', '偏印', '傷官'],
         correct: 1,
-        explanation: '食神與傷官屬於食傷類。',
+        explanation: '丙火與丁火同五行、異陰陽，因此是劫財。',
       },
       {
         id: 4,
-        question: '比肩與劫財屬於哪一類？',
-        options: ['官殺', '比劫', '食傷', '印星'],
+        question: '日主丁火時，丙火是什麼十神？',
+        options: ['比肩', '劫財', '偏印', '傷官'],
         correct: 1,
-        explanation: '比肩與劫財屬於比劫類。',
+        explanation: '丁火與丙火同五行、異陰陽，因此是劫財。',
       },
       {
         id: 5,
-        question: '正印與偏印屬於哪一類？',
-        options: ['印星', '財星', '官殺', '食傷'],
-        correct: 0,
-        explanation: '正印與偏印屬於印星類。',
+        question: '日主戊土時，己土是什麼十神？',
+        options: ['比肩', '劫財', '偏財', '正財'],
+        correct: 1,
+        explanation: '戊土與己土同五行、異陰陽，因此是劫財。',
       },
       {
         id: 6,
-        question: '十神中哪一組代表財運？',
-        options: ['官殺', '財星', '食傷', '比劫'],
+        question: '日主己土時，戊土是什麼十神？',
+        options: ['比肩', '劫財', '偏官', '正官'],
         correct: 1,
-        explanation: '財星代表財運。',
+        explanation: '己土與戊土同五行、異陰陽，因此是劫財。',
       },
       {
         id: 7,
-        question: '哪一組與創意、表達有關？',
-        options: ['食傷', '印星', '官殺', '比劫'],
-        correct: 0,
-        explanation: '食神與傷官屬於食傷，與創意表達相關。',
+        question: '日主庚金時，辛金是什麼十神？',
+        options: ['比肩', '劫財', '偏印', '正印'],
+        correct: 1,
+        explanation: '庚金與辛金同五行、異陰陽，因此是劫財。',
       },
       {
         id: 8,
-        question: '官殺在十神分類中包含哪些？',
-        options: ['正官偏官', '正財偏財', '正印偏印', '比肩劫財'],
-        correct: 0,
-        explanation: '官殺包含正官與偏官。',
+        question: '日主辛金時，庚金是什麼十神？',
+        options: ['比肩', '劫財', '偏官', '正官'],
+        correct: 1,
+        explanation: '辛金與庚金同五行、異陰陽，因此是劫財。',
       },
       {
         id: 9,
-        question: '正官代表什麼？',
-        options: ['財運', '權力地位', '學問', '兄弟'],
+        question: '日主壬水時，癸水是什麼十神？',
+        options: ['比肩', '劫財', '食神', '傷官'],
         correct: 1,
-        explanation: '正官代表權力、地位、名譽。',
+        explanation: '壬水與癸水同五行、異陰陽，因此是劫財。',
       },
       {
         id: 10,
-        question: '偏印又稱為什麼？',
-        options: ['食神', '梟神', '傷官', '劫財'],
+        question: '日主癸水時，壬水是什麼十神？',
+        options: ['比肩', '劫財', '偏財', '正財'],
         correct: 1,
-        explanation: '偏印又稱梟神，代表學問和特殊才能。',
+        explanation: '癸水與壬水同五行、異陰陽，因此是劫財。',
       },
       {
         id: 11,
-        question: '食神主要代表什麼？',
-        options: ['權力', '財運', '福祿才華', '學問'],
-        correct: 2,
-        explanation: '食神主福祿、才華、隨遇而安。',
+        question: '日主乙木時，壬水是什麼十神？',
+        options: ['偏印', '正印', '食神', '比肩'],
+        correct: 1,
+        explanation: '水生木為印星；乙陰壬陽為異陰陽，因此是正印。',
       },
       {
         id: 12,
-        question: '比肩代表什麼關係？',
-        options: ['父母', '兄弟姐妹', '配偶', '子女'],
+        question: '日主丙火時，辛金是什麼十神？',
+        options: ['偏財', '正財', '偏官', '正官'],
         correct: 1,
-        explanation: '比肩代表兄弟姐妹、同事、朋友。',
+        explanation: '火剋金為財星；丙陽辛陰為異陰陽，因此是正財。',
       },
       {
         id: 13,
-        question: '傷官的特性是？',
-        options: ['保守穩重', '才華橫溢但反叛', '善良溫柔', '吝嗇小氣'],
+        question: '日主丁火時，庚金是什麼十神？',
+        options: ['偏財', '正財', '偏官', '正官'],
         correct: 1,
-        explanation: '傷官代表才華橫溢、創意，但也有反叛特性。',
+        explanation: '火剋金為財星；丁陰庚陽為異陰陽，因此是正財。',
       },
       {
         id: 14,
-        question: '劫財主要影響什麼？',
-        options: ['學業', '財運和人脈', '健康', '婚姻'],
+        question: '日主戊土時，甲木是什麼十神？',
+        options: ['正官', '偏官（七殺）', '正印', '偏印'],
         correct: 1,
-        explanation: '劫財影響財運和人脈關係，易有競爭。',
+        explanation: '木剋土為官殺；戊陽甲陽為同陰陽，因此是偏官（七殺）。',
       },
       {
         id: 15,
-        question: '印星包括哪兩個？',
-        options: ['正官偏官', '正財偏財', '正印偏印', '食神傷官'],
+        question: '日主己土時，甲木是什麼十神？',
+        options: ['正官', '偏官（七殺）', '正印', '偏印'],
+        correct: 0,
+        explanation: '木剋土為官殺；己陰甲陽為異陰陽，因此是正官。',
+      },
+      {
+        id: 16,
+        question: '日主庚金時，丁火是什麼十神？',
+        options: ['正官', '偏官（七殺）', '食神', '傷官'],
+        correct: 0,
+        explanation: '火剋金為官殺；庚陽丁陰為異陰陽，因此是正官。',
+      },
+      {
+        id: 17,
+        question: '日主辛金時，丙火是什麼十神？',
+        options: ['正官', '偏官（七殺）', '食神', '傷官'],
+        correct: 0,
+        explanation: '火剋金為官殺；辛陰丙陽為異陰陽，因此是正官。',
+      },
+      {
+        id: 18,
+        question: '日主壬水時，乙木是什麼十神？',
+        options: ['食神', '傷官', '偏財', '正財'],
+        correct: 1,
+        explanation: '水生木為食傷；壬陽乙陰為異陰陽，因此是傷官。',
+      },
+      {
+        id: 19,
+        question: '日主癸水時，甲木是什麼十神？',
+        options: ['食神', '傷官', '偏印', '正印'],
+        correct: 1,
+        explanation: '水生木為食傷；癸陰甲陽為異陰陽，因此是傷官。',
+      },
+      {
+        id: 20,
+        question: '日主庚金時，壬水是什麼十神？',
+        options: ['食神', '傷官', '偏印', '正印'],
+        correct: 0,
+        explanation: '金生水為食傷；庚陽壬陽為同陰陽，因此是食神。',
+      },
+      {
+        id: 21,
+        question: '「同我」在十神中對應哪一組？',
+        options: ['食神、傷官', '比肩、劫財', '正財、偏財', '正官、偏官'],
+        correct: 1,
+        explanation: '「同我」是同五行，對應比肩、劫財。',
+      },
+      {
+        id: 22,
+        question: '下列哪一項正確描述了十神判定順序？',
+        options: ['先看陰陽，再看五行', '只看五行，不看陰陽', '先看五行生剋，再看陰陽定正偏', '先看十神名稱再回推五行'],
         correct: 2,
-        explanation: '印星包括正印和偏印。',
+        explanation: '先判斷與日主的五行關係，再以陰陽決定正偏或比劫。',
       },
     ],
     trueFalseBank: [
       {
         id: 1,
-        question: '十神共有10個不同種類。',
+        question: '日主甲木時，乙木是劫財。',
         correct: true,
-        explanation: '正確！十神包含：正官、偏官、正財、偏財、正印、偏印、食神、傷官、比肩、劫財。',
+        explanation: '正確！同五行異陰陽，為劫財。',
       },
       {
         id: 2,
-        question: '正印代表母親和學問。',
-        correct: true,
-        explanation: '正確！正印象徵母愛、學問和文化。',
+        question: '日主乙木時，甲木是比肩。',
+        correct: false,
+        explanation: '錯誤！乙木見甲木是劫財。',
       },
       {
         id: 3,
-        question: '食神和傷官是同類神煞。',
+        question: '日主丙火時，丁火是劫財。',
         correct: true,
-        explanation: '正確！兩者都是日主所生的十神，但陰陽不同。',
+        explanation: '正確！同五行異陰陽為劫財。',
       },
       {
         id: 4,
-        question: '正財代表婚外情。',
+        question: '日主丁火時，丙火是比肩。',
         correct: false,
-        explanation: '錯誤！偏財代表婚外情，正財代表正當收入和婚姻。',
+        explanation: '錯誤！丁火見丙火是劫財。',
       },
       {
         id: 5,
-        question: '偏官又稱為七殺。',
+        question: '日主戊土時，己土是劫財。',
         correct: true,
-        explanation: '正確！偏官也叫七殺，代表權威和壓力。',
+        explanation: '正確！戊土與己土同五行異陰陽。',
       },
       {
         id: 6,
-        question: '比肩和劫財都是日主所生的十神。',
+        question: '日主己土時，戊土是比肩。',
         correct: false,
-        explanation: '錯誤！比肩劫財是與日主同類的十神，不是日主所生。',
+        explanation: '錯誤！己土見戊土是劫財。',
       },
       {
         id: 7,
-        question: '正印象徵貴人和母愛。',
+        question: '日主庚金時，辛金是劫財。',
         correct: true,
-        explanation: '正確！正印代表貴人、母親、學問。',
+        explanation: '正確！庚金與辛金同五行異陰陽。',
       },
       {
         id: 8,
-        question: '傷官代表保守穩重的性格。',
+        question: '日主辛金時，庚金是比肩。',
         correct: false,
-        explanation: '錯誤！傷官代表才華橫溢但反叛、自信的特質。',
+        explanation: '錯誤！辛金見庚金是劫財。',
+      },
+      {
+        id: 9,
+        question: '日主壬水時，癸水是劫財。',
+        correct: true,
+        explanation: '正確！壬水與癸水同五行異陰陽。',
+      },
+      {
+        id: 10,
+        question: '日主癸水時，壬水是比肩。',
+        correct: false,
+        explanation: '錯誤！癸水見壬水是劫財。',
+      },
+      {
+        id: 11,
+        question: '十神判定要先看五行關係，再看陰陽定正偏。',
+        correct: true,
+        explanation: '正確！這是完整且穩定的判定流程。',
       },
     ],
     matchBank: [
       {
         id: 1,
-        prompt: '配對十神與分類',
+        prompt: '配對日主與劫財（上半組）',
         pairs: [
-          { left: '正官', right: '官殺' },
-          { left: '正財', right: '財星' },
-          { left: '正印', right: '印星' },
-          { left: '食神', right: '食傷' },
-          { left: '比肩', right: '比劫' },
+          { left: '甲木', right: '乙木' },
+          { left: '乙木', right: '甲木' },
+          { left: '丙火', right: '丁火' },
+          { left: '丁火', right: '丙火' },
+          { left: '戊土', right: '己土' },
         ],
       },
       {
         id: 2,
-        prompt: '配對十神組合',
+        prompt: '配對日主與劫財（下半組）',
         pairs: [
-          { left: '官殺', right: '正官、偏官' },
-          { left: '財星', right: '正財、偏財' },
-          { left: '印星', right: '正印、偏印' },
-          { left: '食傷', right: '食神、傷官' },
-          { left: '比劫', right: '比肩、劫財' },
+          { left: '己土', right: '戊土' },
+          { left: '庚金', right: '辛金' },
+          { left: '辛金', right: '庚金' },
+          { left: '壬水', right: '癸水' },
+          { left: '癸水', right: '壬水' },
         ],
       },
       {
         id: 3,
-        prompt: '配對正神與偏神',
+        prompt: '配對日主與比肩',
         pairs: [
-          { left: '正官', right: '偏官' },
-          { left: '正財', right: '偏財' },
-          { left: '正印', right: '偏印' },
-          { left: '食神', right: '傷官' },
-          { left: '比肩', right: '劫財' },
+          { left: '甲木', right: '甲木' },
+          { left: '乙木', right: '乙木' },
+          { left: '丙火', right: '丙火' },
+          { left: '丁火', right: '丁火' },
+          { left: '庚金', right: '庚金' },
         ],
       },
       {
         id: 4,
-        prompt: '配對十神與關係',
+        prompt: '配對跨日主十神（綜合）',
         pairs: [
-          { left: '正官', right: '權力地位' },
-          { left: '正財', right: '正當收入' },
-          { left: '正印', right: '母親學問' },
-          { left: '食神', right: '福祿才華' },
-          { left: '比肩', right: '兄弟同事' },
+          { left: '乙木日主見壬水', right: '正印' },
+          { left: '戊土日主見甲木', right: '偏官（七殺）' },
+          { left: '己土日主見甲木', right: '正官' },
+          { left: '庚金日主見壬水', right: '食神' },
+          { left: '癸水日主見甲木', right: '傷官' },
         ],
       },
     ],
     content: `
       <h2>十神是什麼？</h2>
       <p>十神是日主與其他天干的關係，用來判斷一個人的性格、運勢和吉凶。</p>
-      <p>十神包括：正官、偏官、正財、偏財、正印、偏印、食神、傷官、比肩、劫財。</p>
-      <h3>十神分類</h3>
+      <p>本課改為十個日主（甲乙丙丁戊己庚辛壬癸）都要會判讀：十天干對應十神與五行。</p>
+      <h3>十神判定規則</h3>
       <ul>
-        <li><strong>官殺：</strong>正官、偏官</li>
-        <li><strong>財星：</strong>正財、偏財</li>
-        <li><strong>印星：</strong>正印、偏印</li>
-        <li><strong>食傷：</strong>食神、傷官</li>
-        <li><strong>比劫：</strong>比肩、劫財</li>
+        <li><strong>同我：</strong>同陰陽比肩，異陰陽劫財</li>
+        <li><strong>我生：</strong>同陰陽食神，異陰陽傷官</li>
+        <li><strong>我剋：</strong>同陰陽偏財，異陰陽正財</li>
+        <li><strong>剋我：</strong>同陰陽偏官，異陰陽正官</li>
+        <li><strong>生我：</strong>同陰陽偏印，異陰陽正印</li>
+      </ul>
+      <h3>十日主速記</h3>
+      <ul>
+        <li><strong>同元素：</strong>同陰陽比肩、異陰陽劫財（十日主皆適用）</li>
+        <li><strong>先五行：</strong>同我→比劫、我生→食傷、我剋→財、剋我→官殺、生我→印</li>
+        <li><strong>再陰陽：</strong>同陰陽偏、異陰陽正（比劫例外：同比肩、異劫財）</li>
       </ul>
     `,
     duration: 20,

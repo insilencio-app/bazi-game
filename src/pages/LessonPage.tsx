@@ -90,9 +90,89 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     const mcqCount = Math.min(10, lessonBanks.questionBank.length);
     const tfCount = Math.min(6, lessonBanks.trueFalseBank.length);
     const matchCount = Math.min(4, lessonBanks.matchBank.length);
-    const selectedQuestions = shuffled(lessonBanks.questionBank).slice(0, mcqCount);
-    const selectedTrueFalse = shuffled(lessonBanks.trueFalseBank).slice(0, tfCount);
-    const selectedMatches = shuffled(lessonBanks.matchBank).slice(0, matchCount);
+    const dayMasters = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+
+    const isWuHeRelated = (text: string) =>
+      /天干五合|五合|甲己|乙庚|丙辛|丁壬|戊癸|見合|化/.test(text);
+
+    const pickWithPriority = <T,>(
+      items: T[],
+      count: number,
+      isPriority: (item: T) => boolean,
+      minPriority: number
+    ) => {
+      const priorityItems = shuffled(items.filter(isPriority));
+      const otherItems = shuffled(items.filter((item) => !isPriority(item)));
+      const prioritized = priorityItems.slice(0, Math.min(minPriority, count));
+      const remaining = count - prioritized.length;
+      return [...prioritized, ...otherItems.slice(0, remaining)];
+    };
+
+    const pickBalancedByDayMaster = <T,>(items: T[], count: number, getText: (item: T) => string) => {
+      const pools = new Map<string, T[]>();
+
+      items.forEach((item) => {
+        const text = getText(item);
+        const match = text.match(/日主([甲乙丙丁戊己庚辛壬癸])/);
+        const key = match ? match[1] : 'other';
+        if (!pools.has(key)) pools.set(key, []);
+        pools.get(key)!.push(item);
+      });
+
+      pools.forEach((groupItems, key) => {
+        pools.set(key, shuffled(groupItems));
+      });
+
+      const selected: T[] = [];
+      const orderedStems = shuffled(dayMasters.filter((stem) => (pools.get(stem)?.length ?? 0) > 0));
+
+      orderedStems.forEach((stem) => {
+        if (selected.length >= count) return;
+        const stemPool = pools.get(stem);
+        if (stemPool && stemPool.length > 0) {
+          selected.push(stemPool.shift()!);
+        }
+      });
+
+      const remainingPool = shuffled(Array.from(pools.values()).flat());
+      const remainingCount = Math.max(0, count - selected.length);
+      return [...selected, ...remainingPool.slice(0, remainingCount)];
+    };
+
+    const isHeavenlyStemsLesson = lessonId === 2;
+    const isTenGodsLesson = lessonId === 5;
+
+    const selectedQuestions = isHeavenlyStemsLesson
+      ? pickWithPriority(
+          lessonBanks.questionBank,
+          mcqCount,
+          (q) => isWuHeRelated(`${q.question} ${q.explanation}`),
+          4
+        )
+      : isTenGodsLesson
+      ? pickBalancedByDayMaster(lessonBanks.questionBank, mcqCount, (q) => `${q.question} ${q.explanation}`)
+      : shuffled(lessonBanks.questionBank).slice(0, mcqCount);
+
+    const selectedTrueFalse = isHeavenlyStemsLesson
+      ? pickWithPriority(
+          lessonBanks.trueFalseBank,
+          tfCount,
+          (tf) => isWuHeRelated(`${tf.question} ${tf.explanation}`),
+          3
+        )
+      : isTenGodsLesson
+      ? pickBalancedByDayMaster(lessonBanks.trueFalseBank, tfCount, (tf) => `${tf.question} ${tf.explanation}`)
+      : shuffled(lessonBanks.trueFalseBank).slice(0, tfCount);
+
+    const selectedMatches = isHeavenlyStemsLesson
+      ? pickWithPriority(
+          lessonBanks.matchBank,
+          matchCount,
+          (m) => isWuHeRelated(m.prompt),
+          1
+        )
+      : shuffled(lessonBanks.matchBank).slice(0, matchCount);
+
     const steps: LessonStep[] = [];
 
     selectedQuestions.forEach((q, index) => {
