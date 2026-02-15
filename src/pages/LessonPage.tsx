@@ -389,28 +389,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-4 mb-3">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStepIndex === 0}
-            className="text-gray-600 hover:text-gray-800 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
-            title="上一步驟"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{lesson.title_cn}</h1>
             <p className="text-sm sm:text-lg text-gray-600">{lesson.title_en}</p>
           </div>
           <button
             onClick={onExit}
-            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 transition-colors"
-            title="返回主菜單"
+            className="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base whitespace-nowrap"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z" />
-            </svg>
+            返回主菜單
           </button>
           <div className="text-base text-gray-500">
             <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>
@@ -656,59 +643,104 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
       {/* Action Buttons */}
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && !answered && (
-        <button
-          onClick={handleCheck}
-          disabled={selectedAnswer === null}
-          className={`w-full font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-lg lg:text-xl ${
-            selectedAnswer === null
-              ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          檢查
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStepIndex === 0}
+            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
+          >
+            上一步
+          </button>
+          <button
+            onClick={handleCheck}
+            disabled={selectedAnswer === null}
+            className={`flex-1 font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-lg lg:text-xl ${
+              selectedAnswer === null
+                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            檢查
+          </button>
+        </div>
       )}
 
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
-        <button
-          onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-        >
-          繼續
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStepIndex === 0}
+            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
+          >
+            上一步
+          </button>
+          <button
+            onClick={handleNext}
+            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
+          >
+            繼續
+          </button>
+        </div>
       )}
 
       {currentStep?.type === 'match' && isMatchComplete && (
-        <button
-          onClick={() => {
-            if (!answered) {
-              setScore((prev) => prev + 1);
-              setAnswered(true);
-            }
-            handleNext();
-          }}
-          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-        >
-          繼續
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStepIndex === 0}
+            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
+          >
+            上一步
+          </button>
+          <button
+            onClick={() => {
+              if (!answered) {
+                setScore((prev) => prev + 1);
+                setAnswered(true);
+              }
+              handleNext();
+            }}
+            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
+          >
+            繼續
+          </button>
+        </div>
       )}
 
       {currentStep?.type === 'content' && (
-        <button
-          onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-        >
-          繼續
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStepIndex === 0}
+            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
+          >
+            上一步
+          </button>
+          <button
+            onClick={handleNext}
+            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
+          >
+            繼續
+          </button>
+        </div>
       )}
 
       {currentStep?.type === 'cards' && (
-        <button
-          onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-        >
-          繼續
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStepIndex === 0}
+            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
+          >
+            上一步
+          </button>
+          <button
+            onClick={handleNext}
+            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
+          >
+            繼續
+          </button>
+        </div>
       )}
     </div>
   );
