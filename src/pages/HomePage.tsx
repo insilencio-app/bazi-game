@@ -436,7 +436,7 @@ export const HomePage: React.FC = () => {
             onClick={() => setCurrentMode('menu')}
             className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
           >
-            返回主菜單
+            返回主頁
           </button>
         </div>
       );
@@ -469,7 +469,7 @@ export const HomePage: React.FC = () => {
             <button
               onClick={() => setCurrentMode('menu')}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 transition-colors"
-              title="返回主菜單"
+              title="返回主頁"
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z" />

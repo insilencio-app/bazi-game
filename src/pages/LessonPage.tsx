@@ -87,6 +87,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   };
 
   const quizSteps = useMemo(() => {
+    const isHeavenlyStemsLesson = lessonId === 2;
+    const isTenGodsLesson = lessonId === 5;
+
     const mcqCount = Math.min(10, lessonBanks.questionBank.length);
     const tfCount = Math.min(6, lessonBanks.trueFalseBank.length);
     const matchCount = Math.min(4, lessonBanks.matchBank.length);
@@ -139,9 +142,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       return [...selected, ...remainingPool.slice(0, remainingCount)];
     };
 
-    const isHeavenlyStemsLesson = lessonId === 2;
-    const isTenGodsLesson = lessonId === 5;
-
     const selectedQuestions = isHeavenlyStemsLesson
       ? pickWithPriority(
           lessonBanks.questionBank,
@@ -170,6 +170,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           matchCount,
           (m) => isWuHeRelated(m.prompt),
           1
+        )
+      : isTenGodsLesson
+      ? pickBalancedByDayMaster(
+          lessonBanks.matchBank,
+          matchCount,
+          (m) => `${m.prompt} ${m.pairs.map((pair) => `${pair.left} ${pair.right}`).join(' ')}`
         )
       : shuffled(lessonBanks.matchBank).slice(0, matchCount);
 
@@ -378,7 +384,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           onClick={() => onComplete(lessonId, score, totalQuestions)}
           className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
         >
-          返回主菜單
+          返回主頁
         </button>
       </div>
     );
@@ -397,7 +403,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             onClick={onExit}
             className="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base whitespace-nowrap"
           >
-            返回主菜單
+            返回主頁
           </button>
           <div className="text-base text-gray-500">
             <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>

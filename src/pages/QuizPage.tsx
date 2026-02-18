@@ -61,7 +61,7 @@ export const QuizPage: React.FC<QuizPageProps> = ({ quizId, onComplete }) => {
             onClick={() => onComplete(finalScore)}
             className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            返回主菜單
+            返回主頁
           </button>
           <button
             onClick={() => {
