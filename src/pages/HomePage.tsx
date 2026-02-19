@@ -3,6 +3,7 @@ import { mockElements, mockHeavenlySteams, mockEarthlyBranches, mockTenGods, moc
 import { ElementCard } from '../components/ElementCard';
 import { ElementWheel } from '../components/ElementWheel';
 import { LessonPage } from './LessonPage';
+import { selectByNovelty } from '../utils/quizSelection';
 
 type GameMode = 'menu' | 'elements' | 'lessons' | 'stems' | 'branches' | 'gods' | 'total-quiz';
 
@@ -34,16 +35,15 @@ export const HomePage: React.FC = () => {
         }))
       );
 
-      const shuffled = <T,>(items: T[]) => {
-        const copy = [...items];
-        for (let i = copy.length - 1; i > 0; i -= 1) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [copy[i], copy[j]] = [copy[j], copy[i]];
-        }
-        return copy;
-      };
+      const selected = selectByNovelty(
+        allQuestions,
+        20,
+        (q) => `lesson-${q.lessonId}-mcq-${q.id}`,
+        'bazi-total-quiz-history-v1',
+        30
+      );
 
-      setRandomQuestions(shuffled(allQuestions).slice(0, 20));
+      setRandomQuestions(selected);
     }
   }, [currentMode]);
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods } from '../data/mockData';
+import { selectByNovelty, shuffleArray } from '../utils/quizSelection';
 
 type LessonStep =
   | {
@@ -77,18 +78,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     };
   }, [lessonId]);
 
-  const shuffled = <T,>(items: T[]) => {
-    const copy = [...items];
-    for (let i = copy.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  };
-
   const quizSteps = useMemo(() => {
     const isHeavenlyStemsLesson = lessonId === 2;
     const isTenGodsLesson = lessonId === 5;
+    const lessonHistoryKey = `bazi-lesson-quiz-history-v1-lesson-${lessonId}`;
 
     const mcqCount = Math.min(10, lessonBanks.questionBank.length);
     const tfCount = Math.min(6, lessonBanks.trueFalseBank.length);
@@ -102,16 +95,22 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       items: T[],
       count: number,
       isPriority: (item: T) => boolean,
-      minPriority: number
+      minPriority: number,
+      getKey: (item: T) => string
     ) => {
-      const priorityItems = shuffled(items.filter(isPriority));
-      const otherItems = shuffled(items.filter((item) => !isPriority(item)));
+      const priorityItems = shuffleArray(items.filter(isPriority));
+      const otherItems = shuffleArray(items.filter((item) => !isPriority(item)));
       const prioritized = priorityItems.slice(0, Math.min(minPriority, count));
-      const remaining = count - prioritized.length;
-      return [...prioritized, ...otherItems.slice(0, remaining)];
+      const candidatePool = [...prioritized, ...otherItems];
+      return selectByNovelty(candidatePool, count, getKey, lessonHistoryKey, 10);
     };
 
-    const pickBalancedByDayMaster = <T,>(items: T[], count: number, getText: (item: T) => string) => {
+    const pickBalancedByDayMaster = <T,>(
+      items: T[],
+      count: number,
+      getText: (item: T) => string,
+      getKey: (item: T) => string
+    ) => {
       const pools = new Map<string, T[]>();
 
       items.forEach((item) => {
@@ -123,11 +122,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       });
 
       pools.forEach((groupItems, key) => {
-        pools.set(key, shuffled(groupItems));
+        pools.set(key, shuffleArray(groupItems));
       });
 
       const selected: T[] = [];
-      const orderedStems = shuffled(dayMasters.filter((stem) => (pools.get(stem)?.length ?? 0) > 0));
+      const orderedStems = shuffleArray(dayMasters.filter((stem) => (pools.get(stem)?.length ?? 0) > 0));
 
       orderedStems.forEach((stem) => {
         if (selected.length >= count) return;
@@ -137,9 +136,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         }
       });
 
-      const remainingPool = shuffled(Array.from(pools.values()).flat());
+      const remainingPool = shuffleArray(Array.from(pools.values()).flat());
       const remainingCount = Math.max(0, count - selected.length);
-      return [...selected, ...remainingPool.slice(0, remainingCount)];
+      const candidatePool = [...selected, ...remainingPool.slice(0, remainingCount + count)];
+      return selectByNovelty(candidatePool, count, getKey, lessonHistoryKey, 10);
     };
 
     const selectedQuestions = isHeavenlyStemsLesson
@@ -147,37 +147,51 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           lessonBanks.questionBank,
           mcqCount,
           (q) => isWuHeRelated(`${q.question} ${q.explanation}`),
-          4
+          4,
+          (q) => `mcq-${q.id}`
         )
       : isTenGodsLesson
-      ? pickBalancedByDayMaster(lessonBanks.questionBank, mcqCount, (q) => `${q.question} ${q.explanation}`)
-      : shuffled(lessonBanks.questionBank).slice(0, mcqCount);
+      ? pickBalancedByDayMaster(
+          lessonBanks.questionBank,
+          mcqCount,
+          (q) => `${q.question} ${q.explanation}`,
+          (q) => `mcq-${q.id}`
+        )
+      : selectByNovelty(lessonBanks.questionBank, mcqCount, (q) => `mcq-${q.id}`, lessonHistoryKey, 10);
 
     const selectedTrueFalse = isHeavenlyStemsLesson
       ? pickWithPriority(
           lessonBanks.trueFalseBank,
           tfCount,
           (tf) => isWuHeRelated(`${tf.question} ${tf.explanation}`),
-          3
+          3,
+          (tf) => `tf-${tf.id}`
         )
       : isTenGodsLesson
-      ? pickBalancedByDayMaster(lessonBanks.trueFalseBank, tfCount, (tf) => `${tf.question} ${tf.explanation}`)
-      : shuffled(lessonBanks.trueFalseBank).slice(0, tfCount);
+      ? pickBalancedByDayMaster(
+          lessonBanks.trueFalseBank,
+          tfCount,
+          (tf) => `${tf.question} ${tf.explanation}`,
+          (tf) => `tf-${tf.id}`
+        )
+      : selectByNovelty(lessonBanks.trueFalseBank, tfCount, (tf) => `tf-${tf.id}`, lessonHistoryKey, 10);
 
     const selectedMatches = isHeavenlyStemsLesson
       ? pickWithPriority(
           lessonBanks.matchBank,
           matchCount,
           (m) => isWuHeRelated(m.prompt),
-          1
+          1,
+          (m) => `match-${m.id}`
         )
       : isTenGodsLesson
       ? pickBalancedByDayMaster(
           lessonBanks.matchBank,
           matchCount,
-          (m) => `${m.prompt} ${m.pairs.map((pair) => `${pair.left} ${pair.right}`).join(' ')}`
+          (m) => `${m.prompt} ${m.pairs.map((pair) => `${pair.left} ${pair.right}`).join(' ')}`,
+          (m) => `match-${m.id}`
         )
-      : shuffled(lessonBanks.matchBank).slice(0, matchCount);
+      : selectByNovelty(lessonBanks.matchBank, matchCount, (m) => `match-${m.id}`, lessonHistoryKey, 10);
 
     const steps: LessonStep[] = [];
 
@@ -216,6 +230,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
   const steps = useMemo(() => [...baseSteps, ...quizSteps], [baseSteps, quizSteps]);
   const totalQuestions = steps.filter((step) => step.type === 'mcq' || step.type === 'truefalse' || step.type === 'match').length;
+  const firstQuizStepIndex = steps.findIndex(
+    (step) => step.type === 'mcq' || step.type === 'truefalse' || step.type === 'match'
+  );
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -233,6 +250,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
   const currentStep = steps[currentStepIndex];
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
+  const canSkipToQuiz = firstQuizStepIndex > -1 && currentStepIndex < firstQuizStepIndex;
 
   useEffect(() => {
     setSelectedAnswer(null);
@@ -274,7 +292,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     const allDistractors = Array.from(new Set(allRights.filter((right) => !currentRightSet.has(right))));
     const uniqueDistractors = samePromptDistractors.length >= extraRightCount ? samePromptDistractors : allDistractors;
 
-    const distractors = shuffled(uniqueDistractors)
+    const distractors = shuffleArray(uniqueDistractors)
       .slice(0, extraRightCount)
       .map((right, idx) => ({ 
         right, 
@@ -327,6 +345,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     if (currentStepIndex > 0) {
       setCurrentStepIndex((prev) => prev - 1);
     }
+  };
+
+  const handleSkipToQuiz = () => {
+    if (!canSkipToQuiz) return;
+
+    setCurrentStepIndex(firstQuizStepIndex);
+    setSelectedAnswer(null);
+    setAnswered(false);
+    setShowFeedback(false);
+    setSelectedLeft(null);
+    setMatchedPairs([]);
+    setMatchMessage(null);
   };
 
   const handleMatchLeft = (value: string, index: number) => {
@@ -728,6 +758,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           >
             繼續
           </button>
+          {canSkipToQuiz && (
+            <button
+              onClick={handleSkipToQuiz}
+              className="flex-1 bg-amber-500 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-amber-600 transition-colors text-sm sm:text-lg lg:text-xl"
+            >
+              跳到測驗
+            </button>
+          )}
         </div>
       )}
 
@@ -746,6 +784,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           >
             繼續
           </button>
+          {canSkipToQuiz && (
+            <button
+              onClick={handleSkipToQuiz}
+              className="flex-1 bg-amber-500 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-amber-600 transition-colors text-sm sm:text-lg lg:text-xl"
+            >
+              跳到測驗
+            </button>
+          )}
         </div>
       )}
     </div>
