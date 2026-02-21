@@ -557,16 +557,16 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               {!showHint ? (
                 <button
                   onClick={handleUseHint}
-                  disabled={userXp < 5}
+                  disabled={userXp < 50}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
-                    userXp >= 5
+                    userXp >= 50
                       ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
                       : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <span className="text-lg">💡</span>
-                  <span>使用提示 (花費 5 XP)</span>
-                  {userXp < 5 && <span className="text-xs">(XP不足)</span>}
+                  <span>使用提示 (花費 50 XP)</span>
+                  {userXp < 50 && <span className="text-xs">(XP不足)</span>}
                 </button>
               ) : (
                 <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
@@ -622,16 +622,16 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               {!showHint ? (
                 <button
                   onClick={handleUseHint}
-                  disabled={userXp < 5}
+                  disabled={userXp < 50}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
-                    userXp >= 5
+                    userXp >= 50
                       ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
                       : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <span className="text-lg">💡</span>
-                  <span>使用提示 (花費 5 XP)</span>
-                  {userXp < 5 && <span className="text-xs">(XP不足)</span>}
+                  <span>使用提示 (花費 50 XP)</span>
+                  {userXp < 50 && <span className="text-xs">(XP不足)</span>}
                 </button>
               ) : (
                 <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">

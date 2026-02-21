@@ -2061,6 +2061,7 @@ export const mockLessons = [
         options: ['立春', '驚蟄', '清明', '穀雨'],
         correct: 1,
         explanation: '驚蟄（3月5-7日）標誌著八字二月（卯月）的開始。',
+        hint: '春季節氣序列：立春一月(寅)、驚蟄二月(卯)、清明三月(辰)、穀雨前還是三月。',
       },
       {
         id: 9,
@@ -2096,6 +2097,7 @@ export const mockLessons = [
         options: ['更加複雜', '以節氣而非初一為準', '與公曆相同', '無差別'],
         correct: 1,
         explanation: '八字月份以節氣為準，而農曆以初一為準，時間有差異。',
+        hint: '農曆看農曆初一，八字看節氣時刻 - 這是最大的區別。',
       },
       {
         id: 14,
@@ -2117,6 +2119,7 @@ export const mockLessons = [
         options: ['九月', '十月', '十一月', '十二月'],
         correct: 1,
         explanation: '立冬標誌十月開始，對應亥支。',
+        hint: '冬季序列：立冬十月(亥支)→小雪還在十月→大雪十一月(子支)→小寒十二月(丑支)。',
       },
       {
         id: 17,
@@ -2124,6 +2127,7 @@ export const mockLessons = [
         options: ['七月', '八月', '九月', '十月'],
         correct: 1,
         explanation: '白露（9月初）標誌八月開始，對應酉支。',
+        hint: '秋季節氣：立秋七月(申)→白露八月(酉)→寒露九月(戌)→霜降十月(亥)。',
       },
       {
         id: 18,
@@ -2138,6 +2142,7 @@ export const mockLessons = [
         options: ['八月', '九月', '十月', '十一月'],
         correct: 1,
         explanation: '寒露標誌九月開始，對應戌支。',
+        hint: '寒露後溫度下降明顯，標誌深秋九月。記住「寒」對應九月。',
       },
       {
         id: 20,
@@ -2173,6 +2178,7 @@ export const mockLessons = [
         options: ['五月', '六月', '七月', '八月'],
         correct: 1,
         explanation: '小暑標誌六月開始，對應未支。',
+        hint: '夏季中期：芒種五月(午)→小暑六月(未)。暑熱季節分兩階段。',
       },
       {
         id: 25,
@@ -2201,6 +2207,7 @@ export const mockLessons = [
         options: ['九月', '十月', '十一月', '十二月'],
         correct: 1,
         explanation: '小雪在立冬與大雪之間，仍屬十月（亥月）。',
+        hint: '冬季序列：立冬十月(亥)→小雪還在十月→大雪改為十一月(子支)。',
       },
       {
         id: 29,
@@ -2208,6 +2215,7 @@ export const mockLessons = [
         options: ['十月', '十一月', '十二月', '正月'],
         correct: 1,
         explanation: '大雪標誌十一月開始，對應子支。',
+        hint: '大雪開始結冰，標誌從亥支(十月)進入子支(十一月)。',
       },
       {
         id: 30,
@@ -2236,6 +2244,7 @@ export const mockLessons = [
         options: ['小暑', '立秋', '白露', '寒露'],
         correct: 1,
         explanation: '立秋標誌七月開始，對應申支。',
+        hint: '秋季開始用「立」字代表，立秋七月(申支)開始秋天。',
       },
       {
         id: 34,
@@ -2243,6 +2252,7 @@ export const mockLessons = [
         options: ['申', '酉', '戌', '亥'],
         correct: 1,
         explanation: '八月由白露開始，對應酉支。',
+        hint: '白露進九月？不！白露標誌八月(酉支)。寒露才進九月(戌支)。',
       },
       {
         id: 35,

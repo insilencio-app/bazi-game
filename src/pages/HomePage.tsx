@@ -62,7 +62,7 @@ const LESSON_COMPLETE_XP = 30;
 const PERFECT_LESSON_BONUS_XP = 20;
 const TOTAL_QUIZ_MASTERY_BONUS_XP = 40;
 const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
-const HINT_XP_COST = 5;
+const HINT_XP_COST = 50;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
