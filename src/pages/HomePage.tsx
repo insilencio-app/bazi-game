@@ -292,7 +292,7 @@ export const HomePage: React.FC = () => {
   const [maxQuizStreak, setMaxQuizStreak] = useState(0);
   const [fastCorrectInRun, setFastCorrectInRun] = useState(0);
   const [questionStartAt, setQuestionStartAt] = useState<number | null>(null);
-  const [isBadgeGalleryOpen, setIsBadgeGalleryOpen] = useState(true);
+  const [isBadgeGalleryOpen, setIsBadgeGalleryOpen] = useState(false);
   const [levelUpNotice, setLevelUpNotice] = useState<number | null>(null);
   const [pendingBadgeNotices, setPendingBadgeNotices] = useState<BadgeId[]>([]);
   const [activeBadgeNotice, setActiveBadgeNotice] = useState<BadgeId | null>(null);
@@ -703,21 +703,25 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Badge Gallery */}
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-8">
-              <button
-                onClick={() => setIsBadgeGalleryOpen((prev) => !prev)}
-                className="w-full flex items-center justify-between text-left"
-              >
-                <p className="text-sm sm:text-base text-gray-600">徽章圖鑑</p>
-                <span className="text-sm sm:text-base text-blue-600 font-medium">
-                  {isBadgeGalleryOpen ? '收起 ▲' : '展開 ▼'}
-                </span>
-              </button>
+            {/* Badge Gallery & Progress Charts - Side by Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+              {/* Badge Gallery */}
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+                <button
+                  onClick={() => setIsBadgeGalleryOpen((prev) => !prev)}
+                  className="w-full flex items-center justify-between text-left mb-3"
+                >
+                  <div>
+                    <p className="text-base sm:text-lg font-bold text-gray-800">徽章圖鑑</p>
+                    <p className="text-xs sm:text-sm text-gray-500">{unlockedBadgeIds.length}/{allBadgeIds.length} 已解鎖</p>
+                  </div>
+                  <span className="text-sm sm:text-base text-blue-600 font-medium">
+                    {isBadgeGalleryOpen ? '收起 ▲' : '查看全部 ▼'}
+                  </span>
+                </button>
 
-              {isBadgeGalleryOpen && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
-                  {allBadgeIds.map((badgeId) => {
+                <div className="grid grid-cols-2 gap-2">
+                  {(isBadgeGalleryOpen ? allBadgeIds : allBadgeIds.slice(0, 6)).map((badgeId) => {
                     const badge = BADGE_DEFINITIONS[badgeId];
                     const unlocked = unlockedBadgeIds.includes(badgeId);
 
@@ -746,13 +750,12 @@ export const HomePage: React.FC = () => {
                     );
                   })}
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Progress Charts */}
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-8">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">學習進度統計</h3>
-              <div className="space-y-3">
+              {/* Progress Charts */}
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3">學習進度統計</h3>
+                <div className="space-y-2">
                 {mockLessons.slice(0, 7).map((lesson) => {
                   const stats = userProgress.lessonPerformance[lesson.id];
                   const attempts = stats?.attempts ?? 0;
@@ -760,23 +763,23 @@ export const HomePage: React.FC = () => {
                   const accuracy = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
                   
                   return (
-                    <div key={lesson.id} className="border-b border-gray-100 pb-3 last:border-0">
-                      <div className="flex items-center justify-between mb-2">
+                    <div key={lesson.id} className="border-b border-gray-100 pb-2 last:border-0">
+                      <div className="flex items-center justify-between mb-1">
                         <div className="flex-1">
-                          <p className="text-sm sm:text-base font-medium text-gray-700">{lesson.title_cn}</p>
-                          <p className="text-xs sm:text-sm text-gray-500">
-                            {attempts > 0 ? `${correct}/${attempts} 題正確 • ${accuracy}%` : '尚未開始'}
+                          <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.title_cn}</p>
+                          <p className="text-xs text-gray-500">
+                            {attempts > 0 ? `${correct}/${attempts} • ${accuracy}%` : '尚未開始'}
                           </p>
                         </div>
-                        <div className={`text-2xl sm:text-3xl font-bold ${
+                        <div className={`text-xl sm:text-2xl font-bold ${
                           accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-gray-400'
                         }`}>
                           {attempts > 0 ? `${accuracy}%` : '-'}
                         </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-1.5">
                         <div
-                          className={`h-2 rounded-full transition-all duration-300 ${
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
                             accuracy >= 80 ? 'bg-green-600' : accuracy >= 60 ? 'bg-yellow-600' : 'bg-blue-400'
                           }`}
                           style={{ width: `${accuracy}%` }}
@@ -785,26 +788,27 @@ export const HomePage: React.FC = () => {
                     </div>
                   );
                 })}
-              </div>
-              
-              {/* Overall Stats */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="text-center">
-                    <p className="text-2xl sm:text-3xl font-bold text-blue-600">{userProgress.correctAnswers}</p>
-                    <p className="text-xs sm:text-sm text-gray-600">累計答對</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl sm:text-3xl font-bold text-purple-600">{userProgress.hintsUsed}</p>
-                    <p className="text-xs sm:text-sm text-gray-600">使用提示</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl sm:text-3xl font-bold text-orange-600">{userProgress.bestStreak}</p>
-                    <p className="text-xs sm:text-sm text-gray-600">最佳連勝</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl sm:text-3xl font-bold text-green-600">{levelProgress.level}</p>
-                    <p className="text-xs sm:text-sm text-gray-600">當前等級</p>
+                </div>
+                
+                {/* Overall Stats */}
+                <div className="mt-4 pt-3 border-t border-gray-200">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-center p-2 bg-blue-50 rounded-lg">
+                      <p className="text-xl sm:text-2xl font-bold text-blue-600">{userProgress.correctAnswers}</p>
+                      <p className="text-xs text-gray-600">累計答對</p>
+                    </div>
+                    <div className="text-center p-2 bg-purple-50 rounded-lg">
+                      <p className="text-xl sm:text-2xl font-bold text-purple-600">{userProgress.hintsUsed}</p>
+                      <p className="text-xs text-gray-600">使用提示</p>
+                    </div>
+                    <div className="text-center p-2 bg-orange-50 rounded-lg">
+                      <p className="text-xl sm:text-2xl font-bold text-orange-600">{userProgress.bestStreak}</p>
+                      <p className="text-xs text-gray-600">最佳連勝</p>
+                    </div>
+                    <div className="text-center p-2 bg-green-50 rounded-lg">
+                      <p className="text-xl sm:text-2xl font-bold text-green-600">{levelProgress.level}</p>
+                      <p className="text-xs text-gray-600">當前等級</p>
+                    </div>
                   </div>
                 </div>
               </div>
