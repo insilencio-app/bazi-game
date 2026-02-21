@@ -616,9 +616,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         <div className="mb-8">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800">{currentStep.prompt}</h2>
           <p className="text-sm sm:text-base text-gray-600 mb-4">先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-2">
-              <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">選擇項目：</h3>
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <h3 className="text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">選擇項目：</h3>
               {currentStep.pairs.map((pair, index) => {
                 const uniqueKey = `${pair.left}-${index}`;
                 const isMatched = matchedPairs.some((mp) => mp[0] === uniqueKey);
@@ -627,7 +627,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     key={uniqueKey}
                     onClick={() => handleMatchLeft(pair.left, index)}
                     disabled={isMatched}
-                    className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
+                    className={`w-full p-1.5 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
                         : selectedLeft === uniqueKey
@@ -640,8 +640,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 );
               })}
             </div>
-            <div className="space-y-2">
-              <h3 className="text-sm sm:text-base font-semibold text-gray-700 mb-2">配對選項：</h3>
+            <div className="space-y-1.5 sm:space-y-2">
+              <h3 className="text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">配對選項：</h3>
               {shuffledRights.map((item) => {
                 const isMatched = matchedPairs.some((mp) => mp[1] === item.id);
                 return (
@@ -649,7 +649,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     key={item.id}
                     onClick={() => handleMatchRight(item)}
                     disabled={isMatched}
-                    className={`w-full p-2 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
+                    className={`w-full p-1.5 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
                         : selectedLeft

@@ -177,6 +177,32 @@ const loadPersistedProgress = (): PersistedProgress => {
   }
 };
 
+const getLevelTitle = (level: number): string => {
+  if (level >= 30) return '陰陽宗師';
+  if (level >= 25) return '天命者';
+  if (level >= 21) return '八字聖人';
+  if (level === 20) return '大師';
+  if (level === 19) return '智者';
+  if (level === 18) return '玄門高手';
+  if (level === 17) return '命理宗師';
+  if (level === 16) return '宗師';
+  if (level === 15) return '博學士';
+  if (level === 14) return '專家';
+  if (level === 13) return '命理師';
+  if (level === 12) return '玄學士';
+  if (level === 11) return '術士';
+  if (level === 10) return '精進者';
+  if (level === 9) return '悟道士';
+  if (level === 8) return '通者';
+  if (level === 7) return '勤修士';
+  if (level === 6) return '實踐者';
+  if (level === 5) return '明理生';
+  if (level === 4) return '求道者';
+  if (level === 3) return '習者';
+  if (level === 2) return '入門生';
+  return '啟蒙者';
+};
+
 const calculateLevelProgress = (totalXp: number) => {
   let level = 1;
   let xpIntoCurrentLevel = totalXp;
@@ -262,9 +288,14 @@ export const HomePage: React.FC = () => {
   const [fastCorrectInRun, setFastCorrectInRun] = useState(0);
   const [questionStartAt, setQuestionStartAt] = useState<number | null>(null);
   const [isBadgeGalleryOpen, setIsBadgeGalleryOpen] = useState(true);
+  const [levelUpNotice, setLevelUpNotice] = useState<number | null>(null);
+  const [pendingBadgeNotices, setPendingBadgeNotices] = useState<BadgeId[]>([]);
+  const [activeBadgeNotice, setActiveBadgeNotice] = useState<BadgeId | null>(null);
 
   const levelProgress = calculateLevelProgress(userProgress.totalXp);
   const allBadgeIds = Object.keys(BADGE_DEFINITIONS) as BadgeId[];
+  const previousLevelRef = React.useRef(levelProgress.level);
+  const previousUnlockedBadgeIdsRef = React.useRef<Set<BadgeId>>(new Set(unlockedBadgeIds));
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -280,6 +311,52 @@ export const HomePage: React.FC = () => {
 
     window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
   }, [userProgress, completedLessonIds, perfectLessonIds, highScoreLessonIds, lessonAttemptCounts, unlockedBadgeIds]);
+
+  React.useEffect(() => {
+    if (levelProgress.level > previousLevelRef.current) {
+      setLevelUpNotice(levelProgress.level);
+    }
+    previousLevelRef.current = levelProgress.level;
+  }, [levelProgress.level]);
+
+  React.useEffect(() => {
+    if (levelUpNotice === null) return;
+
+    const timer = window.setTimeout(() => {
+      setLevelUpNotice(null);
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [levelUpNotice]);
+
+  React.useEffect(() => {
+    const prevUnlocked = previousUnlockedBadgeIdsRef.current;
+    const newlyUnlocked = unlockedBadgeIds.filter((badgeId) => !prevUnlocked.has(badgeId));
+
+    if (newlyUnlocked.length > 0) {
+      setPendingBadgeNotices((prev) => [...prev, ...newlyUnlocked]);
+    }
+
+    previousUnlockedBadgeIdsRef.current = new Set(unlockedBadgeIds);
+  }, [unlockedBadgeIds]);
+
+  React.useEffect(() => {
+    if (levelUpNotice !== null || activeBadgeNotice || pendingBadgeNotices.length === 0) return;
+
+    const [nextBadgeId, ...rest] = pendingBadgeNotices;
+    setActiveBadgeNotice(nextBadgeId);
+    setPendingBadgeNotices(rest);
+  }, [pendingBadgeNotices, activeBadgeNotice, levelUpNotice]);
+
+  React.useEffect(() => {
+    if (!activeBadgeNotice) return;
+
+    const timer = window.setTimeout(() => {
+      setActiveBadgeNotice(null);
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [activeBadgeNotice]);
 
   // Generate random questions when in quiz mode
   React.useEffect(() => {
@@ -522,131 +599,173 @@ export const HomePage: React.FC = () => {
     },
   ];
 
+  const rewardOverlay = (
+    (levelUpNotice !== null || activeBadgeNotice) ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-300">
+        {levelUpNotice !== null && (
+          <div className="w-full max-w-md rounded-3xl bg-gradient-to-br from-indigo-600 to-blue-600 text-white shadow-2xl px-6 py-8 text-center animate-in zoom-in-95 duration-300 pointer-events-auto">
+            <p className="text-sm opacity-90">等級提升</p>
+            <p className="text-4xl mt-2">🎉</p>
+            <p className="text-2xl sm:text-3xl font-extrabold mt-2">升到 Lv.{levelUpNotice}</p>
+            <p className="text-xl sm:text-2xl font-bold mt-2 opacity-95">{getLevelTitle(levelUpNotice)}</p>
+            <button
+              onClick={() => setLevelUpNotice(null)}
+              className="mt-6 w-full rounded-xl bg-white/20 hover:bg-white/30 transition-colors py-2 font-semibold"
+            >
+              繼續
+            </button>
+          </div>
+        )}
+
+        {levelUpNotice === null && activeBadgeNotice && (
+          <div className="w-full max-w-md rounded-3xl bg-white border border-amber-200 shadow-2xl px-6 py-8 text-center animate-pulse pointer-events-auto">
+            <p className="text-sm text-amber-700 font-semibold">新徽章解鎖</p>
+            <p className="text-5xl mt-3">{BADGE_DEFINITIONS[activeBadgeNotice].emoji}</p>
+            <p className="text-2xl sm:text-3xl font-extrabold text-gray-800 mt-2">{BADGE_DEFINITIONS[activeBadgeNotice].name}</p>
+            <p className="text-sm sm:text-base text-gray-500 mt-2">{BADGE_DEFINITIONS[activeBadgeNotice].hintLong}</p>
+            <button
+              onClick={() => setActiveBadgeNotice(null)}
+              className="mt-6 w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white transition-colors py-2 font-semibold"
+            >
+              繼續
+            </button>
+          </div>
+        )}
+      </div>
+    ) : null
+  );
+
   // Main Menu
   if (currentMode === 'menu') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        {/* Header */}
-        <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sm:p-8 shadow-lg">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-2">輕鬆學八字</h1>
-          <p className="text-sm sm:text-lg lg:text-2xl opacity-90">Learn BaZi in an Interactive Way</p>
-        </header>
+      <>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+          {/* Header */}
+          <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sm:p-8 shadow-lg">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-2">輕鬆學八字</h1>
+            <p className="text-sm sm:text-lg lg:text-2xl opacity-90">Learn BaZi in an Interactive Way</p>
+          </header>
 
-        {/* User Stats */}
-        <div className="max-w-6xl mx-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600">Lv.{levelProgress.level}</div>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">等級</p>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-sm sm:text-base text-gray-600">經驗值</p>
-                <p className="text-xs sm:text-sm text-gray-500">
-                  {levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}
-                </p>
+          {/* User Stats */}
+          <div className="max-w-6xl mx-auto p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
+                <div className="flex items-baseline justify-center gap-2 sm:gap-3">
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600">Lv.{levelProgress.level}</span>
+                  <span className="text-lg sm:text-xl lg:text-2xl text-gray-800 font-semibold">{getLevelTitle(levelProgress.level)}</span>
+                </div>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">等級</p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
-                <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }}
-                ></div>
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm sm:text-base text-gray-600">經驗值</p>
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    {levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}
+                  </p>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
+                  <div
+                    className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }}
+                  ></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Badge Gallery */}
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-8">
-            <button
-              onClick={() => setIsBadgeGalleryOpen((prev) => !prev)}
-              className="w-full flex items-center justify-between text-left"
-            >
-              <p className="text-sm sm:text-base text-gray-600">徽章圖鑑</p>
-              <span className="text-sm sm:text-base text-blue-600 font-medium">
-                {isBadgeGalleryOpen ? '收起 ▲' : '展開 ▼'}
-              </span>
-            </button>
+            {/* Badge Gallery */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-8">
+              <button
+                onClick={() => setIsBadgeGalleryOpen((prev) => !prev)}
+                className="w-full flex items-center justify-between text-left"
+              >
+                <p className="text-sm sm:text-base text-gray-600">徽章圖鑑</p>
+                <span className="text-sm sm:text-base text-blue-600 font-medium">
+                  {isBadgeGalleryOpen ? '收起 ▲' : '展開 ▼'}
+                </span>
+              </button>
 
-            {isBadgeGalleryOpen && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
-                {allBadgeIds.map((badgeId) => {
-                  const badge = BADGE_DEFINITIONS[badgeId];
-                  const unlocked = unlockedBadgeIds.includes(badgeId);
+              {isBadgeGalleryOpen && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
+                  {allBadgeIds.map((badgeId) => {
+                    const badge = BADGE_DEFINITIONS[badgeId];
+                    const unlocked = unlockedBadgeIds.includes(badgeId);
 
-                  return (
-                    <div
-                      key={badgeId}
-                      className={`rounded-lg border p-2 text-center transition-all ${
-                        unlocked
-                          ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'
-                          : 'bg-gray-100 border-gray-200'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 text-left">
-                        <p className={`text-3xl shrink-0 ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
-                        <div>
-                          <p className={`text-sm sm:text-base leading-tight ${unlocked ? 'text-gray-700 font-medium' : 'text-gray-400'}`}>
-                            {badge.name}
-                          </p>
-                          <p className={`text-xs sm:text-sm leading-tight mt-0.5 ${unlocked ? 'text-gray-500' : 'text-gray-400'}`}>
-                            <span className="sm:hidden">{badge.hintShort}</span>
-                            <span className="hidden sm:inline">{badge.hintLong}</span>
-                          </p>
+                    return (
+                      <div
+                        key={badgeId}
+                        className={`rounded-lg border p-2 text-center transition-all ${
+                          unlocked
+                            ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'
+                            : 'bg-gray-100 border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 text-left">
+                          <p className={`text-3xl shrink-0 ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
+                          <div>
+                            <p className={`text-sm sm:text-base leading-tight ${unlocked ? 'text-gray-700 font-medium' : 'text-gray-400'}`}>
+                              {badge.name}
+                            </p>
+                            <p className={`text-xs sm:text-sm leading-tight mt-0.5 ${unlocked ? 'text-gray-500' : 'text-gray-400'}`}>
+                              <span className="sm:hidden">{badge.hintShort}</span>
+                              <span className="hidden sm:inline">{badge.hintLong}</span>
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Learning Path */}
-          <div className="bg-white rounded-3xl shadow-xl p-4 sm:p-8 mb-8 relative overflow-hidden">
-            <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 blur-2xl"></div>
-            <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-gradient-to-br from-emerald-100 to-green-200 blur-2xl"></div>
-
-            <div className="relative">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3 sm:gap-0">
-                <div>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">學習路徑</h2>
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 mt-1">跟著路徑完成每個課程步驟</p>
+                    );
+                  })}
                 </div>
-                <div className="hidden md:flex items-center gap-2 text-base text-gray-500">
-                  <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                  <span>從這裡開始</span>
+              )}
+            </div>
+
+            {/* Learning Path */}
+            <div className="bg-white rounded-3xl shadow-xl p-4 sm:p-8 mb-8 relative overflow-hidden">
+              <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 blur-2xl"></div>
+              <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-gradient-to-br from-emerald-100 to-green-200 blur-2xl"></div>
+
+              <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3 sm:gap-0">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">學習路徑</h2>
+                    <p className="text-xs sm:text-sm lg:text-base text-gray-600 mt-1">跟著路徑完成每個課程步驟</p>
+                  </div>
+                  <div className="hidden md:flex items-center gap-2 text-base text-gray-500">
+                    <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                    <span>從這裡開始</span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="relative pl-8">
-                <div className="absolute left-3 top-0 bottom-0 w-2 rounded-full bg-gradient-to-b from-blue-200 via-indigo-200 to-emerald-200"></div>
+                <div className="relative pl-8">
+                  <div className="absolute left-3 top-0 bottom-0 w-2 rounded-full bg-gradient-to-b from-blue-200 via-indigo-200 to-emerald-200"></div>
 
-                <div className="space-y-10">
-                  {pathSteps.map((step, index) => (
-                    <div
-                      key={step.id}
-                      className={`relative flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} md:pr-8`}
-                    >
-                      <div className="absolute -left-1.5 top-4 h-6 w-6 rounded-full bg-white border-4 border-blue-400"></div>
-                      <button
-                        onClick={step.onClick}
-                        className={`w-full md:w-[70%] text-left p-4 sm:p-6 rounded-2xl shadow-lg border border-white/60 bg-gradient-to-br ${step.accent} text-white hover:scale-[1.01] transition-transform`}
+                  <div className="space-y-10">
+                    {pathSteps.map((step, index) => (
+                      <div
+                        key={step.id}
+                        className={`relative flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} md:pr-8`}
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-2xl sm:text-3xl lg:text-4xl">{step.emoji}</span>
-                          <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold bg-white/20">{step.chip}</span>
-                        </div>
-                        <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mt-3">{step.title}</h3>
-                        <p className="text-white/90 mt-1 text-xs sm:text-sm lg:text-base">{step.subtitle}</p>
-                      </button>
-                    </div>
-                  ))}
+                        <div className="absolute -left-1.5 top-4 h-6 w-6 rounded-full bg-white border-4 border-blue-400"></div>
+                        <button
+                          onClick={step.onClick}
+                          className={`w-full md:w-[70%] text-left p-4 sm:p-6 rounded-2xl shadow-lg border border-white/60 bg-gradient-to-br ${step.accent} text-white hover:scale-[1.01] transition-transform`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-2xl sm:text-3xl lg:text-4xl">{step.emoji}</span>
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold bg-white/20">{step.chip}</span>
+                          </div>
+                          <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mt-3">{step.title}</h3>
+                          <p className="text-white/90 mt-1 text-xs sm:text-sm lg:text-base">{step.subtitle}</p>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        {rewardOverlay}
+      </>
     );
   }
 
@@ -843,21 +962,24 @@ export const HomePage: React.FC = () => {
 
     if (isQuizFinished) {
       return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
-          <h2 className="text-5xl font-bold mb-4">綜合測驗完成！</h2>
-          <p className="text-xl text-gray-600 mb-6">你已完成綜合測驗。</p>
-          <div className="bg-blue-50 rounded-lg p-8 mb-6">
-            <p className="text-5xl font-bold text-blue-700 mb-2">{quizScore} / {randomQuestions.length}</p>
-            <p className="text-xl text-gray-700">答對題數</p>
-            <p className="text-2xl font-bold text-blue-700 mt-2">{Math.round((quizScore / randomQuestions.length) * 100)}%</p>
+        <>
+          <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
+            <h2 className="text-5xl font-bold mb-4">綜合測驗完成！</h2>
+            <p className="text-xl text-gray-600 mb-6">你已完成綜合測驗。</p>
+            <div className="bg-blue-50 rounded-lg p-8 mb-6">
+              <p className="text-5xl font-bold text-blue-700 mb-2">{quizScore} / {randomQuestions.length}</p>
+              <p className="text-xl text-gray-700">答對題數</p>
+              <p className="text-2xl font-bold text-blue-700 mt-2">{Math.round((quizScore / randomQuestions.length) * 100)}%</p>
+            </div>
+            <button
+              onClick={() => setCurrentMode('menu')}
+              className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
+            >
+              返回主頁
+            </button>
           </div>
-          <button
-            onClick={() => setCurrentMode('menu')}
-            className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
-          >
-            返回主頁
-          </button>
-        </div>
+          {rewardOverlay}
+        </>
       );
     }
 
@@ -899,12 +1021,10 @@ export const HomePage: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h1>
             <button
               onClick={() => setCurrentMode('menu')}
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 transition-colors"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 font-semibold text-sm sm:text-base transition-colors"
               title="返回主頁"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z" />
-              </svg>
+              返回主頁
             </button>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
