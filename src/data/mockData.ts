@@ -418,6 +418,7 @@ export const mockLessons = [
         options: ['北方', '南方', '東方', '中央'],
         correct: 1,
         explanation: '南方是火的方位，象徵光明、溫暖和積極。',
+        hint: '想想太陽在哪個方位最熾熱、最溫暖。',
       },
       {
         id: 2,
@@ -425,6 +426,7 @@ export const mockLessons = [
         options: ['東', '南', '西', '北'],
         correct: 2,
         explanation: '金對應西方。',
+        hint: '太陽在哪個方向落下？金屬與秋天、收斂有關。',
       },
       {
         id: 3,
@@ -432,6 +434,7 @@ export const mockLessons = [
         options: ['春', '夏', '秋', '冬'],
         correct: 0,
         explanation: '木象徵春季的勃勃生機。',
+        hint: '樹木在哪個季節生長最旺盛？',
       },
       {
         id: 4,
@@ -439,6 +442,7 @@ export const mockLessons = [
         options: ['木', '金', '土', '水'],
         correct: 2,
         explanation: '火燃燒產生灰燼（土），所以火生土。',
+        hint: '火燃燒後會留下什麼？想想灰燼的性質。',
       },
       {
         id: 5,
@@ -446,6 +450,7 @@ export const mockLessons = [
         options: ['木', '土', '水', '金'],
         correct: 2,
         explanation: '水可以滅火，所以水剋火。',
+        hint: '用什麼可以滅火？',
       },
       {
         id: 6,
@@ -453,6 +458,7 @@ export const mockLessons = [
         options: ['喜', '怒', '恐', '思'],
         correct: 2,
         explanation: '水對應恐。',
+        hint: '深水中往往讓人產生什麼本能情緒？',
       },
       {
         id: 7,
@@ -460,6 +466,7 @@ export const mockLessons = [
         options: ['春', '夏', '秋', '四季'],
         correct: 3,
         explanation: '土代表四季之中。',
+        hint: '大地承載萬物，在所有季節都存在。',
       },
       {
         id: 8,
@@ -467,6 +474,7 @@ export const mockLessons = [
         options: ['木', '火', '水', '土'],
         correct: 2,
         explanation: '金生水。',
+        hint: '金屬表面在寒冷時會凝結什麼？',
       },
       {
         id: 9,
@@ -474,6 +482,7 @@ export const mockLessons = [
         options: ['土', '火', '金', '水'],
         correct: 2,
         explanation: '金剋木，像斧頭砍樹。',
+        hint: '用什麼工具可以砍斷樹木？',
       },
       {
         id: 10,
@@ -481,6 +490,7 @@ export const mockLessons = [
         options: ['喜', '怒', '思', '悲'],
         correct: 1,
         explanation: '木對應怒。',
+        hint: '木具有向上生長、衝破的力量，對應什麼情緒？',
       },
       {
         id: 11,
@@ -488,6 +498,7 @@ export const mockLessons = [
         options: ['木', '火', '金', '水'],
         correct: 2,
         explanation: '土生金，大地孕育礦藏。',
+        hint: '大地裡蘊藏著什麼寶貴的礦物？',
       },
       {
         id: 12,
@@ -495,6 +506,7 @@ export const mockLessons = [
         options: ['木', '火', '金', '水'],
         correct: 0,
         explanation: '木剋土，树木的根系穿透土壤。',
+        hint: '樹根會穿透什麼來吸收養分？',
       },
       {
         id: 13,
@@ -502,6 +514,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '金'],
         correct: 0,
         explanation: '水生木，水滋養樹木生長。',
+        hint: '植物生長需要什麼來澆灌？',
       },
       {
         id: 14,
@@ -509,6 +522,7 @@ export const mockLessons = [
         options: ['喜', '怒', '思', '恨'],
         correct: 0,
         explanation: '火對應喜。',
+        hint: '火焰給人帶來溫暖、光明，讓人產生什麼正面情緒？',
       },
       {
         id: 15,
@@ -516,6 +530,7 @@ export const mockLessons = [
         options: ['喜', '怒', '思', '悲'],
         correct: 3,
         explanation: '金對應悲。',
+        hint: '秋天肅殺、金屬冷硬，對應什麼感傷情緒？',
       },
       {
         id: 16,
@@ -523,6 +538,7 @@ export const mockLessons = [
         options: ['東', '南', '西', '北'],
         correct: 0,
         explanation: '木對應東方。',
+        hint: '太陽從哪個方向升起？春天與生機來自何方？',
       },
       {
         id: 17,
@@ -530,6 +546,7 @@ export const mockLessons = [
         options: ['木', '金', '水', '土'],
         correct: 1,
         explanation: '火剋金，火能熔金。',
+        hint: '高溫的火可以熔化什麼物質？',
       },
       {
         id: 18,
@@ -537,6 +554,7 @@ export const mockLessons = [
         options: ['中', '東', '西', '北'],
         correct: 0,
         explanation: '土對應中央。',
+        hint: '大地位於四方的什麼位置？',
       },
       {
         id: 19,
@@ -544,6 +562,7 @@ export const mockLessons = [
         options: ['火', '木', '土', '金'],
         correct: 1,
         explanation: '相生為水生木。',
+        hint: '水可以滋養什麼生長？',
       },
       {
         id: 20,
@@ -551,6 +570,7 @@ export const mockLessons = [
         options: ['金剋水', '水剋木', '土剋水', '木剋火'],
         correct: 2,
         explanation: '土剋水是正確的相剋關係。',
+        hint: '土能吸收或阻擋什麼？想想土堤的作用。',
       },
       {
         id: 21,
@@ -558,6 +578,7 @@ export const mockLessons = [
         options: ['春', '夏', '秋', '冬'],
         correct: 3,
         explanation: '水象徵冬季。',
+        hint: '哪個季節最寒冷，水會結冰？',
       },
       {
         id: 22,
@@ -565,6 +586,7 @@ export const mockLessons = [
         options: ['思', '悲', '怒', '喜'],
         correct: 0,
         explanation: '土對應思。',
+        hint: '土代表穩定、承載，需要什麼思考活動？',
       },
     ],
     trueFalseBank: [
@@ -573,72 +595,84 @@ export const mockLessons = [
         question: '五行中，木生火是正確的。',
         correct: true,
         explanation: '正確！木生火是五行相生的關係之一。',
+        hint: '木柴燃燒會產生什麼？',
       },
       {
         id: 2,
         question: '水元素對應北方。',
         correct: true,
         explanation: '正確！水對應北方，象徵寒冷與智慧。',
+        hint: '最寒冷的方向是哪裡？',
       },
       {
         id: 3,
         question: '火剋水是五行相剋的關係。',
         correct: false,
         explanation: '錯誤！是水剋火，而非火剋水。',
+        hint: '火與水相遇，哪個會滅掉哪個？',
       },
       {
         id: 4,
         question: '土元素代表所有四季。',
         correct: true,
         explanation: '正確！土代表四季之中，無固定季節。',
+        hint: '土是否只屬於某一個特定季節？',
       },
       {
         id: 5,
         question: '金生火是正確的相生關係。',
         correct: false,
         explanation: '錯誤！金生水，不是生火。',
+        hint: '金屬冷却後會產生什麼？',
       },
       {
         id: 6,
         question: '木剋土是相剋關係。',
         correct: true,
         explanation: '正確！木剋土，樹木穿透土壤。',
+        hint: '樹根是否會破壞土壤的結構？',
       },
       {
         id: 7,
         question: '東方對應火元素。',
         correct: false,
         explanation: '錯誤！東方對應木元素，南方才是火。',
+        hint: '太陽升起的方向會是最熱的地方嗎？',
       },
       {
         id: 8,
         question: '水生木是相生關係。',
         correct: true,
         explanation: '正確！水滋養樹木生長。',
+        hint: '樹木需要什麼才能生長繁茂？',
       },
       {
         id: 9,
         question: '火元素對應南方。',
         correct: true,
         explanation: '正確！火對應南方。',
+        hint: '哪個方向太陽最直接、最熱？',
       },
       {
         id: 10,
         question: '土剋火是正確的五行相剋。',
         correct: false,
         explanation: '錯誤！火生土，並非土剋火。',
+        hint: '火燃燒後產生土（灰燼），是生還是剋？',
       },
       {
         id: 11,
         question: '金元素對應秋季。',
         correct: true,
         explanation: '正確！金象徵秋季。',
+        hint: '哪個季節與收穫、肅殺、凋零有關？',
       },
       {
         id: 12,
         question: '木元素對應西方。',
         correct: false,
         explanation: '錯誤！木對應東方，西方對應金。',
+        hint: '生機著墇的方向是哪裡？是日出還是日落？',
       },
     ],
     matchBank: [
@@ -785,6 +819,7 @@ export const mockLessons = [
         options: ['8個', '10個', '12個', '5個'],
         correct: 1,
         explanation: '天干共有10個：甲乙丙丁戊己庚辛壬癸。',
+        hint: '天干與十神的「十」有關，不是地支的數量。',
       },
       {
         id: 2,
@@ -792,6 +827,7 @@ export const mockLessons = [
         options: ['陽', '陰', '中性', '不確定'],
         correct: 0,
         explanation: '甲是陽木。',
+        hint: '甲是天幹第一位，是單數還是雙數？',
       },
       {
         id: 3,
@@ -799,6 +835,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '水'],
         correct: 3,
         explanation: '癸為陰水。',
+        hint: '癸是天幹最後一位，與壬（陽水）同屬水。',
       },
       {
         id: 4,
@@ -806,6 +843,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '金'],
         correct: 3,
         explanation: '庚屬金，是陽金。',
+        hint: '庚辛是金的陰陽對，庚位於甲乙丙丁戊己之後。',
       },
       {
         id: 5,
@@ -820,6 +858,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '金'],
         correct: 1,
         explanation: '丁為陰火。',
+        hint: '丁與丙都屬火，丙丁分別代表太陽與燭光。',
       },
       {
         id: 7,
@@ -841,6 +880,7 @@ export const mockLessons = [
         options: ['陽', '陰', '中性', '不確定'],
         correct: 1,
         explanation: '乙是陰木，代表花草。',
+        hint: '乙是第二位，是雙數。',
       },
       {
         id: 10,
@@ -848,6 +888,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '金'],
         correct: 1,
         explanation: '丙為陽火，代表太陽。',
+        hint: '丙代表太陽，具有熾熱的特性。',
       },
       {
         id: 11,
@@ -855,6 +896,7 @@ export const mockLessons = [
         options: ['木', '火', '金', '水'],
         correct: 2,
         explanation: '辛為陰金，代表珠寶。',
+        hint: '辛與庚都屬金，辛代表精美的珠寶。',
       },
       {
         id: 12,
@@ -862,6 +904,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '水'],
         correct: 2,
         explanation: '己屬於土元素，是陰土。',
+        hint: '己與戊同屬土，己代表田園。',
       },
       {
         id: 13,
@@ -869,6 +912,7 @@ export const mockLessons = [
         options: ['陽', '陰', '中性', '不確定'],
         correct: 0,
         explanation: '戊是陽土，代表高山。',
+        hint: '戊是第五位，是單數還是雙數？',
       },
       {
         id: 14,
@@ -890,6 +934,7 @@ export const mockLessons = [
         options: ['乙', '己', '庚', '癸'],
         correct: 1,
         explanation: '甲己合土。',
+        hint: '甲是第一位，己是第六位，相差五位就是合的規律。',
       },
       {
         id: 17,
@@ -897,6 +942,7 @@ export const mockLessons = [
         options: ['木', '火', '金', '水'],
         correct: 2,
         explanation: '乙庚合金。',
+        hint: '乙庚合成的元素與它們所屬五行有關。',
       },
       {
         id: 18,
@@ -904,6 +950,7 @@ export const mockLessons = [
         options: ['丙壬合火', '丁癸合木', '丙辛合水', '戊壬合土'],
         correct: 2,
         explanation: '天干五合之一是丙辛合水。',
+        hint: '丙是陽火，辛是陰金，它們相合會化水。記住五合口訣會很有幫助。',
       },
       {
         id: 19,
@@ -911,6 +958,7 @@ export const mockLessons = [
         options: ['木', '火', '土', '金'],
         correct: 0,
         explanation: '丁壬合木。',
+        hint: '丁壬是火水相合，但合成什麼元素需記憶。',
       },
       {
         id: 20,
@@ -918,6 +966,7 @@ export const mockLessons = [
         options: ['戊癸合金', '戊癸合火', '戊癸合木', '戊癸合水'],
         correct: 1,
         explanation: '戊癸合火。',
+        hint: '戊癸是土水相合，但合成火需記住。',
       },
       {
         id: 21,
@@ -1344,6 +1393,7 @@ export const mockLessons = [
         options: ['10個', '12個', '8個', '5個'],
         correct: 1,
         explanation: '地支共有12個：子丑寅卯辰巳午未申酉戌亥。',
+        hint: '地支對應12生肖，與天干的10個不同。',
       },
       {
         id: 2,
