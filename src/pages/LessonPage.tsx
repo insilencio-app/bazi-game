@@ -210,6 +210,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         options: q.options,
         correct: q.correct,
         explanation: q.explanation,
+        hint: q.hint,
       });
     });
 
@@ -220,6 +221,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         question: tf.question,
         correct: tf.correct,
         explanation: tf.explanation,
+        hint: tf.hint,
       });
     });
 
