@@ -90,9 +90,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     const isTenGodsLesson = lessonId === 5;
     const lessonHistoryKey = `bazi-lesson-quiz-history-v1-lesson-${lessonId}`;
 
-    const mcqCount = Math.min(10, lessonBanks.questionBank.length);
-    const tfCount = Math.min(6, lessonBanks.trueFalseBank.length);
-    const matchCount = Math.min(4, lessonBanks.matchBank.length);
+    const mcqCount = Math.min(6, lessonBanks.questionBank.length);
+    const tfCount = Math.min(2, lessonBanks.trueFalseBank.length);
+    const matchCount = Math.min(2, lessonBanks.matchBank.length);
     const dayMasters = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 
     const isWuHeRelated = (text: string) =>
