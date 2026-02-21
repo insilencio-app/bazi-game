@@ -43,6 +43,8 @@ type UserProgress = {
   fastCorrectAnswers: number;
   dailyStreak: number;
   lastPlayedDate: string | null;
+  hintsUsed: number;
+  lessonPerformance: Record<number, { attempts: number; correct: number }>;
 };
 
 type PersistedProgress = {
@@ -60,6 +62,7 @@ const LESSON_COMPLETE_XP = 30;
 const PERFECT_LESSON_BONUS_XP = 20;
 const TOTAL_QUIZ_MASTERY_BONUS_XP = 40;
 const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
+const HINT_XP_COST = 5;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
@@ -84,7 +87,7 @@ const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShor
   'daily-3': { name: '每日簽到3天', emoji: '📅', hintShort: '連玩3天', hintLong: '連續遊玩 3 天' },
   'daily-7': { name: '每日簽到7天', emoji: '🗓️', hintShort: '連玩7天', hintLong: '連續遊玩 7 天' },
   'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: '7課80+', hintLong: '7 個課程都達 80%+' },
-  'total-quiz-finisher': { name: '綜測完成者', emoji: '🏁', hintShort: '總測1次', hintLong: '完成總測驗 1 次' },
+  'total-quiz-finisher': { name: '總測完成者', emoji: '🏁', hintShort: '總測1次', hintLong: '完成總測驗 1 次' },
   'total-quiz-finisher-5': { name: '測驗不放棄', emoji: '🎯', hintShort: '總測5次', hintLong: '完成總測驗 5 次' },
   'replay-3': { name: '回鍋高手', emoji: '🔁', hintShort: '同課3次', hintLong: '同一課程累計遊玩 3 次' },
 };
@@ -100,6 +103,8 @@ const defaultProgress: UserProgress = {
   fastCorrectAnswers: 0,
   dailyStreak: 0,
   lastPlayedDate: null,
+  hintsUsed: 0,
+  lessonPerformance: {},
 };
 
 const getDateKey = (date = new Date()) => {
@@ -291,6 +296,7 @@ export const HomePage: React.FC = () => {
   const [levelUpNotice, setLevelUpNotice] = useState<number | null>(null);
   const [pendingBadgeNotices, setPendingBadgeNotices] = useState<BadgeId[]>([]);
   const [activeBadgeNotice, setActiveBadgeNotice] = useState<BadgeId | null>(null);
+  const [showTotalQuizHint, setShowTotalQuizHint] = useState(false);
 
   const levelProgress = calculateLevelProgress(userProgress.totalXp);
   const allBadgeIds = Object.keys(BADGE_DEFINITIONS) as BadgeId[];
@@ -395,6 +401,7 @@ export const HomePage: React.FC = () => {
       setMaxQuizStreak(0);
       setFastCorrectInRun(0);
       setQuestionStartAt(null);
+      setShowTotalQuizHint(false);
     }
   }, [currentMode]);
 
@@ -522,6 +529,30 @@ export const HomePage: React.FC = () => {
     }
 
     setCurrentMode('menu');
+  };
+
+  const handleUseHint = () => {
+    setUserProgress((prev) => ({
+      ...prev,
+      totalXp: Math.max(0, prev.totalXp - HINT_XP_COST),
+      hintsUsed: prev.hintsUsed + 1,
+    }));
+  };
+
+  const handleQuestionAnswered = (lessonId: number, correct: boolean) => {
+    setUserProgress((prev) => {
+      const lessonStats = prev.lessonPerformance[lessonId] ?? { attempts: 0, correct: 0 };
+      return {
+        ...prev,
+        lessonPerformance: {
+          ...prev.lessonPerformance,
+          [lessonId]: {
+            attempts: lessonStats.attempts + 1,
+            correct: lessonStats.correct + (correct ? 1 : 0),
+          },
+        },
+      };
+    });
   };
 
   const pathSteps = [
@@ -718,6 +749,67 @@ export const HomePage: React.FC = () => {
               )}
             </div>
 
+            {/* Progress Charts */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">學習進度統計</h3>
+              <div className="space-y-3">
+                {mockLessons.slice(0, 7).map((lesson) => {
+                  const stats = userProgress.lessonPerformance[lesson.id];
+                  const attempts = stats?.attempts ?? 0;
+                  const correct = stats?.correct ?? 0;
+                  const accuracy = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
+                  
+                  return (
+                    <div key={lesson.id} className="border-b border-gray-100 pb-3 last:border-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex-1">
+                          <p className="text-sm sm:text-base font-medium text-gray-700">{lesson.title_cn}</p>
+                          <p className="text-xs sm:text-sm text-gray-500">
+                            {attempts > 0 ? `${correct}/${attempts} 題正確 • ${accuracy}%` : '尚未開始'}
+                          </p>
+                        </div>
+                        <div className={`text-2xl sm:text-3xl font-bold ${
+                          accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-gray-400'
+                        }`}>
+                          {attempts > 0 ? `${accuracy}%` : '-'}
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            accuracy >= 80 ? 'bg-green-600' : accuracy >= 60 ? 'bg-yellow-600' : 'bg-blue-400'
+                          }`}
+                          style={{ width: `${accuracy}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Overall Stats */}
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="text-center">
+                    <p className="text-2xl sm:text-3xl font-bold text-blue-600">{userProgress.correctAnswers}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">累計答對</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl sm:text-3xl font-bold text-purple-600">{userProgress.hintsUsed}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">使用提示</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl sm:text-3xl font-bold text-orange-600">{userProgress.bestStreak}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">最佳連勝</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl sm:text-3xl font-bold text-green-600">{levelProgress.level}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">當前等級</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Learning Path */}
             <div className="bg-white rounded-3xl shadow-xl p-4 sm:p-8 mb-8 relative overflow-hidden">
               <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 blur-2xl"></div>
@@ -848,6 +940,9 @@ export const HomePage: React.FC = () => {
           lessonId={selectedLesson}
           onComplete={handleLessonComplete}
           onExit={() => setCurrentMode('menu')}
+          userXp={userProgress.totalXp}
+          onUseHint={handleUseHint}
+          onQuestionAnswered={handleQuestionAnswered}
         />
       );
     }
@@ -986,7 +1081,9 @@ export const HomePage: React.FC = () => {
     const handleCheck = () => {
       if (selectedAnswer === null || answered) return;
       setAnswered(true);
-      if (selectedAnswer === currentQuestion.correct) {
+      const isCorrect = selectedAnswer === currentQuestion.correct;
+      
+      if (isCorrect) {
         setQuizScore((prev) => prev + 1);
         setCurrentQuizStreak((prev) => {
           const next = prev + 1;
@@ -1000,6 +1097,9 @@ export const HomePage: React.FC = () => {
       } else {
         setCurrentQuizStreak(0);
       }
+      
+      // Track lesson performance
+      handleQuestionAnswered(currentQuestion.lessonId, isCorrect);
     };
 
     const handleNext = () => {
@@ -1008,8 +1108,16 @@ export const HomePage: React.FC = () => {
         setSelectedAnswer(null);
         setAnswered(false);
         setQuestionStartAt(Date.now());
+        setShowTotalQuizHint(false);
       } else {
         setIsQuizFinished(true);
+      }
+    };
+
+    const handleUseTotalQuizHint = () => {
+      if (userProgress.totalXp >= HINT_XP_COST && !showTotalQuizHint) {
+        setShowTotalQuizHint(true);
+        handleUseHint();
       }
     };
 
@@ -1042,6 +1150,35 @@ export const HomePage: React.FC = () => {
         <div className="mb-8">
           <p className="text-sm text-gray-500 mb-2">課程: {currentQuestion.lessonTitle}</p>
           <h2 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">{currentQuestion.question}</h2>
+
+          {/* Hint Section */}
+          {currentQuestion.hint && !answered && (
+            <div className="mb-4">
+              {!showTotalQuizHint ? (
+                <button
+                  onClick={handleUseTotalQuizHint}
+                  disabled={userProgress.totalXp < HINT_XP_COST}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
+                    userProgress.totalXp >= HINT_XP_COST
+                      ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
+                      : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <span className="text-lg">💡</span>
+                  <span>使用提示 (花費 5 XP)</span>
+                  {userProgress.totalXp < HINT_XP_COST && <span className="text-xs">(XP不足)</span>}
+                </button>
+              ) : (
+                <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
+                  <p className="font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base">
+                    <span className="text-lg">💡</span>
+                    提示：
+                  </p>
+                  <p className="text-gray-700 text-sm sm:text-base">{currentQuestion.hint}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Options */}
           <div className="space-y-3 mb-6">

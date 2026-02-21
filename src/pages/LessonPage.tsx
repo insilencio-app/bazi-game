@@ -24,6 +24,7 @@ type LessonStep =
       options: string[];
       correct: number;
       explanation: string;
+      hint?: string;
     }
   | {
       id: number;
@@ -31,6 +32,7 @@ type LessonStep =
       question: string;
       correct: boolean;
       explanation: string;
+      hint?: string;
     }
   | {
       id: number;
@@ -45,6 +47,7 @@ type LessonQuestion = {
   options: string[];
   correct: number;
   explanation: string;
+  hint?: string;
 };
 
 type LessonTrueFalse = {
@@ -52,6 +55,7 @@ type LessonTrueFalse = {
   question: string;
   correct: boolean;
   explanation: string;
+  hint?: string;
 };
 
 type LessonMatch = {
@@ -64,9 +68,12 @@ interface LessonProps {
   lessonId: number;
   onComplete: (lessonId: number, score: number, totalQuestions: number) => void;
   onExit: () => void;
+  userXp: number;
+  onUseHint: () => void;
+  onQuestionAnswered: (lessonId: number, correct: boolean) => void;
 }
 
-export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit }) => {
+export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit, userXp, onUseHint, onQuestionAnswered }) => {
   const lesson = mockLessons.find((l) => l.id === lessonId);
   const baseSteps = (lesson?.steps ?? []) as LessonStep[];
 
@@ -243,6 +250,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [matchedPairs, setMatchedPairs] = useState<Array<[string, string]>>([]);
   const [matchMessage, setMatchMessage] = useState<string | null>(null);
+  const [showHint, setShowHint] = useState(false);
 
   if (!lesson) {
     return <div>課程未找到</div>;
@@ -259,6 +267,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setSelectedLeft(null);
     setMatchedPairs([]);
     setMatchMessage(null);
+    setShowHint(false);
   }, [currentStepIndex]);
 
   const shuffledRights = useMemo(() => {
@@ -318,9 +327,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setAnswered(true);
     setShowFeedback(true);
 
+    let isCorrect = false;
+
     // For MCQ: check if selectedAnswer matches correct index
     if (currentStep.type === 'mcq' && selectedAnswer === currentStep.correct) {
       setScore((prev) => prev + 1);
+      isCorrect = true;
     }
     
     // For true/false: selectedAnswer 1 = true, 0 = false
@@ -328,7 +340,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       const userAnswerIsTrue = selectedAnswer === 1;
       if (userAnswerIsTrue === currentStep.correct) {
         setScore((prev) => prev + 1);
+        isCorrect = true;
       }
+    }
+
+    // Track performance
+    onQuestionAnswered(lessonId, isCorrect);
+  };
+
+  const handleUseHint = () => {
+    if (userXp >= 5 && !showHint) {
+      setShowHint(true);
+      onUseHint();
     }
   };
 
@@ -525,6 +548,36 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {currentStep?.type === 'mcq' && (
         <div className="mb-8">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
+          
+          {/* Hint Section */}
+          {currentStep.hint && !answered && (
+            <div className="mb-4">
+              {!showHint ? (
+                <button
+                  onClick={handleUseHint}
+                  disabled={userXp < 5}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
+                    userXp >= 5
+                      ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
+                      : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <span className="text-lg">💡</span>
+                  <span>使用提示 (花費 5 XP)</span>
+                  {userXp < 5 && <span className="text-xs">(XP不足)</span>}
+                </button>
+              ) : (
+                <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
+                  <p className="font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base">
+                    <span className="text-lg">💡</span>
+                    提示：
+                  </p>
+                  <p className="text-gray-700 text-sm sm:text-base">{currentStep.hint}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="space-y-3 mb-6">
             {currentStep.options.map((option, idx) => (
               <button
@@ -560,6 +613,36 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {currentStep?.type === 'truefalse' && (
         <div className="mb-8">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
+          
+          {/* Hint Section */}
+          {currentStep.hint && !answered && (
+            <div className="mb-4">
+              {!showHint ? (
+                <button
+                  onClick={handleUseHint}
+                  disabled={userXp < 5}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
+                    userXp >= 5
+                      ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
+                      : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <span className="text-lg">💡</span>
+                  <span>使用提示 (花費 5 XP)</span>
+                  {userXp < 5 && <span className="text-xs">(XP不足)</span>}
+                </button>
+              ) : (
+                <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
+                  <p className="font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base">
+                    <span className="text-lg">💡</span>
+                    提示：
+                  </p>
+                  <p className="text-gray-700 text-sm sm:text-base">{currentStep.hint}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
             <button
               onClick={() => setSelectedAnswer(1)}
