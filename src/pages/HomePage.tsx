@@ -293,6 +293,7 @@ export const HomePage: React.FC = () => {
   const [fastCorrectInRun, setFastCorrectInRun] = useState(0);
   const [questionStartAt, setQuestionStartAt] = useState<number | null>(null);
   const [isBadgeGalleryOpen, setIsBadgeGalleryOpen] = useState(false);
+  const [isProgressChartsOpen, setIsProgressChartsOpen] = useState(false);
   const [levelUpNotice, setLevelUpNotice] = useState<number | null>(null);
   const [pendingBadgeNotices, setPendingBadgeNotices] = useState<BadgeId[]>([]);
   const [activeBadgeNotice, setActiveBadgeNotice] = useState<BadgeId | null>(null);
@@ -754,9 +755,21 @@ export const HomePage: React.FC = () => {
 
               {/* Progress Charts */}
               <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3">學習進度統計</h3>
+                <button
+                  onClick={() => setIsProgressChartsOpen((prev) => !prev)}
+                  className="w-full flex items-center justify-between text-left mb-3"
+                >
+                  <div>
+                    <p className="text-base sm:text-lg font-bold text-gray-800">學習進度統計</p>
+                    <p className="text-xs sm:text-sm text-gray-500">各課程答題正確率</p>
+                  </div>
+                  <span className="text-sm sm:text-base text-blue-600 font-medium">
+                    {isProgressChartsOpen ? '收起 ▲' : '查看全部 ▼'}
+                  </span>
+                </button>
+
                 <div className="space-y-2">
-                {mockLessons.slice(0, 7).map((lesson) => {
+                {mockLessons.slice(0, isProgressChartsOpen ? 7 : 3).map((lesson) => {
                   const stats = userProgress.lessonPerformance[lesson.id];
                   const attempts = stats?.attempts ?? 0;
                   const correct = stats?.correct ?? 0;
