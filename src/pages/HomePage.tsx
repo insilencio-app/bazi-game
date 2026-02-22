@@ -45,6 +45,7 @@ type UserProgress = {
   lastPlayedDate: string | null;
   hintsUsed: number;
   lessonPerformance: Record<number, { attempts: number; correct: number }>;
+  lessonLatestPercent: Record<number, number>;
 };
 
 type PersistedProgress = {
@@ -105,6 +106,7 @@ const defaultProgress: UserProgress = {
   lastPlayedDate: null,
   hintsUsed: 0,
   lessonPerformance: {},
+  lessonLatestPercent: {},
 };
 
 const getDateKey = (date = new Date()) => {
@@ -509,6 +511,10 @@ export const HomePage: React.FC = () => {
       totalScore: userProgress.totalScore + (isNewCompletion ? score : 0),
       totalXp: userProgress.totalXp + earnedXp,
       correctAnswers: userProgress.correctAnswers + score,
+      lessonLatestPercent: {
+        ...userProgress.lessonLatestPercent,
+        [lessonId]: Math.round(lessonPercent),
+      },
     };
 
     const achievedBadges = getAchievedBadges(
@@ -774,6 +780,7 @@ export const HomePage: React.FC = () => {
                   const attempts = stats?.attempts ?? 0;
                   const correct = stats?.correct ?? 0;
                   const accuracy = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
+                  const latestPercent = userProgress.lessonLatestPercent[lesson.id];
                   
                   return (
                     <div key={lesson.id} className="border-b border-gray-100 pb-2 last:border-0">
@@ -781,8 +788,11 @@ export const HomePage: React.FC = () => {
                         <div className="flex-1">
                           <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.title_cn}</p>
                           <p className="text-xs text-gray-500">
-                            {attempts > 0 ? `${correct}/${attempts} • ${accuracy}%` : '尚未開始'}
+                            {attempts > 0 ? `累計 ${correct}/${attempts} • ${accuracy}%` : '尚未開始'}
                           </p>
+                          {typeof latestPercent === 'number' && (
+                            <p className="text-xs text-blue-600 font-medium mt-0.5">最近一次：{latestPercent}%</p>
+                          )}
                         </div>
                         <div className={`text-xl sm:text-2xl font-bold ${
                           accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-gray-400'
