@@ -878,6 +878,28 @@ export const HomePage: React.FC = () => {
                   );
                 })}
                 </div>
+
+                {/* Total Quiz Summary */}
+                {userProgress.totalQuizAttempts > 0 && (
+                  <div className="mt-4 pt-3 border-t border-gray-200 mb-4">
+                    <div className="border-b border-gray-100 pb-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex-1">
+                          <p className="text-xs sm:text-sm font-medium text-gray-700">總測驗</p>
+                          <p className="text-xs text-gray-500">
+                            {userProgress.totalQuizAttempts > 0
+                              ? `累計 ${userProgress.totalQuizMastered + userProgress.totalQuizPerfect}/${userProgress.totalQuizAttempts} • ${Math.round(((userProgress.totalQuizMastered + userProgress.totalQuizPerfect) / userProgress.totalQuizAttempts) * 100)}%`
+                              : '尚未開始'}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5">最新進度</p>
+                          <div className="text-xl sm:text-2xl font-bold text-blue-600">-</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
                 {/* Overall Stats */}
                 <div className="mt-4 pt-3 border-t border-gray-200">
