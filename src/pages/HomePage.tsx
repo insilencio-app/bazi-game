@@ -817,7 +817,7 @@ export const HomePage: React.FC = () => {
                 >
                   <div>
                     <p className="text-base sm:text-lg font-bold text-gray-800">學習進度統計</p>
-                    <p className="text-xs sm:text-sm text-gray-500">最近一次成績與近期表現</p>
+                    <p className="text-xs sm:text-sm text-gray-500">累計表現與最近一次成績</p>
                   </div>
                   <span className="text-sm sm:text-base text-blue-600 font-medium">
                     {isProgressChartsOpen ? '收起 ▲' : '查看全部 ▼'}
@@ -826,6 +826,10 @@ export const HomePage: React.FC = () => {
 
                 <div className="space-y-2">
                 {mockLessons.slice(0, isProgressChartsOpen ? 7 : 3).map((lesson) => {
+                  const stats = userProgress.lessonPerformance[lesson.id];
+                  const attempts = stats?.attempts ?? 0;
+                  const correct = stats?.correct ?? 0;
+                  const cumulativePercent = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
                   const recentWindowSize = Math.max(1, userProgress.lessonRecentWindowSize[lesson.id] ?? 10);
                   const latestPercent = userProgress.lessonLatestPercent[lesson.id];
                   const recentAnswerSource = (userProgress.lessonRecentAnswers[lesson.id] ?? []).filter(
@@ -834,10 +838,9 @@ export const HomePage: React.FC = () => {
                   const recentAnswers = recentAnswerSource.slice(-recentWindowSize);
                   const recentAttempts = recentAnswers.length;
                   const recentCorrect = recentAnswers.filter(Boolean).length;
-                  const recentAccuracy = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
-                  const displayPercent = typeof latestPercent === 'number' ? latestPercent : recentAccuracy;
+                  const displayPercent = typeof latestPercent === 'number' ? latestPercent : 0;
                   const displayBarPercent = Math.min(100, Math.max(0, displayPercent));
-                  const hasDisplayPercent = typeof latestPercent === 'number' || recentAttempts > 0;
+                  const hasDisplayPercent = typeof latestPercent === 'number';
                   
                   return (
                     <div key={lesson.id} className="border-b border-gray-100 pb-2 last:border-0">
@@ -845,10 +848,13 @@ export const HomePage: React.FC = () => {
                         <div className="flex-1">
                           <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.title_cn}</p>
                           <p className="text-xs text-gray-500">
-                            {recentAttempts > 0 ? `最近${recentWindowSize}題 ${recentCorrect}/${recentAttempts} • ${recentAccuracy}%` : '尚未開始'}
+                            {attempts > 0 ? `累計 ${correct}/${attempts} • ${cumulativePercent}%` : '尚未開始'}
                           </p>
                           {typeof latestPercent === 'number' && (
                             <p className="text-xs text-blue-600 font-medium mt-0.5">最近一次：{latestPercent}%</p>
+                          )}
+                          {typeof latestPercent !== 'number' && recentAttempts > 0 && (
+                            <p className="text-xs text-gray-400 mt-0.5">最近{recentWindowSize}題：{recentCorrect}/{recentAttempts}</p>
                           )}
                         </div>
                         <div className="text-right">
@@ -1248,7 +1254,7 @@ export const HomePage: React.FC = () => {
           <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             ></div>
           </div>
           <div className="text-base text-gray-500 mt-2">
