@@ -11,7 +11,16 @@ type BadgeId =
   | 'lesson-master'
   | 'quiz-starter'
   | 'ten-correct'
+  | 'twenty-correct'
   | 'fifty-correct'
+  | 'seventy-five-correct'
+  | 'hundred-correct'
+  | 'one-fifty-correct'
+  | 'two-hundred-correct'
+  | 'two-fifty-correct'
+  | 'three-hundred-correct'
+  | 'four-hundred-correct'
+  | 'five-hundred-correct'
   | 'perfect-lesson'
   | 'total-quiz-80'
   | 'total-quiz-100'
@@ -30,7 +39,14 @@ type BadgeId =
   | 'all-courses-80'
   | 'total-quiz-finisher'
   | 'total-quiz-finisher-5'
-  | 'replay-3';
+  | 'replay-3'
+  | 'master-scholar'
+  | 'perfect-combo'
+  | 'late-bloomer'
+  | 'rising-star'
+  | 'ancient-sage'
+  | 'knowledge-hoarder'
+  | 'quiz-warrior';
 
 type UserProgress = {
   totalScore: number;
@@ -74,7 +90,16 @@ const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShor
   'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: '7課', hintLong: '完成 7 個課程' },
   'quiz-starter': { name: '測驗新手', emoji: '🧠', hintShort: '答對1', hintLong: '累計答對 1 題' },
   'ten-correct': { name: '十題達成', emoji: '🔟', hintShort: '答對10', hintLong: '累計答對 10 題' },
+  'twenty-correct': { name: '二十題高手', emoji: '2️⃣0️⃣', hintShort: '答對20', hintLong: '累計答對 20 題' },
   'fifty-correct': { name: '五十題高手', emoji: '🏆', hintShort: '答對50', hintLong: '累計答對 50 題' },
+  'seventy-five-correct': { name: '七十五題達成', emoji: '7️⃣5️⃣', hintShort: '答對75', hintLong: '累計答對 75 題' },
+  'hundred-correct': { name: '百題達成', emoji: '💯', hintShort: '答對100', hintLong: '累計答對 100 題' },
+  'one-fifty-correct': { name: '150題高手', emoji: '🎯', hintShort: '答對150', hintLong: '累計答對 150 題' },
+  'two-hundred-correct': { name: '200題達成', emoji: '📈', hintShort: '答對200', hintLong: '累計答對 200 題' },
+  'two-fifty-correct': { name: '250題里程碑', emoji: '🛤️', hintShort: '答對250', hintLong: '累計答對 250 題' },
+  'three-hundred-correct': { name: '300題成就', emoji: '🔥', hintShort: '答對300', hintLong: '累計答對 300 題' },
+  'four-hundred-correct': { name: '400題大師', emoji: '👑', hintShort: '答對400', hintLong: '累計答對 400 題' },
+  'five-hundred-correct': { name: '500題先知', emoji: '🔮', hintShort: '答對500', hintLong: '累計答對 500 題' },
   'perfect-lesson': { name: '完美課程', emoji: '⭐', hintShort: '單課滿分', hintLong: '任一課程拿滿分' },
   'total-quiz-80': { name: '綜合80%', emoji: '🥈', hintShort: '總測80+', hintLong: '總測驗達到 80% 以上' },
   'total-quiz-100': { name: '綜合滿分', emoji: '🥇', hintShort: '總測100', hintLong: '總測驗 100% 滿分' },
@@ -94,6 +119,13 @@ const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShor
   'total-quiz-finisher': { name: '總測完成者', emoji: '🏁', hintShort: '總測1次', hintLong: '完成總測驗 1 次' },
   'total-quiz-finisher-5': { name: '測驗不放棄', emoji: '🎯', hintShort: '總測5次', hintLong: '完成總測驗 5 次' },
   'replay-3': { name: '回鍋高手', emoji: '🔁', hintShort: '同課3次', hintLong: '同一課程累計遊玩 3 次' },
+  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: '7課滿分', hintLong: '7 個課程都達 100%' },
+  'perfect-combo': { name: '完美連鎖', emoji: '✨', hintShort: '三課滿分', hintLong: '達成 3 個課程滿分' },
+  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: '7課完成', hintLong: '完成全部 7 個課程' },
+  'rising-star': { name: '冉冉上升', emoji: '⭐', hintShort: 'Lv.10', hintLong: '達到等級 10' },
+  'ancient-sage': { name: '遠古聖賢', emoji: '🏔️', hintShort: 'Lv.20', hintLong: '達到等級 20' },
+  'knowledge-hoarder': { name: '知識囤積者', emoji: '💰', hintShort: '500XP', hintLong: '累計獲得 500 XP' },
+  'quiz-warrior': { name: '測驗戰士', emoji: '⚔️', hintShort: '總測10次', hintLong: '完成總測驗 10 次' },
 };
 
 const defaultProgress: UserProgress = {
@@ -282,7 +314,16 @@ const getAchievedBadges = (
   if (completedLessonIds.size >= 7) achieved.push('lesson-master');
   if (progress.correctAnswers >= 1) achieved.push('quiz-starter');
   if (progress.correctAnswers >= 10) achieved.push('ten-correct');
+  if (progress.correctAnswers >= 20) achieved.push('twenty-correct');
   if (progress.correctAnswers >= 50) achieved.push('fifty-correct');
+  if (progress.correctAnswers >= 75) achieved.push('seventy-five-correct');
+  if (progress.correctAnswers >= 100) achieved.push('hundred-correct');
+  if (progress.correctAnswers >= 150) achieved.push('one-fifty-correct');
+  if (progress.correctAnswers >= 200) achieved.push('two-hundred-correct');
+  if (progress.correctAnswers >= 250) achieved.push('two-fifty-correct');
+  if (progress.correctAnswers >= 300) achieved.push('three-hundred-correct');
+  if (progress.correctAnswers >= 400) achieved.push('four-hundred-correct');
+  if (progress.correctAnswers >= 500) achieved.push('five-hundred-correct');
   if (perfectLessonIds.size >= 1) achieved.push('perfect-lesson');
   if (progress.totalQuizMastered >= 1) achieved.push('total-quiz-80');
   if (progress.totalQuizPerfect >= 1) achieved.push('total-quiz-100');
@@ -302,6 +343,20 @@ const getAchievedBadges = (
   if (progress.totalQuizAttempts >= 1) achieved.push('total-quiz-finisher');
   if (progress.totalQuizAttempts >= 5) achieved.push('total-quiz-finisher-5');
   if (Object.values(lessonAttemptCounts).some((count) => count >= 3)) achieved.push('replay-3');
+
+  // New badges for learning milestones
+  if (perfectLessonIds.size >= 7) achieved.push('master-scholar');
+  if (perfectLessonIds.size >= 3) achieved.push('perfect-combo');
+  if (completedLessonIds.size >= 7) achieved.push('late-bloomer');
+  
+  // Level-based badges
+  const levelCalc = calculateLevelProgress(progress.totalXp);
+  if (levelCalc.level >= 10) achieved.push('rising-star');
+  if (levelCalc.level >= 20) achieved.push('ancient-sage');
+
+  // Engagement badges
+  if (progress.totalXp >= 500) achieved.push('knowledge-hoarder');
+  if (progress.totalQuizAttempts >= 10) achieved.push('quiz-warrior');
 
   return achieved;
 };
