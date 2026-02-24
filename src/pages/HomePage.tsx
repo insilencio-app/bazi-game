@@ -1153,6 +1153,7 @@ export const HomePage: React.FC = () => {
     const recentAttempts = recentAnswers.length;
     const recentCorrect = recentAnswers.filter(Boolean).length;
     const recentPercent = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
+    const latestBarPercent = Math.min(100, Math.max(0, latestPercent));
     const currentAttemptedCount = quizIndex + (answered ? 1 : 0);
     const currentCorrectCount = quizScore + (answered && selectedAnswer === currentQuestion.correct ? 1 : 0);
     const currentAccuracy = currentAttemptedCount > 0 ? Math.round((currentCorrectCount / currentAttemptedCount) * 100) : 0;
@@ -1165,11 +1166,11 @@ export const HomePage: React.FC = () => {
             <p className="text-xl text-gray-600 mb-6">你已完成綜合測驗。</p>
             <div className="mb-6 text-left">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-gray-600 font-medium">總測驗進度</p>
-                <p className="text-sm font-semibold text-blue-700">100%</p>
+                <p className="text-sm text-gray-600 font-medium">總測驗進度（本次）</p>
+                <p className="text-sm font-semibold text-blue-700">{latestPercent}%</p>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${latestBarPercent}%` }}></div>
               </div>
             </div>
             <div className="bg-blue-50 rounded-lg p-8 mb-6">
