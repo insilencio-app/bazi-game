@@ -997,6 +997,14 @@ export const HomePage: React.FC = () => {
                       <p className="text-xl sm:text-2xl font-bold text-green-600">{levelProgress.level}</p>
                       <p className="text-xs text-gray-600">當前等級</p>
                     </div>
+                    <div className="text-center p-2 bg-pink-50 rounded-lg">
+                      <p className="text-xl sm:text-2xl font-bold text-pink-600">{userProgress.dailyStreak}</p>
+                      <p className="text-xs text-gray-600">連玩天數</p>
+                    </div>
+                    <div className="text-center p-2 bg-cyan-50 rounded-lg">
+                      <p className="text-xl sm:text-2xl font-bold text-cyan-600">{userProgress.totalXp}</p>
+                      <p className="text-xs text-gray-600">累計經驗值</p>
+                    </div>
                   </div>
                 </div>
               </div>
