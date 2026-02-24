@@ -45,6 +45,8 @@ type UserProgress = {
   lastPlayedDate: string | null;
   hintsUsed: number;
   lessonPerformance: Record<number, { attempts: number; correct: number }>;
+  lessonRecentAnswers: Record<number, boolean[]>;
+  lessonRecentWindowSize: Record<number, number>;
   lessonLatestPercent: Record<number, number>;
 };
 
@@ -106,7 +108,21 @@ const defaultProgress: UserProgress = {
   lastPlayedDate: null,
   hintsUsed: 0,
   lessonPerformance: {},
+  lessonRecentAnswers: {},
+  lessonRecentWindowSize: {},
   lessonLatestPercent: {},
+};
+
+const getLessonRecentWindowSize = (lessonId: number): number => {
+  const lesson = mockLessons.find((item) => item.id === lessonId) as any;
+  if (!lesson) return 10;
+
+  const questionBankCount = Math.min(6, Array.isArray(lesson.questionBank) ? lesson.questionBank.length : 0);
+  const trueFalseBankCount = Math.min(2, Array.isArray(lesson.trueFalseBank) ? lesson.trueFalseBank.length : 0);
+  const matchBankCount = Math.min(2, Array.isArray(lesson.matchBank) ? lesson.matchBank.length : 0);
+  const totalQuestionCount = questionBankCount + trueFalseBankCount + matchBankCount;
+
+  return totalQuestionCount > 0 ? totalQuestionCount : 10;
 };
 
 const getDateKey = (date = new Date()) => {
@@ -158,10 +174,30 @@ const loadPersistedProgress = (): PersistedProgress => {
     }
 
     const parsed = JSON.parse(raw) as Partial<PersistedProgress>;
+    const mergedProgress: UserProgress = {
+      ...defaultProgress,
+      ...(parsed.userProgress ?? {}),
+    };
+
+    const migratedWindowSize: Record<number, number> = {
+      ...(mergedProgress.lessonRecentWindowSize ?? {}),
+    };
+
+    const lessonIdsWithProgress = new Set<number>([
+      ...Object.keys(mergedProgress.lessonPerformance ?? {}).map((key) => Number(key)),
+      ...Object.keys(mergedProgress.lessonRecentAnswers ?? {}).map((key) => Number(key)),
+      ...Object.keys(mergedProgress.lessonLatestPercent ?? {}).map((key) => Number(key)),
+    ]);
+
+    lessonIdsWithProgress.forEach((lessonId) => {
+      if (!Number.isFinite(lessonId) || lessonId <= 0) return;
+      migratedWindowSize[lessonId] = getLessonRecentWindowSize(lessonId);
+    });
+
     return {
       userProgress: {
-        ...defaultProgress,
-        ...(parsed.userProgress ?? {}),
+        ...mergedProgress,
+        lessonRecentWindowSize: migratedWindowSize,
       },
       completedLessonIds: Array.isArray(parsed.completedLessonIds) ? parsed.completedLessonIds : [],
       perfectLessonIds: Array.isArray(parsed.perfectLessonIds) ? parsed.perfectLessonIds : [],
@@ -293,6 +329,7 @@ export const HomePage: React.FC = () => {
   const [, setCurrentQuizStreak] = useState(0);
   const [maxQuizStreak, setMaxQuizStreak] = useState(0);
   const [fastCorrectInRun, setFastCorrectInRun] = useState(0);
+  const [totalQuizAnswerHistory, setTotalQuizAnswerHistory] = useState<boolean[]>([]);
   const [questionStartAt, setQuestionStartAt] = useState<number | null>(null);
   const [isBadgeGalleryOpen, setIsBadgeGalleryOpen] = useState(false);
   const [isProgressChartsOpen, setIsProgressChartsOpen] = useState(false);
@@ -403,6 +440,7 @@ export const HomePage: React.FC = () => {
       setCurrentQuizStreak(0);
       setMaxQuizStreak(0);
       setFastCorrectInRun(0);
+      setTotalQuizAnswerHistory([]);
       setQuestionStartAt(null);
       setShowTotalQuizHint(false);
     }
@@ -511,6 +549,10 @@ export const HomePage: React.FC = () => {
       totalScore: userProgress.totalScore + (isNewCompletion ? score : 0),
       totalXp: userProgress.totalXp + earnedXp,
       correctAnswers: userProgress.correctAnswers + score,
+      lessonRecentWindowSize: {
+        ...userProgress.lessonRecentWindowSize,
+        [lessonId]: Math.max(1, totalQuestions),
+      },
       lessonLatestPercent: {
         ...userProgress.lessonLatestPercent,
         [lessonId]: Math.round(lessonPercent),
@@ -549,6 +591,10 @@ export const HomePage: React.FC = () => {
   const handleQuestionAnswered = (lessonId: number, correct: boolean) => {
     setUserProgress((prev) => {
       const lessonStats = prev.lessonPerformance[lessonId] ?? { attempts: 0, correct: 0 };
+      const recentWindowSize = Math.max(1, prev.lessonRecentWindowSize[lessonId] ?? 10);
+      const recentAnswers = prev.lessonRecentAnswers[lessonId] ?? [];
+      const nextRecentAnswers = [...recentAnswers, correct].slice(-recentWindowSize);
+
       return {
         ...prev,
         lessonPerformance: {
@@ -557,6 +603,10 @@ export const HomePage: React.FC = () => {
             attempts: lessonStats.attempts + 1,
             correct: lessonStats.correct + (correct ? 1 : 0),
           },
+        },
+        lessonRecentAnswers: {
+          ...prev.lessonRecentAnswers,
+          [lessonId]: nextRecentAnswers,
         },
       };
     });
@@ -767,7 +817,7 @@ export const HomePage: React.FC = () => {
                 >
                   <div>
                     <p className="text-base sm:text-lg font-bold text-gray-800">學習進度統計</p>
-                    <p className="text-xs sm:text-sm text-gray-500">各課程答題正確率</p>
+                    <p className="text-xs sm:text-sm text-gray-500">最近一次與最近10題表現</p>
                   </div>
                   <span className="text-sm sm:text-base text-blue-600 font-medium">
                     {isProgressChartsOpen ? '收起 ▲' : '查看全部 ▼'}
@@ -779,8 +829,17 @@ export const HomePage: React.FC = () => {
                   const stats = userProgress.lessonPerformance[lesson.id];
                   const attempts = stats?.attempts ?? 0;
                   const correct = stats?.correct ?? 0;
-                  const accuracy = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
+                  const recentWindowSize = Math.max(1, userProgress.lessonRecentWindowSize[lesson.id] ?? 10);
                   const latestPercent = userProgress.lessonLatestPercent[lesson.id];
+                  const recentAnswerSource = (userProgress.lessonRecentAnswers[lesson.id] ?? []).filter(
+                    (value): value is boolean => typeof value === 'boolean'
+                  );
+                  const recentAnswers = recentAnswerSource.slice(-recentWindowSize);
+                  const recentAttempts = recentAnswers.length;
+                  const recentCorrect = recentAnswers.filter(Boolean).length;
+                  const recentAccuracy = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
+                  const displayPercent = typeof latestPercent === 'number' ? latestPercent : recentAccuracy;
+                  const hasDisplayPercent = typeof latestPercent === 'number' || recentAttempts > 0;
                   
                   return (
                     <div key={lesson.id} className="border-b border-gray-100 pb-2 last:border-0">
@@ -788,24 +847,27 @@ export const HomePage: React.FC = () => {
                         <div className="flex-1">
                           <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.title_cn}</p>
                           <p className="text-xs text-gray-500">
-                            {attempts > 0 ? `累計 ${correct}/${attempts} • ${accuracy}%` : '尚未開始'}
+                            {recentAttempts > 0 ? `最近${recentWindowSize}題 ${recentCorrect}/${recentAttempts} • ${recentAccuracy}%` : '尚未開始'}
                           </p>
                           {typeof latestPercent === 'number' && (
                             <p className="text-xs text-blue-600 font-medium mt-0.5">最近一次：{latestPercent}%</p>
                           )}
+                          {attempts > 0 && (
+                            <p className="text-xs text-gray-400 mt-0.5">累計統計：{correct}/{attempts}</p>
+                          )}
                         </div>
                         <div className={`text-xl sm:text-2xl font-bold ${
-                          accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-gray-400'
+                          displayPercent >= 80 ? 'text-green-600' : displayPercent >= 60 ? 'text-yellow-600' : 'text-gray-400'
                         }`}>
-                          {attempts > 0 ? `${accuracy}%` : '-'}
+                          {hasDisplayPercent ? `${displayPercent}%` : '-'}
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5">
                         <div
                           className={`h-1.5 rounded-full transition-all duration-300 ${
-                            accuracy >= 80 ? 'bg-green-600' : accuracy >= 60 ? 'bg-yellow-600' : 'bg-blue-400'
+                            displayPercent >= 80 ? 'bg-green-600' : displayPercent >= 60 ? 'bg-yellow-600' : 'bg-blue-400'
                           }`}
-                          style={{ width: `${accuracy}%` }}
+                          style={{ width: `${displayPercent}%` }}
                         ></div>
                       </div>
                     </div>
@@ -1081,6 +1143,12 @@ export const HomePage: React.FC = () => {
 
     const currentQuestion = randomQuestions[quizIndex];
     const progress = randomQuestions.length ? ((quizIndex + 1) / randomQuestions.length) * 100 : 0;
+    const latestPercent = Math.round((quizScore / randomQuestions.length) * 100);
+    const recentWindowSize = Math.max(1, randomQuestions.length);
+    const recentAnswers = totalQuizAnswerHistory.slice(-recentWindowSize);
+    const recentAttempts = recentAnswers.length;
+    const recentCorrect = recentAnswers.filter(Boolean).length;
+    const recentPercent = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
 
     if (isQuizFinished) {
       return (
@@ -1091,7 +1159,10 @@ export const HomePage: React.FC = () => {
             <div className="bg-blue-50 rounded-lg p-8 mb-6">
               <p className="text-5xl font-bold text-blue-700 mb-2">{quizScore} / {randomQuestions.length}</p>
               <p className="text-xl text-gray-700">答對題數</p>
-              <p className="text-2xl font-bold text-blue-700 mt-2">{Math.round((quizScore / randomQuestions.length) * 100)}%</p>
+              <p className="text-2xl font-bold text-blue-700 mt-2">本次成績：{latestPercent}%</p>
+              <p className="text-base text-gray-600 mt-2">
+                最近{recentWindowSize}題：{recentCorrect}/{recentAttempts} • {recentPercent}%
+              </p>
             </div>
             <button
               onClick={() => setCurrentMode('menu')}
@@ -1124,6 +1195,8 @@ export const HomePage: React.FC = () => {
       } else {
         setCurrentQuizStreak(0);
       }
+
+      setTotalQuizAnswerHistory((prev) => [...prev, isCorrect]);
       
       // Track lesson performance
       handleQuestionAnswered(currentQuestion.lessonId, isCorrect);
