@@ -817,7 +817,7 @@ export const HomePage: React.FC = () => {
                 >
                   <div>
                     <p className="text-base sm:text-lg font-bold text-gray-800">學習進度統計</p>
-                    <p className="text-xs sm:text-sm text-gray-500">最近一次與最近10題表現</p>
+                    <p className="text-xs sm:text-sm text-gray-500">最近一次成績與近期表現</p>
                   </div>
                   <span className="text-sm sm:text-base text-blue-600 font-medium">
                     {isProgressChartsOpen ? '收起 ▲' : '查看全部 ▼'}
@@ -826,9 +826,6 @@ export const HomePage: React.FC = () => {
 
                 <div className="space-y-2">
                 {mockLessons.slice(0, isProgressChartsOpen ? 7 : 3).map((lesson) => {
-                  const stats = userProgress.lessonPerformance[lesson.id];
-                  const attempts = stats?.attempts ?? 0;
-                  const correct = stats?.correct ?? 0;
                   const recentWindowSize = Math.max(1, userProgress.lessonRecentWindowSize[lesson.id] ?? 10);
                   const latestPercent = userProgress.lessonLatestPercent[lesson.id];
                   const recentAnswerSource = (userProgress.lessonRecentAnswers[lesson.id] ?? []).filter(
@@ -852,14 +849,14 @@ export const HomePage: React.FC = () => {
                           {typeof latestPercent === 'number' && (
                             <p className="text-xs text-blue-600 font-medium mt-0.5">最近一次：{latestPercent}%</p>
                           )}
-                          {attempts > 0 && (
-                            <p className="text-xs text-gray-400 mt-0.5">累計統計：{correct}/{attempts}</p>
-                          )}
                         </div>
-                        <div className={`text-xl sm:text-2xl font-bold ${
+                        <div className="text-right">
+                          <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5">最新進度</p>
+                          <div className={`text-xl sm:text-2xl font-bold ${
                           displayPercent >= 80 ? 'text-green-600' : displayPercent >= 60 ? 'text-yellow-600' : 'text-gray-400'
-                        }`}>
-                          {hasDisplayPercent ? `${displayPercent}%` : '-'}
+                          }`}>
+                            {hasDisplayPercent ? `${displayPercent}%` : '-'}
+                          </div>
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -1149,6 +1146,9 @@ export const HomePage: React.FC = () => {
     const recentAttempts = recentAnswers.length;
     const recentCorrect = recentAnswers.filter(Boolean).length;
     const recentPercent = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
+    const currentAttemptedCount = quizIndex + (answered ? 1 : 0);
+    const currentCorrectCount = quizScore + (answered && selectedAnswer === currentQuestion.correct ? 1 : 0);
+    const currentAccuracy = currentAttemptedCount > 0 ? Math.round((currentCorrectCount / currentAttemptedCount) * 100) : 0;
 
     if (isQuizFinished) {
       return (
@@ -1156,6 +1156,15 @@ export const HomePage: React.FC = () => {
           <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
             <h2 className="text-5xl font-bold mb-4">綜合測驗完成！</h2>
             <p className="text-xl text-gray-600 mb-6">你已完成綜合測驗。</p>
+            <div className="mb-6 text-left">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-600 font-medium">總測驗進度</p>
+                <p className="text-sm font-semibold text-blue-700">100%</p>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+              </div>
+            </div>
             <div className="bg-blue-50 rounded-lg p-8 mb-6">
               <p className="text-5xl font-bold text-blue-700 mb-2">{quizScore} / {randomQuestions.length}</p>
               <p className="text-xl text-gray-700">答對題數</p>
@@ -1243,6 +1252,8 @@ export const HomePage: React.FC = () => {
           </div>
           <div className="text-base text-gray-500 mt-2">
             <span className="font-semibold">第 {quizIndex + 1}/{randomQuestions.length} 題</span>
+            <span className="mx-2">•</span>
+            <span className="font-semibold text-blue-700">目前正確率：{currentAccuracy}%</span>
           </div>
         </div>
 
