@@ -1391,7 +1391,7 @@ export const HomePage: React.FC = () => {
                   }`}
                 >
                   <span className="text-lg">💡</span>
-                  <span>使用提示 (花費 5 XP)</span>
+                  <span>使用提示 (花費 50 XP)</span>
                   {userProgress.totalXp < HINT_XP_COST && <span className="text-xs">(XP不足)</span>}
                 </button>
               ) : (

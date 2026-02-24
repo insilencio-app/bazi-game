@@ -351,7 +351,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   };
 
   const handleUseHint = () => {
-    if (userXp >= 5 && !showHint) {
+    if (userXp >= 50 && !showHint) {
       setShowHint(true);
       onUseHint();
     }
