@@ -48,6 +48,7 @@ type UserProgress = {
   lessonRecentAnswers: Record<number, boolean[]>;
   lessonRecentWindowSize: Record<number, number>;
   lessonLatestPercent: Record<number, number>;
+  totalQuizLatestPercent: number | null;
 };
 
 type PersistedProgress = {
@@ -111,6 +112,7 @@ const defaultProgress: UserProgress = {
   lessonRecentAnswers: {},
   lessonRecentWindowSize: {},
   lessonLatestPercent: {},
+  totalQuizLatestPercent: null,
 };
 
 const getLessonRecentWindowSize = (lessonId: number): number => {
@@ -472,6 +474,7 @@ export const HomePage: React.FC = () => {
       totalQuizAttempts: userProgress.totalQuizAttempts + 1,
       bestStreak: Math.max(userProgress.bestStreak, maxQuizStreak),
       fastCorrectAnswers: userProgress.fastCorrectAnswers + fastCorrectInRun,
+      totalQuizLatestPercent: percentage,
     };
 
     const achievedBadges = getAchievedBadges(
@@ -891,11 +894,30 @@ export const HomePage: React.FC = () => {
                               ? `累計 ${userProgress.totalQuizMastered + userProgress.totalQuizPerfect}/${userProgress.totalQuizAttempts} • ${Math.round(((userProgress.totalQuizMastered + userProgress.totalQuizPerfect) / userProgress.totalQuizAttempts) * 100)}%`
                               : '尚未開始'}
                           </p>
+                          {typeof userProgress.totalQuizLatestPercent === 'number' && (
+                            <p className="text-xs text-blue-600 font-medium mt-0.5">最近一次：{userProgress.totalQuizLatestPercent}%</p>
+                          )}
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] sm:text-xs text-gray-500 mb-0.5">最新進度</p>
-                          <div className="text-xl sm:text-2xl font-bold text-blue-600">-</div>
+                          <div className={`text-xl sm:text-2xl font-bold ${
+                            typeof userProgress.totalQuizLatestPercent === 'number'
+                              ? userProgress.totalQuizLatestPercent >= 80 ? 'text-green-600' : userProgress.totalQuizLatestPercent >= 60 ? 'text-yellow-600' : 'text-blue-600'
+                              : 'text-gray-400'
+                          }`}>
+                            {typeof userProgress.totalQuizLatestPercent === 'number' ? `${userProgress.totalQuizLatestPercent}%` : '-'}
+                          </div>
                         </div>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            typeof userProgress.totalQuizLatestPercent === 'number'
+                              ? userProgress.totalQuizLatestPercent >= 80 ? 'bg-green-600' : userProgress.totalQuizLatestPercent >= 60 ? 'bg-yellow-600' : 'bg-blue-400'
+                              : 'bg-gray-200'
+                          }`}
+                          style={{ width: `${Math.min(100, Math.max(0, userProgress.totalQuizLatestPercent ?? 0))}%` }}
+                        ></div>
                       </div>
                     </div>
                   </div>
