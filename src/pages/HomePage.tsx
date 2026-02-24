@@ -836,6 +836,7 @@ export const HomePage: React.FC = () => {
                   const recentCorrect = recentAnswers.filter(Boolean).length;
                   const recentAccuracy = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
                   const displayPercent = typeof latestPercent === 'number' ? latestPercent : recentAccuracy;
+                  const displayBarPercent = Math.min(100, Math.max(0, displayPercent));
                   const hasDisplayPercent = typeof latestPercent === 'number' || recentAttempts > 0;
                   
                   return (
@@ -864,7 +865,7 @@ export const HomePage: React.FC = () => {
                           className={`h-1.5 rounded-full transition-all duration-300 ${
                             displayPercent >= 80 ? 'bg-green-600' : displayPercent >= 60 ? 'bg-yellow-600' : 'bg-blue-400'
                           }`}
-                          style={{ width: `${displayPercent}%` }}
+                          style={{ width: `${displayBarPercent}%` }}
                         ></div>
                       </div>
                     </div>
