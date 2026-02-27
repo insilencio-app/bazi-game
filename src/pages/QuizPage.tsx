@@ -80,7 +80,7 @@ export const QuizPage: React.FC<QuizPageProps> = ({ quizId, onComplete }) => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-2 text-center">{quiz.title_cn}</h1>
-      <p className="text-gray-600 text-center mb-8">{quiz.title_en}</p>
+      <p className="text-gray-600 text-center mb-8">測驗模式</p>
       <QuizGame questions={quiz.questions} onComplete={handleQuizComplete} />
     </div>
   );

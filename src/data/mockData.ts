@@ -1922,10 +1922,12 @@ export const mockLessons = [
       {
         id: 2,
         type: 'content',
-        title: '春季節氣（三個月）',
+        title: '春季節氣（六節）',
         bullets: [
           '立春（2月3-5日）- 春季開始，冬天結束，萬物復甦',
+          '雨水（2月18-20日）- 降雨增多，氣溫回升，春意漸濃',
           '驚蟄（3月5-7日）- 春雷響起，蟲蟻甦醒，農民開始耕種',
+          '春分（3月20-22日）- 晝夜幾乎等長，陰陽平衡',
           '清明（4月4-6日）- 天氣晴朗，氣溫升高，是祭祖掃墓的時節',
           '穀雨（4月19-21日）- 雨水充沛，穀物滋長',
         ],
@@ -1933,34 +1935,40 @@ export const mockLessons = [
       {
         id: 3,
         type: 'content',
-        title: '夏季節氣（三個月）',
+        title: '夏季節氣（六節）',
         bullets: [
           '立夏（5月5-7日）- 夏季開始，氣溫急升，農作物開始茁壯',
           '小滿（5月20-22日）- 小麥逐漸飽滿，水果開始成長',
           '芒種（6月5-7日）- 有芒穀類作物開始收割，農事最繁忙',
           '夏至（6月20-22日）- 白天最長，陽氣最盛，正午時影子最短',
+          '小暑（7月6-8日）- 天氣炎熱漸起，進入盛夏前段',
+          '大暑（7月22-24日）- 一年中最炎熱的時段之一',
         ],
       },
       {
         id: 4,
         type: 'content',
-        title: '秋季節氣（三個月）',
+        title: '秋季節氣（六節）',
         bullets: [
           '立秋（8月7-9日）- 秋季開始，氣溫開始下降，炎夏結束',
           '處暑（8月22-24日）- 熱氣逐漸消散，天氣變涼',
           '白露（9月7-9日）- 夜間溫度降低，露水凝結，呈白色',
           '秋分（9月22-24日）- 白天黑夜等長，秋季過半，收穫開始',
+          '寒露（10月8-9日）- 露水更寒，深秋氣息明顯',
+          '霜降（10月23-24日）- 氣溫驟降，開始出現霜象',
         ],
       },
       {
         id: 5,
         type: 'content',
-        title: '冬季節氣（三個月）',
+        title: '冬季節氣（六節）',
         bullets: [
           '立冬（11月7-8日）- 冬季開始，氣溫明顯下降',
           '小雪（11月22-23日）- 溫度下降，高空冷，開始降雪',
           '大雪（12月6-8日）- 降雪量增加，地面積雪',
           '冬至（12月21-23日）- 白天最短，陽氣最弱，民間冬至節',
+          '小寒（1月5-7日）- 進入嚴寒時段，寒氣加重',
+          '大寒（1月20-21日）- 寒氣最盛，為冬季最後一個節氣',
         ],
       },
       {
@@ -1977,20 +1985,23 @@ export const mockLessons = [
       {
         id: 7,
         type: 'content',
-        title: '八字十二個月份與節氣對應',
+        title: '八字十二個月份與24節氣對應',
+        paragraphs: [
+          '以下用「每月起節＋每月中節」完整列出24節氣，並對應八字十二個月份。',
+        ],
         bullets: [
-          '正月：立春（2月）→ 驚蟄前，對應寅支',
-          '二月：驚蟄（3月）→ 清明前，對應卯支',
-          '三月：清明（4月）→ 穀雨前，對應辰支',
-          '四月：立夏（5月）→ 小滿前，對應巳支',
-          '五月：芒種（6月）→ 夏至前，對應午支',
-          '六月：小暑（7月）→ 立秋前，對應未支',
-          '七月：立秋（8月）→ 處暑前，對應申支',
-          '八月：白露（9月）→ 秋分前，對應酉支',
-          '九月：寒露（10月）→ 立冬前，對應戌支',
-          '十月：立冬（11月）→ 小雪前，對應亥支',
-          '十一月：大雪（12月）→ 冬至前，對應子支',
-          '十二月：小寒（1月）→ 立春前，對應丑支',
+          '正月（寅）：立春 → 雨水（約2月）',
+          '二月（卯）：驚蟄 → 春分（約3月）',
+          '三月（辰）：清明 → 穀雨（約4月）',
+          '四月（巳）：立夏 → 小滿（約5月）',
+          '五月（午）：芒種 → 夏至（約6月）',
+          '六月（未）：小暑 → 大暑（約7月）',
+          '七月（申）：立秋 → 處暑（約8月）',
+          '八月（酉）：白露 → 秋分（約9月）',
+          '九月（戌）：寒露 → 霜降（約10月）',
+          '十月（亥）：立冬 → 小雪（約11月）',
+          '十一月（子）：大雪 → 冬至（約12月）',
+          '十二月（丑）：小寒 → 大寒（約1月，之後立春進入下一年正月）',
         ],
       },
       {
@@ -2011,7 +2022,7 @@ export const mockLessons = [
         question: '24節氣共分為幾個季節？',
         options: ['3個', '4個', '6個', '8個'],
         correct: 1,
-        explanation: '24節氣分為4個季節，每季3個月共12個節氣。',
+        explanation: '24節氣分為4個季節，每季6個節氣。',
       },
       {
         id: 2,
@@ -2087,9 +2098,9 @@ export const mockLessons = [
       {
         id: 12,
         question: '以下哪個節氣是冬季的最後一個？',
-        options: ['小雪', '大雪', '冬至', '小寒'],
-        correct: 3,
-        explanation: '小寒（1月下旬）是冬季的最後一個節氣，之後立春開始新春。',
+        options: ['小雪', '大雪', '冬至', '小寒', '大寒'],
+        correct: 4,
+        explanation: '大寒（約1月20-21日）是冬季最後一個節氣，之後才進入立春。',
       },
       {
         id: 13,
@@ -2268,6 +2279,62 @@ export const mockLessons = [
         correct: 1,
         explanation: '夏至通常是白天最長的一天。',
       },
+      {
+        id: 37,
+        question: '雨水通常出現在哪個月份區間？',
+        options: ['1月中下旬', '2月中下旬', '3月中下旬', '4月中下旬'],
+        correct: 1,
+        explanation: '雨水通常在2月中下旬，位於立春之後、驚蟄之前。',
+      },
+      {
+        id: 38,
+        question: '春分最典型的天文特徵是？',
+        options: ['白天最長', '白天最短', '晝夜幾乎等長', '進入最炎熱時段'],
+        correct: 2,
+        explanation: '春分與秋分一樣，晝夜幾乎等長。',
+      },
+      {
+        id: 39,
+        question: '大暑通常落在何時？',
+        options: ['6月上旬', '7月下旬', '8月上旬', '9月下旬'],
+        correct: 1,
+        explanation: '大暑通常在7月下旬，是一年中最炎熱時段之一。',
+      },
+      {
+        id: 40,
+        question: '霜降在八字月令中通常屬於哪個月份？',
+        options: ['八月（酉月）', '九月（戌月）', '十月（亥月）', '十一月（子月）'],
+        correct: 1,
+        explanation: '九月由寒露開始到立冬前，霜降仍屬九月（戌月）範圍。',
+      },
+      {
+        id: 41,
+        question: '大寒在八字月令中通常屬於哪個月份？',
+        options: ['十月（亥月）', '十一月（子月）', '十二月（丑月）', '正月（寅月）'],
+        correct: 2,
+        explanation: '十二月由小寒開始到立春前，大寒仍屬十二月（丑月）。',
+      },
+      {
+        id: 42,
+        question: '下列哪一組是冬季最後兩個節氣？',
+        options: ['大雪、冬至', '冬至、小寒', '小寒、大寒', '大寒、立春'],
+        correct: 2,
+        explanation: '冬季最後兩個節氣是小寒與大寒，之後才到立春。',
+      },
+      {
+        id: 43,
+        question: '下列哪個節氣是秋季最後一個節氣？',
+        options: ['秋分', '寒露', '霜降', '立冬'],
+        correct: 2,
+        explanation: '秋季最後一個節氣是霜降，之後進入立冬。',
+      },
+      {
+        id: 44,
+        question: '依本課月令劃分，六月（未月）對應哪兩個節氣？',
+        options: ['芒種、夏至', '小暑、大暑', '立秋、處暑', '大雪、冬至'],
+        correct: 1,
+        explanation: '本課以小暑起六月、至立秋前，大暑仍在六月範圍。',
+      },
     ],
     trueFalseBank: [
       {
@@ -2402,6 +2469,42 @@ export const mockLessons = [
         correct: false,
         explanation: '錯誤！立春是節氣節點，不以農曆初一固定。',
       },
+      {
+        id: 23,
+        question: '雨水位於立春與驚蟄之間。',
+        correct: true,
+        explanation: '正確！雨水在立春後、驚蟄前。',
+      },
+      {
+        id: 24,
+        question: '春分與秋分都屬於晝夜幾乎等長的節點。',
+        correct: true,
+        explanation: '正確！春分、秋分都以晝夜平衡為特徵。',
+      },
+      {
+        id: 25,
+        question: '大暑屬於八字六月（未月）範圍。',
+        correct: true,
+        explanation: '正確！六月由小暑起，大暑仍在立秋前。',
+      },
+      {
+        id: 26,
+        question: '霜降標誌八字十月（亥月）的開始。',
+        correct: false,
+        explanation: '錯誤！十月由立冬開始，霜降仍在九月（戌月）。',
+      },
+      {
+        id: 27,
+        question: '大寒是冬季最後一個節氣。',
+        correct: true,
+        explanation: '正確！大寒之後才進入立春。',
+      },
+      {
+        id: 28,
+        question: '大雪之後下一個節氣就是小寒。',
+        correct: false,
+        explanation: '錯誤！大雪之後先到冬至，再到小寒。',
+      },
     ],
     matchBank: [
       {
@@ -2514,16 +2617,49 @@ export const mockLessons = [
           { left: '十一月', right: '大雪' },
         ],
       },
+      {
+        id: 11,
+        prompt: '配對春季節氣順序（補充）',
+        pairs: [
+          { left: '立春', right: '雨水之前' },
+          { left: '雨水', right: '驚蟄之前' },
+          { left: '驚蟄', right: '春分之前' },
+          { left: '春分', right: '清明之前' },
+          { left: '清明', right: '穀雨之前' },
+        ],
+      },
+      {
+        id: 12,
+        prompt: '配對節氣與八字月份（24節氣擴充）',
+        pairs: [
+          { left: '雨水', right: '正月（寅）' },
+          { left: '春分', right: '二月（卯）' },
+          { left: '大暑', right: '六月（未）' },
+          { left: '霜降', right: '九月（戌）' },
+          { left: '大寒', right: '十二月（丑）' },
+        ],
+      },
+      {
+        id: 13,
+        prompt: '配對節氣與鄰接節氣（秋冬）',
+        pairs: [
+          { left: '處暑', right: '白露之前' },
+          { left: '秋分', right: '寒露之前' },
+          { left: '霜降', right: '立冬之前' },
+          { left: '冬至', right: '小寒之前' },
+          { left: '小寒', right: '大寒之前' },
+        ],
+      },
     ],
     content: `
       <h2>節氣與月份計算概述</h2>
       <p>節氣是中國傳統計時制度，根據太陽位置將全年分為24個時間節點，每個節氣反映自然界的變化。</p>
-      <h3>四季十二節氣</h3>
+      <h3>四季二十四節氣</h3>
       <ul>
-        <li><strong>春季：</strong>立春、驚蟄、清明、穀雨</li>
-        <li><strong>夏季：</strong>立夏、小滿、芒種、夏至</li>
-        <li><strong>秋季：</strong>立秋、處暑、白露、秋分</li>
-        <li><strong>冬季：</strong>立冬、小雪、大雪、冬至</li>
+        <li><strong>春季：</strong>立春、雨水、驚蟄、春分、清明、穀雨</li>
+        <li><strong>夏季：</strong>立夏、小滿、芒種、夏至、小暑、大暑</li>
+        <li><strong>秋季：</strong>立秋、處暑、白露、秋分、寒露、霜降</li>
+        <li><strong>冬季：</strong>立冬、小雪、大雪、冬至、小寒、大寒</li>
       </ul>
       <h3>八字月份劃分</h3>
       <ul>
@@ -4324,395 +4460,20 @@ export const mockLessons = [
   },
 ];
 
-export const mockQuizzes = [
-  {
-    id: 1,
-    lesson_id: 1,
-    title_cn: '五行基礎測驗',
-    title_en: 'Five Elements Quiz',
-    questions: [
-      {
-        id: 1,
-        question: '以下哪個方向與火元素相關？',
-        options: ['北方', '南方', '東方', '中央'],
-        correct: 1,
-        explanation: '南方是火的方位，象徵光明、溫暖和積極。',
-      },
-      {
-        id: 2,
-        question: '火生什麼元素？',
-        options: ['木', '金', '土', '水'],
-        correct: 2,
-        explanation: '火燃燒產生灰燼（土），所以火生土。',
-      },
-      {
-        id: 3,
-        question: '什麼元素剋火？',
-        options: ['木', '土', '水', '金'],
-        correct: 2,
-        explanation: '水可以滅火，所以水剋火。',
-      },
-      {
-        id: 4,
-        question: '木元素代表的季節是？',
-        options: ['春', '夏', '秋', '冬'],
-        correct: 0,
-        explanation: '木象徵春季的勃勃生機。',
-      },
-      {
-        id: 5,
-        question: '金元素的顏色是？',
-        options: ['紅色', '綠色', '白色', '黑色'],
-        correct: 2,
-        explanation: '金的顏色是白色，象徵純淨和光輝。',
-      },
-    ],
-  },
-  {
-    id: 2,
-    lesson_id: 2,
-    title_cn: '十天干測驗',
-    title_en: 'Heavenly Stems Quiz',
-    questions: [
-      {
-        id: 1,
-        question: '天干一共有幾個？',
-        options: ['8個', '10個', '12個', '5個'],
-        correct: 1,
-        explanation: '天干共有10個：甲乙丙丁戊己庚辛壬癸。',
-      },
-      {
-        id: 2,
-        question: '甲木屬於哪種陰陽？',
-        options: ['陽', '陰', '中性', '不確定'],
-        correct: 0,
-        explanation: '甲是陽木，代表生長和積極的特性。',
-      },
-      {
-        id: 3,
-        question: '庚屬於哪一個五行？',
-        options: ['木', '火', '土', '金'],
-        correct: 3,
-        explanation: '庚屬金，是陽金。',
-      },
-      {
-        id: 4,
-        question: '以下哪個天干屬於陰？',
-        options: ['甲', '丙', '戊', '癸'],
-        correct: 3,
-        explanation: '癸為陰水，其餘三個為陽干。',
-      },
-    ],
-  },
-  {
-    id: 3,
-    lesson_id: 3,
-    title_cn: '十二地支測驗',
-    title_en: 'Earthly Branches Quiz',
-    questions: [
-      {
-        id: 1,
-        question: '地支一共有幾個？',
-        options: ['10個', '12個', '8個', '5個'],
-        correct: 1,
-        explanation: '地支共有12個：子丑寅卯辰巳午未申酉戌亥。',
-      },
-      {
-        id: 2,
-        question: '子時對應的時間範圍是？',
-        options: ['01:00-03:00', '23:00-01:00', '05:00-07:00', '11:00-13:00'],
-        correct: 1,
-        explanation: '子時是午夜，從晚上23:00到凌晨01:00。',
-      },
-      {
-        id: 3,
-        question: '哪個地支對應生肖龍？',
-        options: ['辰', '巳', '午', '未'],
-        correct: 0,
-        explanation: '辰對應生肖龍。',
-      },
-      {
-        id: 4,
-        question: '酉支對應哪個生肖？',
-        options: ['猴', '雞', '狗', '豬'],
-        correct: 1,
-        explanation: '酉對應生肖雞。',
-      },
-    ],
-  },
-  {
-    id: 4,
-    lesson_id: 4,
-    title_cn: '節氣與月份計算測驗',
-    title_en: 'Solar Terms and Bazi Months Quiz',
-    questions: [
-      {
-        id: 1,
-        question: '24節氣全年共分為幾個季節？',
-        options: ['3個', '4個', '6個', '8個'],
-        correct: 1,
-        explanation: '24節氣分為4個季節，分別是春季、夏季、秋季和冬季。',
-      },
-      {
-        id: 2,
-        question: '立春通常在幾月？',
-        options: ['1月', '2月', '3月', '4月'],
-        correct: 1,
-        explanation: '立春通常在2月3-5日。',
-      },
-      {
-        id: 3,
-        question: '夏至通常在幾月？',
-        options: ['5月', '6月', '7月', '8月'],
-        correct: 1,
-        explanation: '夏至通常在6月20-22日。',
-      },
-      {
-        id: 4,
-        question: '以下哪個節氣標誌秋季的開始？',
-        options: ['白露', '立秋', '秋分', '處暑'],
-        correct: 1,
-        explanation: '立秋（8月7-9日）標誌著秋季的開始。',
-      },
-      {
-        id: 5,
-        question: '八字月份是以什麼為標準劃分的？',
-        options: ['農曆月份', '節氣', '公曆月份', '季節'],
-        correct: 1,
-        explanation: '八字月份以節氣為標準，立春開始為正月。',
-      },
-      {
-        id: 6,
-        question: '正月在八字中對應哪個地支？',
-        options: ['子', '寅', '卯', '辰'],
-        correct: 1,
-        explanation: '正月（立春後）對應寅支。',
-      },
-      {
-        id: 7,
-        question: '驚蟄標誌著八字哪個月份的開始？',
-        options: ['正月', '二月', '三月', '四月'],
-        correct: 1,
-        explanation: '驚蟄（3月5-7日）標誌著八字二月（卯月）的開始。',
-      },
-      {
-        id: 8,
-        question: '以下哪個地支對應八字五月？',
-        options: ['巳支', '午支', '未支', '申支'],
-        correct: 1,
-        explanation: '五月（芒種後）對應午支。',
-      },
-      {
-        id: 9,
-        question: '冬至時白天和黑夜的關係是？',
-        options: ['白天最長', '黑夜最長', '等長', '差不多'],
-        correct: 1,
-        explanation: '冬至時白天最短，黑夜最長，陽氣最弱。',
-      },
-      {
-        id: 10,
-        question: '清明通常在幾月？',
-        options: ['2月', '3月', '4月', '5月'],
-        correct: 2,
-        explanation: '清明通常在4月4-6日。',
-      },
-      {
-        id: 11,
-        question: '小暑通常在幾月？',
-        options: ['5月', '6月', '7月', '8月'],
-        correct: 2,
-        explanation: '小暑通常在7月6-8日。',
-      },
-      {
-        id: 12,
-        question: '十月對應的地支是？',
-        options: ['戌支', '亥支', '子支', '丑支'],
-        correct: 1,
-        explanation: '十月（立冬後）對應亥支。',
-      },
-      {
-        id: 13,
-        question: '以下哪個節氣是冬季的最後一個？',
-        options: ['小雪', '大雪', '冬至', '小寒'],
-        correct: 3,
-        explanation: '小寒（1月下旬）是冬季的最後一個節氣，之後立春開始新春季。',
-      },
-      {
-        id: 14,
-        question: '立夏標誌著八字哪個月份的開始？',
-        options: ['三月', '四月', '五月', '六月'],
-        correct: 2,
-        explanation: '立夏（5月5-7日）標誌著八字四月（巳月）往後推...實際上立夏是五月的開始，對應午支。',
-      },
-      {
-        id: 15,
-        question: '十二月在八字中對應哪個地支？',
-        options: ['子支', '丑支', '寅支', '卯支'],
-        correct: 1,
-        explanation: '十二月（小寒到立春前）對應丑支。',
-      },
-    ],
-  },
-  {
-    id: 5,
-    lesson_id: 5,
-    title_cn: '十神詳解測驗',
-    title_en: 'Ten Gods Quiz',
-    questions: [
-      {
-        id: 1,
-        question: '日主甲木時，乙木是什麼十神？',
-        options: ['比肩', '劫財', '食神', '正印'],
-        correct: 1,
-        explanation: '甲木與乙木同五行、異陰陽，因此是劫財。',
-      },
-      {
-        id: 2,
-        question: '日主乙木時，乙木是什麼十神？',
-        options: ['比肩', '劫財', '偏財', '正官'],
-        correct: 0,
-        explanation: '乙木與乙木同五行、同陰陽，因此是比肩。',
-      },
-      {
-        id: 3,
-        question: '日主丙火時，丁火是什麼十神？',
-        options: ['比肩', '劫財', '偏印', '傷官'],
-        correct: 1,
-        explanation: '丙火與丁火同五行、異陰陽，因此是劫財。',
-      },
-      {
-        id: 4,
-        question: '日主丁火時，丁火是什麼十神？',
-        options: ['比肩', '劫財', '食神', '偏財'],
-        correct: 0,
-        explanation: '丁火與丁火同五行、同陰陽，因此是比肩。',
-      },
-      {
-        id: 5,
-        question: '日主戊土時，己土是什麼十神？',
-        options: ['比肩', '劫財', '偏財', '正財'],
-        correct: 1,
-        explanation: '戊土與己土同五行、異陰陽，因此是劫財。',
-      },
-      {
-        id: 6,
-        question: '日主己土時，己土是什麼十神？',
-        options: ['比肩', '劫財', '偏印', '正印'],
-        correct: 0,
-        explanation: '己土與己土同五行、同陰陽，因此是比肩。',
-      },
-      {
-        id: 7,
-        question: '日主庚金時，辛金是什麼十神？',
-        options: ['比肩', '劫財', '偏印', '正印'],
-        correct: 1,
-        explanation: '庚金與辛金同五行、異陰陽，因此是劫財。',
-      },
-      {
-        id: 8,
-        question: '日主辛金時，辛金是什麼十神？',
-        options: ['比肩', '劫財', '正財', '偏財'],
-        correct: 0,
-        explanation: '辛金與辛金同五行、同陰陽，因此是比肩。',
-      },
-      {
-        id: 9,
-        question: '日主壬水時，癸水是什麼十神？',
-        options: ['比肩', '劫財', '食神', '傷官'],
-        correct: 1,
-        explanation: '壬水與癸水同五行、異陰陽，因此是劫財。',
-      },
-      {
-        id: 10,
-        question: '日主癸水時，癸水是什麼十神？',
-        options: ['比肩', '劫財', '傷官', '正官'],
-        correct: 0,
-        explanation: '癸水與癸水同五行、同陰陽，因此是比肩。',
-      },
-      {
-        id: 11,
-        question: '日主甲木時，癸水是什麼十神？',
-        options: ['偏印', '正印', '偏財', '正財'],
-        correct: 1,
-        explanation: '水生木為印星；甲陽癸陰為異陰陽，因此是正印。',
-      },
-      {
-        id: 12,
-        question: '日主乙木時，丙火是什麼十神？',
-        options: ['食神', '傷官', '偏官（七殺）', '正官'],
-        correct: 1,
-        explanation: '木生火為食傷；乙陰丙陽為異陰陽，因此是傷官。',
-      },
-      {
-        id: 13,
-        question: '日主丙火時，壬水是什麼十神？',
-        options: ['偏官（七殺）', '正官', '偏財', '正財'],
-        correct: 0,
-        explanation: '水剋火為官殺；丙陽壬陽為同陰陽，因此是偏官（七殺）。',
-      },
-      {
-        id: 14,
-        question: '日主丁火時，壬水是什麼十神？',
-        options: ['偏官（七殺）', '正官', '偏印', '正印'],
-        correct: 1,
-        explanation: '水剋火為官殺；丁陰壬陽為異陰陽，因此是正官。',
-      },
-      {
-        id: 15,
-        question: '日主己土時，甲木是什麼十神？',
-        options: ['正官', '偏官（七殺）', '正印', '偏印'],
-        correct: 0,
-        explanation: '木剋土為官殺；己陰甲陽為異陰陽，因此是正官。',
-      },
-      {
-        id: 16,
-        question: '日主戊土時，壬水是什麼十神？',
-        options: ['偏財', '正財', '偏官（七殺）', '正官'],
-        correct: 0,
-        explanation: '土剋水為財星；戊陽壬陽為同陰陽，因此是偏財。',
-      },
-      {
-        id: 17,
-        question: '日主庚金時，壬水是什麼十神？',
-        options: ['食神', '傷官', '偏印', '正印'],
-        correct: 0,
-        explanation: '金生水為食傷；庚陽壬陽為同陰陽，因此是食神。',
-      },
-      {
-        id: 18,
-        question: '日主辛金時，丙火是什麼十神？',
-        options: ['正官', '偏官（七殺）', '正印', '偏印'],
-        correct: 0,
-        explanation: '火剋金為官殺；辛陰丙陽為異陰陽，因此是正官。',
-      },
-      {
-        id: 19,
-        question: '日主壬水時，辛金是什麼十神？',
-        options: ['偏印', '正印', '偏官（七殺）', '正官'],
-        correct: 1,
-        explanation: '金生水為印星；壬陽辛陰為異陰陽，因此是正印。',
-      },
-      {
-        id: 20,
-        question: '日主癸水時，甲木是什麼十神？',
-        options: ['食神', '傷官', '偏財', '正財'],
-        correct: 1,
-        explanation: '水生木為食傷；癸陰甲陽為異陰陽，因此是傷官。',
-      },
-      {
-        id: 21,
-        question: '十神判定的正確步驟是什麼？',
-        options: ['先看陰陽，再看五行', '先看五行關係，再看陰陽定正偏', '先背名稱，不看關係', '只看陰陽，不看生剋'],
-        correct: 1,
-        explanation: '先判斷與日主的五行關係（比劫、食傷、財、官殺、印），再用陰陽定正偏。',
-      },
-      {
-        id: 22,
-        question: '比劫在陰陽判定上的「例外規則」是什麼？',
-        options: ['同陰陽為劫財，異陰陽為比肩', '同陰陽為比肩，異陰陽為劫財', '同陰陽為正財，異陰陽為偏財', '同陰陽為正官，異陰陽為偏官'],
-        correct: 1,
-        explanation: '比劫是唯一例外：同陰陽判為比肩、異陰陽判為劫財。',
-      },
-    ],
-  },
-];
+export const mockQuizzes = mockLessons
+  .filter((lesson) => {
+    const bank = (lesson as any).questionBank;
+    return Array.isArray(bank) && bank.length > 0;
+  })
+  .map((lesson) => ({
+    id: lesson.id,
+    lesson_id: lesson.id,
+    title_cn: lesson.title_cn,
+    questions: (((lesson as any).questionBank ?? []) as any[]).map((q) => ({
+      id: q.id,
+      question: q.question,
+      options: q.options,
+      correct: q.correct,
+      explanation: q.explanation,
+    })),
+  }));
