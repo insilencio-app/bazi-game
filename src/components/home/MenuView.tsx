@@ -44,11 +44,11 @@ type PathStep = {
 interface MenuViewProps {
   levelProgress: LevelProgress;
   getLevelTitle: (level: number) => string;
+  completedLessonIds: Set<number>;
   unlockedBadgeIds: string[];
   allBadgeIds: string[];
   badgeDefinitions: Record<string, BadgeDefinition>;
-  isBadgeGalleryOpen: boolean;
-  onToggleBadgeGallery: () => void;
+  onOpenBadgeGallery: () => void;
   isProgressChartsOpen: boolean;
   onToggleProgressCharts: () => void;
   userProgress: UserProgressView;
@@ -59,17 +59,24 @@ interface MenuViewProps {
 export const MenuView: React.FC<MenuViewProps> = ({
   levelProgress,
   getLevelTitle,
+  completedLessonIds,
   unlockedBadgeIds,
   allBadgeIds,
   badgeDefinitions,
-  isBadgeGalleryOpen,
-  onToggleBadgeGallery,
+  onOpenBadgeGallery,
   isProgressChartsOpen,
   onToggleProgressCharts,
   userProgress,
   pathSteps,
   rewardOverlay,
 }) => {
+  const lessonSteps = pathSteps
+    .filter((step) => step.id >= 1 && step.id <= 7)
+    .sort((a, b) => a.id - b.id);
+  const totalQuizStep = pathSteps.find((step) => step.id === 8);
+  const nextLessonStep = lessonSteps.find((step) => !completedLessonIds.has(step.id)) ?? lessonSteps[0];
+  const isAllLessonsCompleted = lessonSteps.every((step) => completedLessonIds.has(step.id));
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -89,8 +96,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
             </div>
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-sm sm:text-base text-gray-600">經驗值</p>
-                <p className="text-xs sm:text-sm text-gray-500">
+                <p className="text-sm sm:text-base text-gray-700">經驗值</p>
+                <p className="text-xs sm:text-sm text-gray-600">
                   {levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}
                 </p>
               </div>
@@ -103,47 +110,64 @@ export const MenuView: React.FC<MenuViewProps> = ({
             </div>
           </div>
 
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">開始今天的學習</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {isAllLessonsCompleted ? '全部課程已完成，建議挑戰總測驗' : `下一步：${nextLessonStep?.title ?? '課程'}`}
+                </p>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600">快速開始，不中斷學習節奏</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={() => (isAllLessonsCompleted ? totalQuizStep?.onClick() : nextLessonStep?.onClick())}
+                className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 transition-colors"
+              >
+                {isAllLessonsCompleted ? '🎯 挑戰總測驗' : '▶ 繼續學習'}
+              </button>
+              <button
+                onClick={() => (isAllLessonsCompleted ? lessonSteps[0]?.onClick() : totalQuizStep?.onClick())}
+                className="w-full rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold py-3 px-4 transition-colors"
+              >
+                {isAllLessonsCompleted ? '📘 重溫第一課' : '🎯 快速測驗'}
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-              <button
-                onClick={onToggleBadgeGallery}
-                className="w-full flex items-center justify-between text-left mb-3"
-              >
+              <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-base sm:text-lg font-bold text-gray-800">徽章圖鑑</p>
-                  <p className="text-xs sm:text-sm text-gray-500">{unlockedBadgeIds.length}/{allBadgeIds.length} 已解鎖</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{unlockedBadgeIds.length}/{allBadgeIds.length} 已解鎖</p>
                 </div>
-                <span className="text-sm sm:text-base text-blue-600 font-medium">
-                  {isBadgeGalleryOpen ? '收起 ▲' : '查看全部 ▼'}
-                </span>
-              </button>
+                <button
+                  onClick={onOpenBadgeGallery}
+                  className="shrink-0 rounded-lg bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 text-sm sm:text-base font-semibold transition-colors"
+                >
+                  查看全部
+                </button>
+              </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                {(isBadgeGalleryOpen ? allBadgeIds : allBadgeIds.slice(0, 6)).map((badgeId) => {
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                {allBadgeIds.slice(0, 6).map((badgeId) => {
                   const badge = badgeDefinitions[badgeId];
                   const unlocked = unlockedBadgeIds.includes(badgeId);
 
                   return (
                     <div
                       key={badgeId}
-                      className={`rounded-lg border p-2 text-center transition-all ${
+                      className={`rounded-lg border p-2 text-center ${
                         unlocked
                           ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'
                           : 'bg-gray-100 border-gray-200'
                       }`}
+                      title={badge.name}
                     >
-                      <div className="flex items-center gap-2 text-left">
-                        <p className={`text-3xl shrink-0 ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
-                        <div>
-                          <p className={`text-sm sm:text-base leading-tight ${unlocked ? 'text-gray-700 font-medium' : 'text-gray-400'}`}>
-                            {badge.name}
-                          </p>
-                          <p className={`text-xs sm:text-sm leading-tight mt-0.5 ${unlocked ? 'text-gray-500' : 'text-gray-400'}`}>
-                            <span className="sm:hidden">{badge.hintShort}</span>
-                            <span className="hidden sm:inline">{badge.hintLong}</span>
-                          </p>
-                        </div>
-                      </div>
+                      <p className={`text-2xl sm:text-3xl ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
                     </div>
                   );
                 })}
@@ -157,14 +181,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
               >
                 <div>
                   <p className="text-base sm:text-lg font-bold text-gray-800">學習進度統計</p>
-                  <p className="text-xs sm:text-sm text-gray-500">累計表現與最近一次成績</p>
+                  <p className="text-xs sm:text-sm text-gray-600">累計表現與最近一次成績</p>
                 </div>
                 <span className="text-sm sm:text-base text-blue-600 font-medium">
                   {isProgressChartsOpen ? '收起 ▲' : '查看全部 ▼'}
                 </span>
               </button>
 
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {mockLessons.slice(0, isProgressChartsOpen ? 7 : 3).map((lesson) => {
                   const stats = userProgress.lessonPerformance[lesson.id];
                   const attempts = stats?.attempts ?? 0;
@@ -183,7 +207,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   const hasDisplayPercent = typeof latestPercent === 'number';
 
                   return (
-                    <div key={lesson.id} className="border-b border-gray-100 pb-2 last:border-0">
+                    <div key={lesson.id} className="border border-gray-100 rounded-lg p-2 sm:p-3">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex-1">
                           <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.title_cn}</p>
@@ -220,8 +244,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
               </div>
 
               {userProgress.totalQuizAttempts > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-200 mb-4">
-                  <div className="border-b border-gray-100 pb-2">
+                <div className="mt-2">
+                  <div className="border border-gray-100 rounded-lg p-2 sm:p-3">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex-1">
                         <p className="text-xs sm:text-sm font-medium text-gray-700">總測驗</p>
@@ -259,7 +283,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 </div>
               )}
 
-              <div className="mt-4 pt-3 border-t border-gray-200">
+              <div className="mt-3 pt-3 border-t border-gray-200">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="text-center p-2 bg-blue-50 rounded-lg">
                     <p className="text-xl sm:text-2xl font-bold text-blue-600">{userProgress.correctAnswers}</p>
@@ -318,10 +342,12 @@ export const MenuView: React.FC<MenuViewProps> = ({
                       <div className="absolute -left-1.5 top-4 h-6 w-6 rounded-full bg-white border-4 border-blue-400"></div>
                       <button
                         onClick={step.onClick}
-                        className={`w-full md:w-[70%] text-left p-4 sm:p-6 rounded-2xl shadow-lg border border-white/60 bg-gradient-to-br ${step.accent} text-white hover:scale-[1.01] transition-transform`}
+                        className={`group w-full md:w-[70%] text-left p-4 sm:p-6 rounded-2xl shadow-lg border border-white/60 bg-gradient-to-br ${step.accent} text-white hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-2xl sm:text-3xl lg:text-4xl">{step.emoji}</span>
+                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center shadow-sm group-hover:bg-white/25 transition-colors">
+                            <span className="text-base sm:text-lg">{step.emoji}</span>
+                          </div>
                           <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold bg-white/20">{step.chip}</span>
                         </div>
                         <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mt-3">{step.title}</h3>

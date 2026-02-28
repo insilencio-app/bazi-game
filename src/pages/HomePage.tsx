@@ -6,6 +6,7 @@ import { StemsView } from '../components/home/StemsView';
 import { GodsView } from '../components/home/GodsView';
 import { MenuView } from '../components/home/MenuView';
 import { TotalQuizView } from '../components/home/TotalQuizView';
+import { BadgesView } from '../components/home/BadgesView';
 import { LessonPage } from './LessonPage';
 import { useGameRouteMode } from '../hooks/useGameRouteMode';
 import { useTotalQuizSession } from '../hooks/useTotalQuizSession';
@@ -248,13 +249,13 @@ const getAchievedBadges = (
 export const HomePage: React.FC = () => {
   const { currentMode, selectedLesson, navigateToMode } = useGameRouteMode();
   const [selectedElement, setSelectedElement] = useState<ElementItem | null>(null);
-  const [isBadgeGalleryOpen, setIsBadgeGalleryOpen] = useState(false);
   const [isProgressChartsOpen, setIsProgressChartsOpen] = useState(false);
   const allBadgeIds = React.useMemo(() => Object.keys(BADGE_DEFINITIONS) as BadgeId[], []);
 
   const {
     userProgress,
     unlockedBadgeIds,
+    completedLessonIds,
     spendHint,
     recordQuestionAnswer,
     completeLesson,
@@ -466,16 +467,27 @@ export const HomePage: React.FC = () => {
       <MenuView
         levelProgress={levelProgress}
         getLevelTitle={getLevelTitle}
+        completedLessonIds={completedLessonIds}
         unlockedBadgeIds={unlockedBadgeIds}
         allBadgeIds={allBadgeIds}
         badgeDefinitions={BADGE_DEFINITIONS}
-        isBadgeGalleryOpen={isBadgeGalleryOpen}
-        onToggleBadgeGallery={() => setIsBadgeGalleryOpen((prev) => !prev)}
+        onOpenBadgeGallery={() => navigateToMode('badges')}
         isProgressChartsOpen={isProgressChartsOpen}
         onToggleProgressCharts={() => setIsProgressChartsOpen((prev) => !prev)}
         userProgress={userProgress}
         pathSteps={pathSteps}
         rewardOverlay={rewardOverlay}
+      />
+    );
+  }
+
+  if (currentMode === 'badges') {
+    return (
+      <BadgesView
+        unlockedBadgeIds={unlockedBadgeIds}
+        allBadgeIds={allBadgeIds}
+        badgeDefinitions={BADGE_DEFINITIONS}
+        onBack={() => navigateToMode('menu')}
       />
     );
   }

@@ -11,6 +11,7 @@ function App() {
           <Route path={ROUTES.elements} element={<HomePage />} />
           <Route path={ROUTES.lessons} element={<HomePage />} />
           <Route path={LESSON_ROUTE_PATTERN} element={<HomePage />} />
+          <Route path={ROUTES.badges} element={<HomePage />} />
           <Route path={ROUTES.stems} element={<HomePage />} />
           <Route path={ROUTES.gods} element={<HomePage />} />
           <Route path={ROUTES.totalQuiz} element={<HomePage />} />

@@ -434,9 +434,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3">
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{lesson.title_cn}</h1>
-            <p className="text-sm sm:text-lg text-gray-600">{lesson.title_en}</p>
+            <p className="text-sm sm:text-lg text-gray-700">{lesson.title_en}</p>
           </div>
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3 sm:ml-auto">
             <QuizActionButton
               label="返回主頁"
               onClick={onExit}
@@ -444,7 +444,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               size="compact"
               stretch={false}
             />
-            <div className="text-sm sm:text-base text-gray-500 whitespace-nowrap">
+            <div className="text-sm sm:text-base text-gray-600 whitespace-nowrap">
               <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>
             </div>
           </div>
@@ -623,8 +623,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {currentStep?.type === 'match' && (
         <div className="mb-8">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800">{currentStep.prompt}</h2>
-          <p className="text-sm sm:text-base text-gray-600 mb-4">先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
-          <div className="grid grid-cols-2 gap-2 sm:gap-4">
+          <p className="text-sm sm:text-base text-gray-700 mb-4">先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-1.5 sm:space-y-2">
               <h3 className="text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">選擇項目：</h3>
               {currentStep.pairs.map((pair, index) => {
@@ -676,8 +676,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               {matchMessage}
             </p>
           )}
-          <div className="mt-3 sm:mt-4 flex justify-between items-center">
-            <p className="text-xs sm:text-sm text-gray-600">已完成 {matchedCount}/{currentStep.pairs.length}</p>
+          <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+            <p className="text-xs sm:text-sm text-gray-700">已完成 {matchedCount}/{currentStep.pairs.length}</p>
             {selectedLeft && (
               <p className="text-xs sm:text-sm text-blue-600 font-medium">已選擇: {selectedLeft.split('-')[0]} → 請選擇配對選項</p>
             )}

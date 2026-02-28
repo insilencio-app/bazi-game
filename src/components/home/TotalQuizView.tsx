@@ -68,9 +68,9 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
-        <h2 className="text-3xl font-bold text-gray-800">總測驗</h2>
-        <p className="text-gray-600 mt-4">加載測驗中...</p>
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h2>
+        <p className="text-gray-700 mt-4">加載測驗中...</p>
       </div>
     );
   }
@@ -82,23 +82,23 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
   if (isQuizFinished) {
     return (
       <>
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
-          <h2 className="text-5xl font-bold mb-4">綜合測驗完成！</h2>
-          <p className="text-xl text-gray-600 mb-6">你已完成綜合測驗。</p>
+        <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg text-center">
+          <h2 className="text-3xl sm:text-5xl font-bold mb-4">綜合測驗完成！</h2>
+          <p className="text-lg sm:text-xl text-gray-700 mb-6">你已完成綜合測驗。</p>
           <div className="mb-6 text-left">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-gray-600 font-medium">總測驗進度（本次）</p>
+              <p className="text-sm text-gray-700 font-medium">總測驗進度（本次）</p>
               <p className="text-sm font-semibold text-blue-700">{latestPercent}%</p>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${latestBarPercent}%` }}></div>
             </div>
           </div>
-          <div className="bg-blue-50 rounded-lg p-8 mb-6">
-            <p className="text-5xl font-bold text-blue-700 mb-2">{quizScore} / {totalQuestions}</p>
-            <p className="text-xl text-gray-700">答對題數</p>
-            <p className="text-2xl font-bold text-blue-700 mt-2">本次成績：{latestPercent}%</p>
-            <p className="text-base text-gray-600 mt-2">
+          <div className="bg-blue-50 rounded-lg p-5 sm:p-8 mb-6">
+            <p className="text-4xl sm:text-5xl font-bold text-blue-700 mb-2">{quizScore} / {totalQuestions}</p>
+            <p className="text-lg sm:text-xl text-gray-700">答對題數</p>
+            <p className="text-xl sm:text-2xl font-bold text-blue-700 mt-2">本次成績：{latestPercent}%</p>
+            <p className="text-sm sm:text-base text-gray-700 mt-2">
               最近{recentWindowSize}題：{recentCorrect}/{recentAttempts} • {recentPercent}%
             </p>
           </div>
@@ -110,7 +110,7 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg">
       <div className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h1>
@@ -122,7 +122,7 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           ></div>
         </div>
-        <div className="text-base text-gray-500 mt-2">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm sm:text-base text-gray-700">
           <span className="font-semibold">第 {quizIndex + 1}/{totalQuestions} 題</span>
           <span className="mx-2">•</span>
           <span className="font-semibold text-blue-700">目前正確率：{currentAccuracy}%</span>
@@ -130,7 +130,7 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
       </div>
 
       <div className="mb-8">
-        <p className="text-sm text-gray-500 mb-2">課程: {currentQuestion.lessonTitle}</p>
+        <p className="text-sm text-gray-700 mb-2">課程：{currentQuestion.lessonTitle}</p>
         <MultipleChoiceQuestion
           question={currentQuestion.question}
           options={currentQuestion.options}

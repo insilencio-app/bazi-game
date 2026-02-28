@@ -5,6 +5,7 @@ import { getLessonRoute, ROUTES, type GameMode } from '../routes';
 const getModeFromPath = (pathname: string): GameMode => {
   if (pathname === ROUTES.elements) return 'elements';
   if (pathname === ROUTES.lessons || pathname.startsWith(`${ROUTES.lessons}/`)) return 'lessons';
+  if (pathname === ROUTES.badges) return 'badges';
   if (pathname === ROUTES.stems) return 'stems';
   if (pathname === ROUTES.gods) return 'gods';
   if (pathname === ROUTES.totalQuiz) return 'total-quiz';
@@ -44,6 +45,10 @@ export const useGameRouteMode = () => {
           return;
         }
         navigate(ROUTES.lessons);
+        return;
+      }
+      if (mode === 'badges') {
+        navigate(ROUTES.badges);
         return;
       }
       if (mode === 'stems' || mode === 'branches') {

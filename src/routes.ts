@@ -2,12 +2,13 @@ export const ROUTES = {
   home: '/',
   elements: '/elements',
   lessons: '/lessons',
+  badges: '/badges',
   stems: '/stems',
   gods: '/gods',
   totalQuiz: '/total-quiz',
 } as const;
 
-export type GameMode = 'menu' | 'elements' | 'lessons' | 'stems' | 'branches' | 'gods' | 'total-quiz';
+export type GameMode = 'menu' | 'elements' | 'lessons' | 'badges' | 'stems' | 'branches' | 'gods' | 'total-quiz';
 
 export const LESSON_ROUTE_PATTERN = '/lessons/:lessonId';
 
