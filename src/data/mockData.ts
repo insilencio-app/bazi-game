@@ -1,3 +1,5 @@
+import type { LessonQuestion, LessonWithQuestionBank } from '../types/domain';
+
 // Mock BaZi data for prototyping
 export const mockElements = [
   {
@@ -4462,18 +4464,22 @@ export const mockLessons = [
 
 export const mockQuizzes = mockLessons
   .filter((lesson) => {
-    const bank = (lesson as any).questionBank;
+    const bank = (lesson as LessonWithQuestionBank).questionBank;
     return Array.isArray(bank) && bank.length > 0;
   })
-  .map((lesson) => ({
-    id: lesson.id,
-    lesson_id: lesson.id,
-    title_cn: lesson.title_cn,
-    questions: (((lesson as any).questionBank ?? []) as any[]).map((q) => ({
-      id: q.id,
-      question: q.question,
-      options: q.options,
-      correct: q.correct,
-      explanation: q.explanation,
-    })),
-  }));
+  .map((lesson) => {
+    const questionBank = ((lesson as LessonWithQuestionBank).questionBank ?? []) as LessonQuestion[];
+
+    return {
+      id: lesson.id,
+      lesson_id: lesson.id,
+      title_cn: lesson.title_cn,
+      questions: questionBank.map((q) => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation,
+      })),
+    };
+  });

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { QuizActionButton } from './quiz/QuizActionButton';
 
 interface QuizQuestion {
   id: number;
@@ -117,26 +118,15 @@ export const QuizGame: React.FC<QuizProps> = ({ questions, onComplete }) => {
       )}
 
       {!answered && (
-        <button
-          onClick={handleCheck}
-          disabled={selectedAnswer === null}
-          className={`w-full font-bold py-4 rounded-lg transition-colors text-lg ${
-            selectedAnswer === null
-              ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          檢查
-        </button>
+        <QuizActionButton label="檢查" onClick={handleCheck} disabled={selectedAnswer === null} fullWidth />
       )}
 
       {answered && (
-        <button
+        <QuizActionButton
+          label={lives <= 0 ? '結束' : currentIndex < questions.length - 1 ? '繼續' : '完成'}
           onClick={handleNext}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-lg"
-        >
-          {lives <= 0 ? '結束' : currentIndex < questions.length - 1 ? '繼續' : '完成'}
-        </button>
+          fullWidth
+        />
       )}
     </div>
   );

@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods } from '../data/mockData';
 import { selectByNovelty, shuffleArray } from '../utils/quizSelection';
+import { MultipleChoiceQuestion } from '../components/quiz/MultipleChoiceQuestion';
+import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
+import { QuizActionButton } from '../components/quiz/QuizActionButton';
+import type { LessonWithBanks } from '../types/domain';
 
 type LessonStep =
   | {
@@ -41,29 +45,6 @@ type LessonStep =
       pairs: { left: string; right: string }[];
     };
 
-type LessonQuestion = {
-  id: number;
-  question: string;
-  options: string[];
-  correct: number;
-  explanation: string;
-  hint?: string;
-};
-
-type LessonTrueFalse = {
-  id: number;
-  question: string;
-  correct: boolean;
-  explanation: string;
-  hint?: string;
-};
-
-type LessonMatch = {
-  id: number;
-  prompt: string;
-  pairs: { left: string; right: string }[];
-};
-
 interface LessonProps {
   lessonId: number;
   onComplete: (lessonId: number, score: number, totalQuestions: number) => void;
@@ -78,12 +59,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const baseSteps = (lesson?.steps ?? []) as LessonStep[];
 
   const lessonBanks = useMemo(() => {
+    const typedLesson = lesson as LessonWithBanks | undefined;
+
     return {
-      questionBank: ((lesson as any)?.questionBank ?? []) as LessonQuestion[],
-      trueFalseBank: ((lesson as any)?.trueFalseBank ?? []) as LessonTrueFalse[],
-      matchBank: ((lesson as any)?.matchBank ?? []) as LessonMatch[],
+      questionBank: typedLesson?.questionBank ?? [],
+      trueFalseBank: typedLesson?.trueFalseBank ?? [],
+      matchBank: typedLesson?.matchBank ?? [],
     };
-  }, [lessonId]);
+  }, [lesson]);
 
   const quizSteps = useMemo(() => {
     const isHeavenlyStemsLesson = lessonId === 2;
@@ -435,12 +418,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             <p className="text-xl text-gray-700">答對題數</p>
           </div>
         )}
-        <button
+        <QuizActionButton
+          label="返回主頁"
           onClick={() => onComplete(lessonId, score, totalQuestions)}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 transition-colors text-xl"
-        >
-          返回主頁
-        </button>
+          fullWidth
+        />
       </div>
     );
   }
@@ -449,19 +431,22 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="flex-1">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3">
+          <div className="min-w-0 flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{lesson.title_cn}</h1>
             <p className="text-sm sm:text-lg text-gray-600">{lesson.title_en}</p>
           </div>
-          <button
-            onClick={onExit}
-            className="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base whitespace-nowrap"
-          >
-            返回主頁
-          </button>
-          <div className="text-base text-gray-500">
-            <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>
+          <div className="flex items-center gap-3 ml-auto">
+            <QuizActionButton
+              label="返回主頁"
+              onClick={onExit}
+              variant="danger"
+              size="compact"
+              stretch={false}
+            />
+            <div className="text-sm sm:text-base text-gray-500 whitespace-nowrap">
+              <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>
+            </div>
           </div>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
@@ -549,100 +534,38 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
       {currentStep?.type === 'mcq' && (
         <div className="mb-8">
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
-          
-          {/* Hint Section */}
-          {currentStep.hint && !answered && (
-            <div className="mb-4">
-              {!showHint ? (
-                <button
-                  onClick={handleUseHint}
-                  disabled={userXp < 50}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
-                    userXp >= 50
-                      ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
-                      : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  <span className="text-lg">💡</span>
-                  <span>使用提示 (花費 50 XP)</span>
-                  {userXp < 50 && <span className="text-xs">(XP不足)</span>}
-                </button>
-              ) : (
-                <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
-                  <p className="font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base">
-                    <span className="text-lg">💡</span>
-                    提示：
-                  </p>
-                  <p className="text-gray-700 text-sm sm:text-base">{currentStep.hint}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="space-y-3 mb-6">
-            {currentStep.options.map((option, idx) => (
-              <button
-                key={idx}
-                onClick={() => setSelectedAnswer(idx)}
-                disabled={answered}
-                className={`w-full p-3 sm:p-5 text-left rounded-lg border-2 transition-all text-sm sm:text-base lg:text-lg ${
-                  selectedAnswer === idx
-                    ? idx === currentStep.correct
-                      ? 'border-green-500 bg-green-50'
-                      : answered
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
-                } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-              >
-                <span className="font-semibold">{String.fromCharCode(65 + idx)}.</span> {option}
-              </button>
-            ))}
-          </div>
-
-          {showFeedback && (
-            <div className={`p-3 sm:p-5 rounded-lg text-sm sm:text-base lg:text-lg ${selectedAnswer === currentStep.correct ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
-              <p className="font-semibold mb-2 text-base sm:text-lg">
-                {selectedAnswer === currentStep.correct ? '✓ 正確!' : '✗ 錯誤'}
-              </p>
-              <p className="text-gray-700 text-sm sm:text-base">{currentStep.explanation}</p>
-            </div>
-          )}
+          <MultipleChoiceQuestion
+            question={currentStep.question}
+            options={currentStep.options}
+            correctIndex={currentStep.correct}
+            explanation={currentStep.explanation}
+            selectedAnswer={selectedAnswer}
+            answered={answered}
+            showFeedback={showFeedback}
+            onSelectAnswer={setSelectedAnswer}
+            hint={currentStep.hint}
+            showHint={showHint}
+            onUseHint={handleUseHint}
+            canUseHint={userXp >= 50}
+            hintXpCost={50}
+            size="large"
+          />
         </div>
       )}
 
       {currentStep?.type === 'truefalse' && (
         <div className="mb-8">
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
-          
-          {/* Hint Section */}
+
           {currentStep.hint && !answered && (
-            <div className="mb-4">
-              {!showHint ? (
-                <button
-                  onClick={handleUseHint}
-                  disabled={userXp < 50}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
-                    userXp >= 50
-                      ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
-                      : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  <span className="text-lg">💡</span>
-                  <span>使用提示 (花費 50 XP)</span>
-                  {userXp < 50 && <span className="text-xs">(XP不足)</span>}
-                </button>
-              ) : (
-                <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
-                  <p className="font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base">
-                    <span className="text-lg">💡</span>
-                    提示：
-                  </p>
-                  <p className="text-gray-700 text-sm sm:text-base">{currentStep.hint}</p>
-                </div>
-              )}
-            </div>
+            <QuizHintPanel
+              hint={currentStep.hint}
+              answered={answered}
+              showHint={showHint}
+              onUseHint={handleUseHint}
+              canUseHint={userXp >= 50}
+              hintXpCost={50}
+            />
           )}
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
@@ -764,56 +687,24 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
       {/* Action Buttons */}
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && !answered && (
-        <div className="flex gap-3">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStepIndex === 0}
-            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
-          >
-            上一步
-          </button>
-          <button
-            onClick={handleCheck}
-            disabled={selectedAnswer === null}
-            className={`flex-1 font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-lg lg:text-xl ${
-              selectedAnswer === null
-                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
-          >
-            檢查
-          </button>
+        <div className="flex flex-wrap gap-3">
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
+          <QuizActionButton label="檢查" onClick={handleCheck} disabled={selectedAnswer === null} />
         </div>
       )}
 
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
-        <div className="flex gap-3">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStepIndex === 0}
-            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
-          >
-            上一步
-          </button>
-          <button
-            onClick={handleNext}
-            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-          >
-            繼續
-          </button>
+        <div className="flex flex-wrap gap-3">
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
+          <QuizActionButton label="繼續" onClick={handleNext} />
         </div>
       )}
 
       {currentStep?.type === 'match' && isMatchComplete && (
-        <div className="flex gap-3">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStepIndex === 0}
-            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
-          >
-            上一步
-          </button>
-          <button
+        <div className="flex flex-wrap gap-3">
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
+          <QuizActionButton
+            label="繼續"
             onClick={() => {
               if (!answered) {
                 setScore((prev) => prev + 1);
@@ -821,61 +712,26 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               }
               handleNext();
             }}
-            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-          >
-            繼續
-          </button>
+          />
         </div>
       )}
 
       {currentStep?.type === 'content' && (
-        <div className="flex gap-3">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStepIndex === 0}
-            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
-          >
-            上一步
-          </button>
-          <button
-            onClick={handleNext}
-            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-          >
-            繼續
-          </button>
+        <div className="flex flex-wrap gap-3">
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
+          <QuizActionButton label="繼續" onClick={handleNext} />
           {canSkipToQuiz && (
-            <button
-              onClick={handleSkipToQuiz}
-              className="flex-1 bg-amber-500 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-amber-600 transition-colors text-sm sm:text-lg lg:text-xl"
-            >
-              跳到測驗
-            </button>
+            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" />
           )}
         </div>
       )}
 
       {currentStep?.type === 'cards' && (
-        <div className="flex gap-3">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStepIndex === 0}
-            className="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg lg:text-xl"
-          >
-            上一步
-          </button>
-          <button
-            onClick={handleNext}
-            className="flex-1 bg-blue-600 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-lg lg:text-xl"
-          >
-            繼續
-          </button>
+        <div className="flex flex-wrap gap-3">
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
+          <QuizActionButton label="繼續" onClick={handleNext} />
           {canSkipToQuiz && (
-            <button
-              onClick={handleSkipToQuiz}
-              className="flex-1 bg-amber-500 text-white font-bold py-3 sm:py-4 rounded-lg hover:bg-amber-600 transition-colors text-sm sm:text-lg lg:text-xl"
-            >
-              跳到測驗
-            </button>
+            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" />
           )}
         </div>
       )}

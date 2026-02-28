@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { mockQuizzes } from '../data/mockData';
 import { QuizGame } from '../components/QuizGame';
+import { QuizActionButton } from '../components/quiz/QuizActionButton';
 
 interface QuizPageProps {
   quizId: number;
@@ -57,21 +58,15 @@ export const QuizPage: React.FC<QuizPageProps> = ({ quizId, onComplete }) => {
 
         {/* Buttons */}
         <div className="flex gap-4">
-          <button
-            onClick={() => onComplete(finalScore)}
-            className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            返回主頁
-          </button>
-          <button
+          <QuizActionButton label="返回主頁" onClick={() => onComplete(finalScore)} />
+          <QuizActionButton
+            label="重新做一遍"
             onClick={() => {
               setCompleted(false);
               setFinalScore(0);
             }}
-            className="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            重新做一遍
-          </button>
+            variant="muted"
+          />
         </div>
       </div>
     );
