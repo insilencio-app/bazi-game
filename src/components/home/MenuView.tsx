@@ -62,6 +62,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const lessonSteps = pathSteps
     .filter((step) => step.id >= 0 && step.id <= 7)
     .sort((a, b) => a.id - b.id);
+  const lessonStepIds = new Set(lessonSteps.map((step) => step.id));
+  const progressLessons = mockLessons
+    .filter((lesson) => lessonStepIds.has(lesson.id))
+    .sort((a, b) => a.id - b.id);
   const totalQuizStep = pathSteps.find((step) => step.id === 8);
   const nextLessonStep = lessonSteps.find((step) => !completedLessonIds.has(step.id)) ?? lessonSteps[0];
   const isAllLessonsCompleted = lessonSteps.every((step) => completedLessonIds.has(step.id));
@@ -152,7 +156,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               </button>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {mockLessons.slice(0, isProgressChartsOpen ? 7 : 3).map((lesson) => {
+                {progressLessons.slice(0, isProgressChartsOpen ? progressLessons.length : 3).map((lesson) => {
                   const stats = userProgress.lessonPerformance[lesson.id];
                   const attempts = stats?.attempts ?? 0;
                   const correct = stats?.correct ?? 0;
