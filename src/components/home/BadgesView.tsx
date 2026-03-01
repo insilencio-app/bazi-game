@@ -37,8 +37,8 @@ export const BadgesView: React.FC<BadgesViewProps> = ({
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {allBadgeIds.map((badgeId) => {
             const badge = badgeDefinitions[badgeId];
             const unlocked = unlockedBadgeIds.includes(badgeId);
@@ -46,19 +46,19 @@ export const BadgesView: React.FC<BadgesViewProps> = ({
             return (
               <div
                 key={badgeId}
-                className={`rounded-xl border p-4 transition-all ${
+                className={`rounded-xl border p-3 sm:p-4 transition-all ${
                   unlocked
                     ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 shadow'
                     : 'bg-gray-100 border-gray-200'
                 }`}
               >
-                <div className="flex items-start gap-3">
-                  <p className={`text-4xl shrink-0 ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
+                <div className="flex items-start gap-2.5 sm:gap-3">
+                  <p className={`text-3xl sm:text-4xl shrink-0 ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
                   <div className="min-w-0">
-                    <p className={`text-base sm:text-lg font-semibold ${unlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+                    <p className={`text-sm sm:text-base font-semibold ${unlocked ? 'text-gray-800' : 'text-gray-400'}`}>
                       {badge.name}
                     </p>
-                    <p className={`text-sm mt-1 leading-relaxed ${unlocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                    <p className={`text-xs sm:text-sm mt-1 leading-relaxed ${unlocked ? 'text-gray-600' : 'text-gray-400'}`}>
                       {badge.hintLong}
                     </p>
                     <p className={`text-xs mt-2 ${unlocked ? 'text-amber-700 font-medium' : 'text-gray-400'}`}>
