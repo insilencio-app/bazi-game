@@ -70,39 +70,41 @@ export const MenuView: React.FC<MenuViewProps> = ({
     <>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sm:p-8 shadow-lg">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-2">輕鬆學八字</h1>
-          <p className="text-sm sm:text-lg lg:text-2xl opacity-90">Learn BaZi in an Interactive Way</p>
+          <div className="max-w-6xl mx-auto">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-2">輕鬆學八字</h1>
+            <p className="text-sm sm:text-lg lg:text-2xl opacity-90">Learn BaZi in an Interactive Way</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 sm:mt-6">
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
+                <div className="flex items-baseline justify-center gap-2 sm:gap-3">
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600">Lv.{levelProgress.level}</span>
+                  <span className="text-lg sm:text-xl lg:text-2xl text-gray-800 font-semibold">{getLevelTitle(levelProgress.level)}</span>
+                </div>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">等級</p>
+              </div>
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm sm:text-base text-gray-700">經驗值</p>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    {levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}
+                  </p>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
+                  <div
+                    className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }}
+                  ></div>
+                </div>
+              </div>
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
+                <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-600">{unlockedBadgeIds.length}</p>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">已解鎖徽章</p>
+              </div>
+            </div>
+          </div>
         </header>
 
         <div className="max-w-6xl mx-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
-              <div className="flex items-baseline justify-center gap-2 sm:gap-3">
-                <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600">Lv.{levelProgress.level}</span>
-                <span className="text-lg sm:text-xl lg:text-2xl text-gray-800 font-semibold">{getLevelTitle(levelProgress.level)}</span>
-              </div>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">等級</p>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-sm sm:text-base text-gray-700">經驗值</p>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  {levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}
-                </p>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
-                <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }}
-                ></div>
-              </div>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-600">{unlockedBadgeIds.length}</p>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">已解鎖徽章</p>
-            </div>
-          </div>
-
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
