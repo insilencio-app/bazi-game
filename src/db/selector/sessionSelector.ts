@@ -70,10 +70,11 @@ const rankCandidates = (
     const isUnseen = exposure === undefined;
     const distance = isUnseen ? Number.POSITIVE_INFINITY : currentCursor - exposure.lastSeenCursor;
     const isGapSatisfied = isUnseen || distance >= minGap;
+    const noveltyBand: RankedCandidate['noveltyBand'] = isUnseen ? 0 : isGapSatisfied ? 1 : 2;
 
     return {
       question,
-      noveltyBand: isUnseen ? 0 : isGapSatisfied ? 1 : 2,
+      noveltyBand,
       seenAt,
       tie: rng(),
     };
