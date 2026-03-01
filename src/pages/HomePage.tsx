@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getAnalyticsLessons, getAnalyticsSummary, type AnalyticsLessonsResponse, type AnalyticsSummaryResponse } from '../api/quizApi';
 import { mockElements, mockLessons } from '../data/mockData';
 import { ElementsView } from '../components/home/ElementsView';
 import { LessonsView } from '../components/home/LessonsView';
@@ -9,6 +10,7 @@ import { TotalQuizView } from '../components/home/TotalQuizView';
 import { BadgesView } from '../components/home/BadgesView';
 import { LessonPage } from './LessonPage';
 import { useGameRouteMode } from '../hooks/useGameRouteMode';
+import { useRemoteQuizApi } from '../config/env';
 import { useTotalQuizSession } from '../hooks/useTotalQuizSession';
 import { useRewardNotices } from '../hooks/useRewardNotices';
 import { useProgressionStore, type UserProgress } from '../hooks/useProgressionStore';
@@ -250,6 +252,10 @@ export const HomePage: React.FC = () => {
   const { currentMode, selectedLesson, navigateToMode } = useGameRouteMode();
   const [selectedElement, setSelectedElement] = useState<ElementItem | null>(null);
   const [isProgressChartsOpen, setIsProgressChartsOpen] = useState(false);
+  const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsSummaryResponse['summary'] | null>(null);
+  const [analyticsLessons, setAnalyticsLessons] = useState<AnalyticsLessonsResponse['lessons']>([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
   const allBadgeIds = React.useMemo(() => Object.keys(BADGE_DEFINITIONS) as BadgeId[], []);
 
   const {
@@ -334,6 +340,52 @@ export const HomePage: React.FC = () => {
     fastCorrectInRun,
     applyTotalQuizCompletion,
   ]);
+
+  React.useEffect(() => {
+    if (currentMode !== 'menu') {
+      return;
+    }
+
+    if (!useRemoteQuizApi) {
+      setAnalyticsSummary(null);
+      setAnalyticsLessons([]);
+      setAnalyticsError(null);
+      setAnalyticsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadAnalytics = async () => {
+      setAnalyticsLoading(true);
+      setAnalyticsError(null);
+
+      try {
+        const [summaryResponse, lessonsResponse] = await Promise.all([
+          getAnalyticsSummary('guest'),
+          getAnalyticsLessons('guest'),
+        ]);
+
+        if (cancelled) return;
+
+        setAnalyticsSummary(summaryResponse.summary);
+        setAnalyticsLessons(lessonsResponse.lessons);
+      } catch {
+        if (cancelled) return;
+        setAnalyticsError('無法取得伺服器統計資料');
+      } finally {
+        if (!cancelled) {
+          setAnalyticsLoading(false);
+        }
+      }
+    };
+
+    void loadAnalytics();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentMode]);
 
   const handleElementClick = (element: string) => {
     const el = mockElements.find((e) => e.name_cn === element);
@@ -482,6 +534,10 @@ export const HomePage: React.FC = () => {
         isProgressChartsOpen={isProgressChartsOpen}
         onToggleProgressCharts={() => setIsProgressChartsOpen((prev) => !prev)}
         userProgress={userProgress}
+        analyticsSummary={analyticsSummary}
+        analyticsLessons={analyticsLessons}
+        analyticsLoading={analyticsLoading}
+        analyticsError={analyticsError}
         pathSteps={pathSteps}
         rewardOverlay={rewardOverlay}
       />

@@ -1,0 +1,1405 @@
+[
+  {
+    "id": "lesson-2-match-1",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與五行",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲",
+          "right": "木"
+        },
+        {
+          "left": "丙",
+          "right": "火"
+        },
+        {
+          "left": "戊",
+          "right": "土"
+        },
+        {
+          "left": "庚",
+          "right": "金"
+        },
+        {
+          "left": "癸",
+          "right": "水"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-10",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與五合對象",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲",
+          "right": "己"
+        },
+        {
+          "left": "乙",
+          "right": "庚"
+        },
+        {
+          "left": "丙",
+          "right": "辛"
+        },
+        {
+          "left": "丁",
+          "right": "壬"
+        },
+        {
+          "left": "戊",
+          "right": "癸"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-11",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與五合結果",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲己",
+          "right": "土"
+        },
+        {
+          "left": "乙庚",
+          "right": "金"
+        },
+        {
+          "left": "丙辛",
+          "right": "水"
+        },
+        {
+          "left": "丁壬",
+          "right": "木"
+        },
+        {
+          "left": "戊癸",
+          "right": "火"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-12",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與代表特質（補充）",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "庚",
+          "right": "堅強直率"
+        },
+        {
+          "left": "辛",
+          "right": "細緻敏感"
+        },
+        {
+          "left": "壬",
+          "right": "聰慧好動"
+        },
+        {
+          "left": "癸",
+          "right": "沉靜神秘"
+        },
+        {
+          "left": "乙",
+          "right": "柔和靈活"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-2",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與陰陽",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲",
+          "right": "陽"
+        },
+        {
+          "left": "乙",
+          "right": "陰"
+        },
+        {
+          "left": "丙",
+          "right": "陽"
+        },
+        {
+          "left": "丁",
+          "right": "陰"
+        },
+        {
+          "left": "庚",
+          "right": "陽"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-3",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對陰干與五行",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "乙",
+          "right": "木"
+        },
+        {
+          "left": "丁",
+          "right": "火"
+        },
+        {
+          "left": "己",
+          "right": "土"
+        },
+        {
+          "left": "辛",
+          "right": "金"
+        },
+        {
+          "left": "癸",
+          "right": "水"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-4",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對陽干與五行",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲",
+          "right": "木"
+        },
+        {
+          "left": "丙",
+          "right": "火"
+        },
+        {
+          "left": "戊",
+          "right": "土"
+        },
+        {
+          "left": "庚",
+          "right": "金"
+        },
+        {
+          "left": "壬",
+          "right": "水"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-5",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干五合",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲",
+          "right": "己合土"
+        },
+        {
+          "left": "乙",
+          "right": "庚合金"
+        },
+        {
+          "left": "丙",
+          "right": "辛合水"
+        },
+        {
+          "left": "丁",
+          "right": "壬合木"
+        },
+        {
+          "left": "戊",
+          "right": "癸合火"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-6",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與代表意象",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "甲",
+          "right": "大樹"
+        },
+        {
+          "left": "乙",
+          "right": "花草"
+        },
+        {
+          "left": "丙",
+          "right": "太陽"
+        },
+        {
+          "left": "丁",
+          "right": "燭光"
+        },
+        {
+          "left": "戊",
+          "right": "高山"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-7",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與陰陽（補充）",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "己",
+          "right": "陰"
+        },
+        {
+          "left": "庚",
+          "right": "陽"
+        },
+        {
+          "left": "辛",
+          "right": "陰"
+        },
+        {
+          "left": "壬",
+          "right": "陽"
+        },
+        {
+          "left": "癸",
+          "right": "陰"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-8",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對天干與五行（補充）",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "乙",
+          "right": "木"
+        },
+        {
+          "left": "丁",
+          "right": "火"
+        },
+        {
+          "left": "己",
+          "right": "土"
+        },
+        {
+          "left": "辛",
+          "right": "金"
+        },
+        {
+          "left": "壬",
+          "right": "水"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-match-9",
+    "lessonId": 2,
+    "type": "match",
+    "prompt": "配對五行與對應天干組",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "match": {
+      "pairs": [
+        {
+          "left": "木",
+          "right": "甲乙"
+        },
+        {
+          "left": "火",
+          "right": "丙丁"
+        },
+        {
+          "left": "土",
+          "right": "戊己"
+        },
+        {
+          "left": "金",
+          "right": "庚辛"
+        },
+        {
+          "left": "水",
+          "right": "壬癸"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-2-mcq-1",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "天干一共有幾個？",
+    "explanation": "天干共有10個：甲乙丙丁戊己庚辛壬癸。",
+    "hint": "天干與十神的「十」有關，不是地支的數量。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "8個",
+        "10個",
+        "12個",
+        "5個"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-10",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "丙屬於哪一個五行？",
+    "explanation": "丙為陽火，代表太陽。",
+    "hint": "丙代表太陽，具有熾熱的特性。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "土",
+        "金"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-11",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "辛屬於哪一個五行？",
+    "explanation": "辛為陰金，代表珠寶。",
+    "hint": "辛與庚都屬金，辛代表精美的珠寶。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "金",
+        "水"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-12",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "己屬於哪一個五行？",
+    "explanation": "己屬於土元素，是陰土。",
+    "hint": "己與戊同屬土，己代表田園。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "土",
+        "水"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-13",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "戊屬於哪種陰陽？",
+    "explanation": "戊是陽土，代表高山。",
+    "hint": "戊是第五位，是單數還是雙數？",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "陽",
+        "陰",
+        "中性",
+        "不確定"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-14",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "天干中火屬性的是？",
+    "explanation": "丙丁皆為火。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲乙",
+        "丙丁",
+        "戊己",
+        "壬癸"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-15",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "天干中金屬性的是？",
+    "explanation": "庚辛皆為金。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲乙",
+        "丙丁",
+        "庚辛",
+        "壬癸"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-16",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "天干五合中，甲與哪一個天干相合？",
+    "explanation": "甲己合土。",
+    "hint": "甲是第一位，己是第六位，相差五位就是合的規律。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "乙",
+        "己",
+        "庚",
+        "癸"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-17",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "乙庚相合後對應哪一種五行？",
+    "explanation": "乙庚合金。",
+    "hint": "乙庚合成的元素與它們所屬五行有關。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "金",
+        "水"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-18",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下哪一組是正確的天干五合？",
+    "explanation": "天干五合之一是丙辛合水。",
+    "hint": "丙是陽火，辛是陰金，它們相合會化水。記住五合口訣會很有幫助。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "丙壬合火",
+        "丁癸合木",
+        "丙辛合水",
+        "戊壬合土"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-19",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "丁壬合對應的五行是？",
+    "explanation": "丁壬合木。",
+    "hint": "丁壬是火水相合，但合成什麼元素需記憶。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "土",
+        "金"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-2",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "甲木屬於哪種陰陽？",
+    "explanation": "甲是陽木。",
+    "hint": "甲是天幹第一位，是單數還是雙數？",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "陽",
+        "陰",
+        "中性",
+        "不確定"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-20",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "戊癸合的正確說法是？",
+    "explanation": "戊癸合火。",
+    "hint": "戊癸是土水相合，但合成火需記住。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "戊癸合金",
+        "戊癸合火",
+        "戊癸合木",
+        "戊癸合水"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-21",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "下列哪一項完整列出天干五合的一組？",
+    "explanation": "天干五合依序為甲己、乙庚、丙辛、丁壬、戊癸。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲己、乙庚、丙辛、丁壬、戊癸",
+        "甲庚、乙辛、丙壬、丁癸、戊己",
+        "甲乙、丙丁、戊己、庚辛、壬癸",
+        "甲丁、乙戊、丙己、庚壬、辛癸"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-22",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "關於「見合就一定化」的說法，下列何者正確？",
+    "explanation": "判讀五合需看命局整體強弱與季節，不是見合就一定化。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "正確，任何情況都一定化",
+        "錯誤，仍需配合全局與時令判斷",
+        "只要有甲己就一定化土",
+        "只有冬季才會化"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-23",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下哪組天干都屬於陽干？",
+    "explanation": "甲、丙、戊皆為陽干。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲、丙、戊",
+        "乙、丁、己",
+        "辛、癸、乙",
+        "丁、辛、癸"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-24",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "壬在五行與陰陽中的正確描述是？",
+    "explanation": "壬為陽水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "陰水",
+        "陽水",
+        "陰金",
+        "陽木"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-25",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下何者為正確的陰干組合？",
+    "explanation": "陰干為乙丁己辛癸。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲、丙、戊、庚、壬",
+        "乙、丁、己、辛、癸",
+        "甲、乙、丙、丁、戊",
+        "庚、辛、壬、癸、甲"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-26",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "天干中屬水的是哪一組？",
+    "explanation": "壬癸屬水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲乙",
+        "丙丁",
+        "庚辛",
+        "壬癸"
+      ],
+      "correctIndex": 3
+    }
+  },
+  {
+    "id": "lesson-2-mcq-27",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "下列何者正確對應「天干五合」？",
+    "explanation": "丁壬合木是正確五合之一。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "丁壬合木",
+        "甲庚合金",
+        "乙辛合水",
+        "丙壬合火"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-28",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "己在天干中的屬性是？",
+    "explanation": "己為陰土。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "陽土",
+        "陰土",
+        "陽金",
+        "陰火"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-29",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "下列哪個天干屬於陽火？",
+    "explanation": "丙為陽火，丁為陰火。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "丁",
+        "丙",
+        "戊",
+        "辛"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-3",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "癸屬於哪一個五行？",
+    "explanation": "癸為陰水。",
+    "hint": "癸是天幹最後一位，與壬（陽水）同屬水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "土",
+        "水"
+      ],
+      "correctIndex": 3
+    }
+  },
+  {
+    "id": "lesson-2-mcq-30",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "下列哪組對應正確？",
+    "explanation": "庚是陽金，辛是陰金。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "辛－陽金",
+        "壬－陰水",
+        "庚－陽金",
+        "癸－陽水"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-31",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下哪組「天干－五行」完全正確？",
+    "explanation": "甲乙同屬木，其餘選項五行配對錯誤。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲木、乙木",
+        "丙土、丁土",
+        "庚火、辛火",
+        "壬金、癸金"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-32",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "在天干五合中，丙與誰相合？",
+    "explanation": "丙辛合水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "壬",
+        "辛",
+        "己",
+        "癸"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-33",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下哪個是陰干？",
+    "explanation": "己為陰土，屬陰干。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "壬",
+        "庚",
+        "己",
+        "甲"
+      ],
+      "correctIndex": 2
+    }
+  },
+  {
+    "id": "lesson-2-mcq-34",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "下列何者是正確的五合結果？",
+    "explanation": "戊癸合火是正確五合關係。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "丁壬合金",
+        "戊癸合火",
+        "乙庚合木",
+        "甲己合水"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-35",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "「單數為陽，雙數為陰」最適合用來判斷哪一項？",
+    "explanation": "這是天干陰陽判斷的記憶口訣。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "地支生肖",
+        "天干陰陽",
+        "五行顏色",
+        "節氣季節"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-4",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "庚屬於哪一個五行？",
+    "explanation": "庚屬金，是陽金。",
+    "hint": "庚辛是金的陰陽對，庚位於甲乙丙丁戊己之後。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "土",
+        "金"
+      ],
+      "correctIndex": 3
+    }
+  },
+  {
+    "id": "lesson-2-mcq-5",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下哪個天干屬於陰？",
+    "explanation": "癸為陰水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲",
+        "丙",
+        "戊",
+        "癸"
+      ],
+      "correctIndex": 3
+    }
+  },
+  {
+    "id": "lesson-2-mcq-6",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "丁屬於哪一個五行？",
+    "explanation": "丁為陰火。",
+    "hint": "丁與丙都屬火，丙丁分別代表太陽與燭光。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "木",
+        "火",
+        "土",
+        "金"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-mcq-7",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "以下哪個天干屬於陽？",
+    "explanation": "壬為陽水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "乙",
+        "己",
+        "辛",
+        "壬"
+      ],
+      "correctIndex": 3
+    }
+  },
+  {
+    "id": "lesson-2-mcq-8",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "天干中木屬性的是？",
+    "explanation": "甲乙皆為木。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "甲乙",
+        "丙丁",
+        "戊己",
+        "庚辛"
+      ],
+      "correctIndex": 0
+    }
+  },
+  {
+    "id": "lesson-2-mcq-9",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "乙屬於哪種陰陽？",
+    "explanation": "乙是陰木，代表花草。",
+    "hint": "乙是第二位，是雙數。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "mcq": {
+      "options": [
+        "陽",
+        "陰",
+        "中性",
+        "不確定"
+      ],
+      "correctIndex": 1
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-1",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "天干共有12個。",
+    "explanation": "錯誤！天干只有10個：甲乙丙丁戊己庚辛壬癸。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-10",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "乙辛合金是正確的天干五合。",
+    "explanation": "錯誤！正確是乙庚合金。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-11",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "丙辛合水、丁壬合木都屬於天干五合。",
+    "explanation": "正確！這兩組都在天干五合中。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-12",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "看到五合就一定會化，不需要看其他條件。",
+    "explanation": "錯誤！仍需結合命局全局與時令判斷是否能化。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-13",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "乙屬陰木。",
+    "explanation": "正確！乙是陰木。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-14",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "庚屬陰金。",
+    "explanation": "錯誤！庚是陽金，辛才是陰金。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-15",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "壬癸都屬於水元素。",
+    "explanation": "正確！壬為陽水、癸為陰水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-16",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "甲己合木是正確的五合關係。",
+    "explanation": "錯誤！甲己合土。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-17",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "丁屬陰火。",
+    "explanation": "正確！丁為陰火。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-18",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "丙辛合木是正確的天干五合。",
+    "explanation": "錯誤！丙辛合水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-19",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "乙庚合金屬於天干五合之一。",
+    "explanation": "正確！乙庚合金。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-2",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "甲是陽干，乙是陰干。",
+    "explanation": "正確！甲為陽木，乙為陰木。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-20",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "壬是陰水。",
+    "explanation": "錯誤！壬是陽水，癸才是陰水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-3",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "壬屬於火元素。",
+    "explanation": "錯誤！壬屬於水元素，是陽水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-4",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "戊和己都屬於土元素。",
+    "explanation": "正確！戊是陽土，己是陰土。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-5",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "丙代表陽火，象徵太陽。",
+    "explanation": "正確！丙是陽火，代表太陽、熱情。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-6",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "庚和辛都屬於木元素。",
+    "explanation": "錯誤！庚和辛都屬於金元素。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-7",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "所有陽干都是單數位置（甲丙戊庚壬）。",
+    "explanation": "正確！單數為陽，雙數為陰。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-8",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "癸是陽水。",
+    "explanation": "錯誤！癸是陰水，壬才是陽水。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": false
+    }
+  },
+  {
+    "id": "lesson-2-truefalse-9",
+    "lessonId": 2,
+    "type": "truefalse",
+    "prompt": "甲己合土屬於天干五合之一。",
+    "explanation": "正確！甲己合土是天干五合的第一組。",
+    "difficulty": 2,
+    "tags": [
+      "十天干入門"
+    ],
+    "truefalse": {
+      "correct": true
+    }
+  }
+]

@@ -1,11 +1,13 @@
 import React from 'react';
 import { mockLessons } from '../data/mockData';
+import { createQuizSession, getQuizSession, submitQuizAttempts } from '../api/quizApi';
+import { useRemoteQuizApi } from '../config/env';
 import { selectByNovelty } from '../utils/quizSelection';
 import type { GameMode } from '../routes';
 import type { LessonQuestion, LessonWithQuestionBank } from '../types/domain';
 
 type TotalQuizQuestion = {
-  id: number;
+  id: string;
   question: string;
   options: string[];
   correct: number;
@@ -72,28 +74,98 @@ export const useTotalQuizSession = ({
   const [totalQuizAnswerHistory, setTotalQuizAnswerHistory] = React.useState<boolean[]>([]);
   const [questionStartAt, setQuestionStartAt] = React.useState<number | null>(null);
   const [showTotalQuizHint, setShowTotalQuizHint] = React.useState(false);
+  const [apiSessionId, setApiSessionId] = React.useState<string | null>(null);
+  const [attemptsToSync, setAttemptsToSync] = React.useState<
+    Array<{ questionId: string; isCorrect: boolean; responseMs: number | null }>
+  >([]);
+
+  const getLocalQuestions = React.useCallback((): TotalQuizQuestion[] => {
+    const allQuestions = mockLessons.flatMap((lesson) =>
+      (((lesson as LessonWithQuestionBank)?.questionBank ?? []) as LessonQuestion[]).map((question) => ({
+        id: `lesson-${lesson.id}-mcq-${question.id}`,
+        question: question.question,
+        options: question.options,
+        correct: question.correct,
+        explanation: question.explanation,
+        hint: question.hint,
+        lessonId: lesson.id,
+        lessonTitle: lesson.title_cn,
+      }))
+    );
+
+    return selectByNovelty(
+      allQuestions,
+      20,
+      (question) => question.id,
+      'bazi-total-quiz-history-v1',
+      30
+    );
+  }, []);
 
   React.useEffect(() => {
-    if (currentMode === 'total-quiz' && randomQuestions.length === 0) {
-      const allQuestions = mockLessons.flatMap((lesson) =>
-        (((lesson as LessonWithQuestionBank)?.questionBank ?? []) as LessonQuestion[]).map((question) => ({
-          ...question,
-          lessonId: lesson.id,
-          lessonTitle: lesson.title_cn,
-        }))
-      );
+    if (currentMode !== 'total-quiz' || randomQuestions.length > 0) return;
 
-      const selected = selectByNovelty(
-        allQuestions,
-        20,
-        (question) => `lesson-${question.lessonId}-mcq-${question.id}`,
-        'bazi-total-quiz-history-v1',
-        30
-      );
+    let cancelled = false;
 
-      setRandomQuestions(selected as TotalQuizQuestion[]);
-    }
-  }, [currentMode, randomQuestions.length]);
+    const loadQuestions = async () => {
+      if (!useRemoteQuizApi) {
+        setRandomQuestions(getLocalQuestions());
+        return;
+      }
+
+      try {
+        const created = await createQuizSession({
+          userId: 'guest',
+          policy: {
+            totalCount: 20,
+            minGap: 30,
+            typeTargets: {
+              mcq: 20,
+              truefalse: 0,
+              match: 0,
+            },
+          },
+        });
+
+        const sessionDetail = await getQuizSession(created.sessionId, true);
+        const lessonTitleById = new Map(mockLessons.map((lesson) => [lesson.id, lesson.title_cn]));
+        const remoteQuestions = sessionDetail.questions
+          .filter((question) => question.type === 'mcq' && Array.isArray(question.options) && typeof question.answer === 'number')
+          .map(
+            (question): TotalQuizQuestion => ({
+              id: question.id,
+              question: question.prompt,
+              options: question.options ?? [],
+              correct: question.answer as number,
+              explanation: question.explanation,
+              hint: question.hint ?? undefined,
+              lessonId: question.lessonId,
+              lessonTitle: lessonTitleById.get(question.lessonId) ?? `課程 ${question.lessonId}`,
+            })
+          );
+
+        if (cancelled) return;
+
+        if (remoteQuestions.length > 0) {
+          setApiSessionId(created.sessionId);
+          setRandomQuestions(remoteQuestions);
+          return;
+        }
+
+        setRandomQuestions(getLocalQuestions());
+      } catch {
+        if (!cancelled) {
+          setRandomQuestions(getLocalQuestions());
+        }
+      }
+    };
+
+    void loadQuestions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentMode, randomQuestions.length, getLocalQuestions]);
 
   React.useEffect(() => {
     if (currentMode !== 'total-quiz') {
@@ -110,8 +182,16 @@ export const useTotalQuizSession = ({
       setTotalQuizAnswerHistory([]);
       setQuestionStartAt(null);
       setShowTotalQuizHint(false);
+      setApiSessionId(null);
+      setAttemptsToSync([]);
     }
   }, [currentMode]);
+
+  React.useEffect(() => {
+    if (!isQuizFinished || !apiSessionId || attemptsToSync.length === 0) return;
+
+    void submitQuizAttempts(apiSessionId, attemptsToSync).catch(() => undefined);
+  }, [isQuizFinished, apiSessionId, attemptsToSync]);
 
   React.useEffect(() => {
     if (currentMode === 'total-quiz' && randomQuestions.length > 0 && !isQuizFinished) {
@@ -163,6 +243,16 @@ export const useTotalQuizSession = ({
 
     setTotalQuizAnswerHistory((prev) => [...prev, evaluation.isCorrect]);
     onQuestionAnswered(currentQuestion.lessonId, evaluation.isCorrect);
+
+    const responseMs = questionStartAt ? Math.max(0, Date.now() - questionStartAt) : null;
+    setAttemptsToSync((prev) => [
+      ...prev,
+      {
+        questionId: currentQuestion.id,
+        isCorrect: evaluation.isCorrect,
+        responseMs,
+      },
+    ]);
   };
 
   const handleNext = () => {

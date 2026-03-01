@@ -24,6 +24,23 @@ type UserProgressView = {
   totalQuizLatestPercent: number | null;
 };
 
+type AnalyticsSummaryView = {
+  sessions: number;
+  attempts: number;
+  correct: number;
+  accuracyPercent: number;
+  averageResponseMs: number | null;
+};
+
+type AnalyticsLessonView = {
+  lessonId: number;
+  lessonTitle: string;
+  attempts: number;
+  correct: number;
+  accuracyPercent: number;
+  averageResponseMs: number | null;
+};
+
 type PathStep = {
   id: number;
   title: string;
@@ -43,6 +60,10 @@ interface MenuViewProps {
   isProgressChartsOpen: boolean;
   onToggleProgressCharts: () => void;
   userProgress: UserProgressView;
+  analyticsSummary: AnalyticsSummaryView | null;
+  analyticsLessons: AnalyticsLessonView[];
+  analyticsLoading: boolean;
+  analyticsError: string | null;
   pathSteps: PathStep[];
   rewardOverlay: React.ReactNode;
 }
@@ -56,6 +77,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
   isProgressChartsOpen,
   onToggleProgressCharts,
   userProgress,
+  analyticsSummary,
+  analyticsLessons,
+  analyticsLoading,
+  analyticsError,
   pathSteps,
   rewardOverlay,
 }) => {
@@ -156,7 +181,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               </button>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {progressLessons.slice(0, isProgressChartsOpen ? progressLessons.length : 3).map((lesson) => {
+                {progressLessons.slice(0, isProgressChartsOpen ? progressLessons.length : 2).map((lesson) => {
                   const stats = userProgress.lessonPerformance[lesson.id];
                   const attempts = stats?.attempts ?? 0;
                   const correct = stats?.correct ?? 0;
@@ -278,6 +303,65 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   </div>
                 </div>
               </div>
+
+              {(analyticsLoading || analyticsError || analyticsSummary || analyticsLessons.length > 0) && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm sm:text-base font-bold text-gray-800">伺服器統計（Phase 5）</p>
+                    <p className="text-[10px] sm:text-xs text-gray-500">以 API 資料為準</p>
+                  </div>
+
+                  {analyticsLoading && (
+                    <p className="text-xs sm:text-sm text-gray-500">讀取中...</p>
+                  )}
+
+                  {!analyticsLoading && analyticsError && (
+                    <p className="text-xs sm:text-sm text-red-500">{analyticsError}</p>
+                  )}
+
+                  {!analyticsLoading && !analyticsError && analyticsSummary && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                      <div className="text-center p-2 bg-slate-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-slate-700">{analyticsSummary.sessions}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-600">完成回合</p>
+                      </div>
+                      <div className="text-center p-2 bg-slate-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-slate-700">{analyticsSummary.attempts}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-600">總作答</p>
+                      </div>
+                      <div className="text-center p-2 bg-slate-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-slate-700">{analyticsSummary.accuracyPercent}%</p>
+                        <p className="text-[10px] sm:text-xs text-gray-600">整體正確率</p>
+                      </div>
+                      <div className="text-center p-2 bg-slate-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-slate-700">{analyticsSummary.averageResponseMs ?? '-'}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-600">平均反應(ms)</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!analyticsLoading && !analyticsError && analyticsLessons.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {analyticsLessons
+                        .slice(0, isProgressChartsOpen ? analyticsLessons.length : 2)
+                        .map((lesson) => (
+                          <div key={lesson.lessonId} className="border border-gray-100 rounded-lg p-2 sm:p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.lessonTitle}</p>
+                                <p className="text-xs text-gray-500">累計 {lesson.correct}/{lesson.attempts}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-lg sm:text-xl font-bold text-blue-600">{lesson.accuracyPercent}%</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500">{lesson.averageResponseMs ?? '-'} ms</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

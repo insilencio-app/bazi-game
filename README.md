@@ -1,38 +1,17 @@
 # BaZi Game
 
-Interactive BaZi learning app built with React + Vite.
-
-## Quick Start
+Interactive BaZi learning game built with React + Vite.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (typically http://localhost:5173).
-
-## Scripts
+Open: http://localhost:5173
 
 ```bash
-npm run dev
 npm run build
-npm run preview
+npm run test:run
 ```
 
-## Deployment
-
-This project is set up for automatic deploys on each push to GitHub.
-
-## Project Structure
-
-```
-src/
-  components/
-  pages/
-  data/
-```
-
-## Notes
-
-- Data and lesson content live in src/data/mockData.ts
-- UI and behavior live in src/pages and src/components
+Optional API: `npm run api:dev`

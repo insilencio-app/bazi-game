@@ -1,0 +1,42 @@
+[
+  {
+    "id": "lesson-2-mcq-new-001",
+    "lessonId": 2,
+    "type": "mcq",
+    "prompt": "下列哪一項屬於天干五合？",
+    "explanation": "甲己、乙庚、丙辛、丁壬、戊癸為天干五合。",
+    "hint": "先回想五合口訣。",
+    "difficulty": 2,
+    "tags": ["十天干", "五合"],
+    "mcq": {
+      "options": ["甲己", "甲庚", "乙辛", "丁癸"],
+      "correctIndex": 0
+    }
+  },
+  {
+    "lessonId": 3,
+    "type": "truefalse",
+    "prompt": "子與午屬於六沖關係。",
+    "explanation": "子午沖是地支六沖之一。",
+    "difficulty": 1,
+    "tags": ["十二地支", "六沖"],
+    "truefalse": {
+      "correct": true
+    }
+  },
+  {
+    "lessonId": 7,
+    "type": "match",
+    "prompt": "請配對地支關係與對應組合",
+    "explanation": "常見關係包含六合、六沖、三合。",
+    "difficulty": 3,
+    "tags": ["地支關係"],
+    "match": {
+      "pairs": [
+        { "left": "六合", "right": "子丑" },
+        { "left": "六沖", "right": "子午" },
+        { "left": "三合", "right": "申子辰" }
+      ]
+    }
+  }
+]
