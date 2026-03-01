@@ -15,7 +15,7 @@ const getModeFromPath = (pathname: string): GameMode => {
 const parseLessonId = (lessonIdParam?: string): number | null => {
   if (!lessonIdParam) return null;
   const parsed = Number(lessonIdParam);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
 };
 
 export const useGameRouteMode = () => {
@@ -40,7 +40,7 @@ export const useGameRouteMode = () => {
         return;
       }
       if (mode === 'lessons') {
-        if (lessonId && Number.isFinite(lessonId)) {
+        if (lessonId !== null && lessonId !== undefined && Number.isFinite(lessonId)) {
           navigate(getLessonRoute(lessonId));
           return;
         }
