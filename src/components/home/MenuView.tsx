@@ -96,10 +96,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   ></div>
                 </div>
               </div>
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
+              <button
+                onClick={onOpenBadgeGallery}
+                className="bg-white p-4 sm:p-6 rounded-lg shadow text-center hover:shadow-md transition-shadow"
+              >
                 <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-600">{unlockedBadgeIds.length}</p>
                 <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">已解鎖徽章</p>
-              </div>
+                <p className="text-xs sm:text-sm text-amber-600 mt-1 font-medium">徽章圖鑑 →</p>
+              </button>
             </div>
           </div>
         </header>
@@ -132,23 +136,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-base sm:text-lg font-bold text-gray-800">徽章圖鑑</p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">已解鎖 {unlockedBadgeIds.length} 枚徽章</p>
-                </div>
-                <button
-                  onClick={onOpenBadgeGallery}
-                  className="shrink-0 rounded-lg bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 text-sm sm:text-base font-semibold transition-colors"
-                >
-                  查看全部
-                </button>
-              </div>
-              <p className="mt-3 text-xs sm:text-sm text-gray-500">點擊「查看全部」可瀏覽完整徽章與解鎖條件</p>
-            </div>
-
+          <div className="mb-8">
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
               <button
                 onClick={onToggleProgressCharts}
