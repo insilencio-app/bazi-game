@@ -26,9 +26,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           <div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">徽章圖鑑</h1>
-            <p className="text-sm sm:text-base opacity-95 mt-1">
-              已解鎖 {unlockedBadgeIds.length}/{allBadgeIds.length}
-            </p>
+            <p className="text-sm sm:text-base opacity-95 mt-1">已解鎖 {unlockedBadgeIds.length}</p>
           </div>
           <button
             onClick={onBack}

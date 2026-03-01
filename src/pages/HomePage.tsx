@@ -469,8 +469,6 @@ export const HomePage: React.FC = () => {
         getLevelTitle={getLevelTitle}
         completedLessonIds={completedLessonIds}
         unlockedBadgeIds={unlockedBadgeIds}
-        allBadgeIds={allBadgeIds}
-        badgeDefinitions={BADGE_DEFINITIONS}
         onOpenBadgeGallery={() => navigateToMode('badges')}
         isProgressChartsOpen={isProgressChartsOpen}
         onToggleProgressCharts={() => setIsProgressChartsOpen((prev) => !prev)}

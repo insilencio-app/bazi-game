@@ -1,13 +1,6 @@
 import React from 'react';
 import { mockLessons } from '../../data/mockData';
 
-type BadgeDefinition = {
-  name: string;
-  emoji: string;
-  hintShort: string;
-  hintLong: string;
-};
-
 type LevelProgress = {
   level: number;
   xpIntoCurrentLevel: number;
@@ -46,8 +39,6 @@ interface MenuViewProps {
   getLevelTitle: (level: number) => string;
   completedLessonIds: Set<number>;
   unlockedBadgeIds: string[];
-  allBadgeIds: string[];
-  badgeDefinitions: Record<string, BadgeDefinition>;
   onOpenBadgeGallery: () => void;
   isProgressChartsOpen: boolean;
   onToggleProgressCharts: () => void;
@@ -61,8 +52,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
   getLevelTitle,
   completedLessonIds,
   unlockedBadgeIds,
-  allBadgeIds,
-  badgeDefinitions,
   onOpenBadgeGallery,
   isProgressChartsOpen,
   onToggleProgressCharts,
@@ -86,7 +75,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </header>
 
         <div className="max-w-6xl mx-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
               <div className="flex items-baseline justify-center gap-2 sm:gap-3">
                 <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600">Lv.{levelProgress.level}</span>
@@ -107,6 +96,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }}
                 ></div>
               </div>
+            </div>
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow text-center">
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-600">{unlockedBadgeIds.length}</p>
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2">已解鎖徽章</p>
             </div>
           </div>
 
@@ -142,7 +135,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-base sm:text-lg font-bold text-gray-800">徽章圖鑑</p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{unlockedBadgeIds.length}/{allBadgeIds.length} 已解鎖</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">已解鎖 {unlockedBadgeIds.length} 枚徽章</p>
                 </div>
                 <button
                   onClick={onOpenBadgeGallery}
@@ -151,27 +144,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   查看全部
                 </button>
               </div>
-
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                {allBadgeIds.slice(0, 6).map((badgeId) => {
-                  const badge = badgeDefinitions[badgeId];
-                  const unlocked = unlockedBadgeIds.includes(badgeId);
-
-                  return (
-                    <div
-                      key={badgeId}
-                      className={`rounded-lg border p-2 text-center ${
-                        unlocked
-                          ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'
-                          : 'bg-gray-100 border-gray-200'
-                      }`}
-                      title={badge.name}
-                    >
-                      <p className={`text-2xl sm:text-3xl ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
-                    </div>
-                  );
-                })}
-              </div>
+              <p className="mt-3 text-xs sm:text-sm text-gray-500">點擊「查看全部」可瀏覽完整徽章與解鎖條件</p>
             </div>
 
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
