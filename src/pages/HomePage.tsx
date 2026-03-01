@@ -67,7 +67,7 @@ const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
   'first-step': { name: '初學者', emoji: '👣', hintShort: '1課', hintLong: '完成任意 1 個課程' },
-  'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: '7課', hintLong: '完成 7 個課程' },
+  'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: '8課', hintLong: '完成 8 個課程' },
   'quiz-starter': { name: '測驗新手', emoji: '🧠', hintShort: '答對1', hintLong: '累計答對 1 題' },
   'ten-correct': { name: '十題達成', emoji: '🔟', hintShort: '答對10', hintLong: '累計答對 10 題' },
   'twenty-correct': { name: '二十題高手', emoji: '2️⃣0️⃣', hintShort: '答對20', hintLong: '累計答對 20 題' },
@@ -95,13 +95,13 @@ const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShor
   'relations-master': { name: '關係達人', emoji: '⚡', hintShort: '完成關係', hintLong: '完成「地支關係」' },
   'daily-3': { name: '每日簽到3天', emoji: '📅', hintShort: '連玩3天', hintLong: '連續遊玩 3 天' },
   'daily-7': { name: '每日簽到7天', emoji: '🗓️', hintShort: '連玩7天', hintLong: '連續遊玩 7 天' },
-  'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: '7課80+', hintLong: '7 個課程都達 80%+' },
+  'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: '8課80+', hintLong: '8 個課程都達 80%+' },
   'total-quiz-finisher': { name: '總測完成者', emoji: '🏁', hintShort: '總測1次', hintLong: '完成總測驗 1 次' },
   'total-quiz-finisher-5': { name: '測驗不放棄', emoji: '🎯', hintShort: '總測5次', hintLong: '完成總測驗 5 次' },
   'replay-3': { name: '回鍋高手', emoji: '🔁', hintShort: '同課3次', hintLong: '同一課程累計遊玩 3 次' },
-  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: '7課滿分', hintLong: '7 個課程都達 100%' },
+  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: '8課滿分', hintLong: '8 個課程都達 100%' },
   'perfect-combo': { name: '完美連鎖', emoji: '✨', hintShort: '三課滿分', hintLong: '達成 3 個課程滿分' },
-  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: '7課完成', hintLong: '完成全部 7 個課程' },
+  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: '8課完成', hintLong: '完成全部 8 個課程' },
   'rising-star': { name: '冉冉上升', emoji: '⭐', hintShort: 'Lv.10', hintLong: '達到等級 10' },
   'ancient-sage': { name: '遠古聖賢', emoji: '🏔️', hintShort: 'Lv.20', hintLong: '達到等級 20' },
   'knowledge-hoarder': { name: '知識囤積者', emoji: '💰', hintShort: '500XP', hintLong: '累計獲得 500 XP' },
@@ -196,7 +196,7 @@ const getAchievedBadges = (
   const achieved: BadgeId[] = [];
 
   if (completedLessonIds.size >= 1) achieved.push('first-step');
-  if (completedLessonIds.size >= 7) achieved.push('lesson-master');
+  if (completedLessonIds.size >= 8) achieved.push('lesson-master');
   if (progress.correctAnswers >= 1) achieved.push('quiz-starter');
   if (progress.correctAnswers >= 10) achieved.push('ten-correct');
   if (progress.correctAnswers >= 20) achieved.push('twenty-correct');
@@ -224,15 +224,15 @@ const getAchievedBadges = (
   if (completedLessonIds.has(7)) achieved.push('relations-master');
   if (progress.dailyStreak >= 3) achieved.push('daily-3');
   if (progress.dailyStreak >= 7) achieved.push('daily-7');
-  if (highScoreLessonIds.size >= 7) achieved.push('all-courses-80');
+  if (highScoreLessonIds.size >= 8) achieved.push('all-courses-80');
   if (progress.totalQuizAttempts >= 1) achieved.push('total-quiz-finisher');
   if (progress.totalQuizAttempts >= 5) achieved.push('total-quiz-finisher-5');
   if (Object.values(lessonAttemptCounts).some((count) => count >= 3)) achieved.push('replay-3');
 
   // New badges for learning milestones
-  if (perfectLessonIds.size >= 7) achieved.push('master-scholar');
+  if (perfectLessonIds.size >= 8) achieved.push('master-scholar');
   if (perfectLessonIds.size >= 3) achieved.push('perfect-combo');
-  if (completedLessonIds.size >= 7) achieved.push('late-bloomer');
+  if (completedLessonIds.size >= 8) achieved.push('late-bloomer');
   
   // Level-based badges
   const levelCalc = calculateLevelProgress(progress.totalXp);
@@ -351,6 +351,15 @@ export const HomePage: React.FC = () => {
   };
 
   const pathSteps = [
+    {
+      id: 0,
+      title: '第0課：四柱入門',
+      subtitle: '先懂四柱與日主再學五行',
+      emoji: '🧭',
+      accent: 'from-indigo-500 to-violet-400',
+      chip: '必修',
+      onClick: () => handleLessonStart(0),
+    },
     {
       id: 1,
       title: '五行基礎',

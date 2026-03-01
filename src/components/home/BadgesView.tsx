@@ -32,7 +32,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({
             onClick={onBack}
             className="bg-red-500 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-red-600 font-bold text-sm sm:text-base lg:text-lg transition-all hover:scale-105 whitespace-nowrap"
           >
-            🏠 返回菜單
+            🏠 返回主頁
           </button>
         </div>
       </header>

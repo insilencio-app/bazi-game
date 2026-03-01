@@ -60,7 +60,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   rewardOverlay,
 }) => {
   const lessonSteps = pathSteps
-    .filter((step) => step.id >= 1 && step.id <= 7)
+    .filter((step) => step.id >= 0 && step.id <= 7)
     .sort((a, b) => a.id - b.id);
   const totalQuizStep = pathSteps.find((step) => step.id === 8);
   const nextLessonStep = lessonSteps.find((step) => !completedLessonIds.has(step.id)) ?? lessonSteps[0];
