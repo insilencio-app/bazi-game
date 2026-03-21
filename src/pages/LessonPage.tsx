@@ -104,34 +104,39 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const lesson = mockLessons.find((l) => l.id === lessonId);
   const baseSteps = (lesson?.steps ?? []) as LessonStep[];
   const [quizQuestions, setQuizQuestions] = useState<QuizApiQuestion[]>([]);
-  const [isQuizLoading, setIsQuizLoading] = useState(true);
+  const [isQuizLoading, setIsQuizLoading] = useState(useRemoteQuizApi);
   const [quizLoadError, setQuizLoadError] = useState<string | null>(null);
+  const shouldUseLocalQuizBank = !useRemoteQuizApi || quizLoadError !== null;
+
+  const getLocalLessonBanks = () => {
+    const typedLesson = lesson as LessonWithBanks | undefined;
+    return {
+      questionBank: (typedLesson?.questionBank ?? []).map((q): LessonBankQuestion => ({
+        id: String(q.id),
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation,
+        hint: q.hint,
+      })),
+      trueFalseBank: (typedLesson?.trueFalseBank ?? []).map((tf): LessonBankTrueFalse => ({
+        id: String(tf.id),
+        question: tf.question,
+        correct: tf.correct,
+        explanation: tf.explanation,
+        hint: tf.hint,
+      })),
+      matchBank: (typedLesson?.matchBank ?? []).map((m): LessonBankMatch => ({
+        id: String(m.id),
+        prompt: m.prompt,
+        pairs: m.pairs,
+      })),
+    };
+  };
 
   const lessonBanks = useMemo(() => {
-    if (!useRemoteQuizApi) {
-      const typedLesson = lesson as LessonWithBanks | undefined;
-      return {
-        questionBank: (typedLesson?.questionBank ?? []).map((q): LessonBankQuestion => ({
-          id: String(q.id),
-          question: q.question,
-          options: q.options,
-          correct: q.correct,
-          explanation: q.explanation,
-          hint: q.hint,
-        })),
-        trueFalseBank: (typedLesson?.trueFalseBank ?? []).map((tf): LessonBankTrueFalse => ({
-          id: String(tf.id),
-          question: tf.question,
-          correct: tf.correct,
-          explanation: tf.explanation,
-          hint: tf.hint,
-        })),
-        matchBank: (typedLesson?.matchBank ?? []).map((m): LessonBankMatch => ({
-          id: String(m.id),
-          prompt: m.prompt,
-          pairs: m.pairs,
-        })),
-      };
+    if (shouldUseLocalQuizBank) {
+      return getLocalLessonBanks();
     }
 
     return {
@@ -162,7 +167,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         })
       ),
     };
-  }, [lesson, quizQuestions]);
+  }, [lesson, quizQuestions, shouldUseLocalQuizBank]);
 
   useEffect(() => {
     if (!useRemoteQuizApi) {
@@ -194,12 +199,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
         if (cancelled) return;
 
+        if (session.questions.length === 0) {
+          setQuizQuestions([]);
+          setQuizLoadError('課程測驗 API 沒有返回題目，已改用內建題庫。');
+          return;
+        }
+
         setQuizQuestions(session.questions);
       } catch {
         if (cancelled) return;
 
         setQuizQuestions([]);
-        setQuizLoadError('課程測驗載入失敗，請確認測驗 API 已啟動。');
+        setQuizLoadError('課程測驗 API 無法使用，已改用內建題庫。');
       } finally {
         if (!cancelled) {
           setIsQuizLoading(false);
@@ -462,16 +473,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     );
   }
 
-  if (quizLoadError) {
-    return (
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
-        <h2 className="text-3xl font-bold mb-4">課程測驗無法載入</h2>
-        <p className="text-lg text-gray-600 mb-6">{quizLoadError}</p>
-        <QuizActionButton label="返回主頁" onClick={onExit} />
-      </div>
-    );
-  }
-
   const handleCheck = () => {
     if (!currentStep) return;
     if (currentStep.type !== 'mcq' && currentStep.type !== 'truefalse') return;
@@ -625,6 +626,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           ></div>
         </div>
+        {quizLoadError && (
+          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            {quizLoadError}
+          </div>
+        )}
       </div>
 
       {/* Step Content */}

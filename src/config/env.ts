@@ -9,5 +9,5 @@ export const apiBaseUrl = trimTrailingSlash(import.meta.env.VITE_API_BASE_URL ||
 
 export const useRemoteQuizApi = parseBoolean(
   import.meta.env.VITE_USE_REMOTE_QUIZ_API,
-  Boolean(import.meta.env.PROD)
+  false
 );

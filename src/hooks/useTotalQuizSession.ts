@@ -1,7 +1,9 @@
 import React from 'react';
 import { mockLessons } from '../data/mockData';
 import { loadQuizSessionQuestions, submitQuizAttempts } from '../api/quizApi';
+import { useRemoteQuizApi } from '../config/env';
 import type { GameMode } from '../routes';
+import { selectByNovelty } from '../utils/quizSelection';
 
 const TOTAL_QUIZ_AUTO_ADVANCE_STORAGE_KEY = 'bazi-total-quiz-auto-advance-v1';
 const TOTAL_QUIZ_AUTO_ADVANCE_DELAY_MS = 1000;
@@ -91,6 +93,38 @@ export const useTotalQuizSession = ({
     Array<{ questionId: string; isCorrect: boolean; responseMs: number | null }>
   >([]);
 
+  const getLocalQuestions = React.useCallback((): TotalQuizQuestion[] => {
+    const allQuestions = mockLessons.flatMap((lesson) => {
+      const questionBank = (lesson as { questionBank?: Array<{
+        id: number | string;
+        question: string;
+        options: string[];
+        correct: number;
+        explanation: string;
+        hint?: string;
+      }> }).questionBank ?? [];
+
+      return questionBank.map((question) => ({
+        id: `lesson-${lesson.id}-mcq-${question.id}`,
+        question: question.question,
+        options: question.options,
+        correct: question.correct,
+        explanation: question.explanation,
+        hint: question.hint,
+        lessonId: lesson.id,
+        lessonTitle: lesson.title_cn,
+      }));
+    });
+
+    return selectByNovelty(
+      allQuestions,
+      20,
+      (question) => question.id,
+      'bazi-total-quiz-history-v1',
+      30
+    );
+  }, []);
+
   React.useEffect(() => {
     if (typeof window === 'undefined' || !window.localStorage) return;
 
@@ -108,6 +142,11 @@ export const useTotalQuizSession = ({
 
     const loadQuestions = async () => {
       setLoadError(null);
+
+      if (!useRemoteQuizApi) {
+        setRandomQuestions(getLocalQuestions());
+        return;
+      }
 
       try {
         const session = await loadQuizSessionQuestions({
@@ -146,12 +185,10 @@ export const useTotalQuizSession = ({
           return;
         }
 
-        setRandomQuestions([]);
-        setLoadError('總測驗題目載入失敗。');
+        setRandomQuestions(getLocalQuestions());
       } catch {
         if (!cancelled) {
-          setRandomQuestions([]);
-          setLoadError('總測驗題目載入失敗，請確認測驗 API 已啟動。');
+          setRandomQuestions(getLocalQuestions());
         }
       }
     };
@@ -161,7 +198,7 @@ export const useTotalQuizSession = ({
     return () => {
       cancelled = true;
     };
-  }, [currentMode, randomQuestions.length]);
+  }, [currentMode, randomQuestions.length, getLocalQuestions]);
 
   React.useEffect(() => {
     if (currentMode !== 'total-quiz') {
