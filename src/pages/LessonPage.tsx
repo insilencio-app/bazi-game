@@ -1,10 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods } from '../data/mockData';
+import { loadQuizSessionQuestions, type QuizApiQuestion } from '../api/quizApi';
+import { useRemoteQuizApi } from '../config/env';
 import { selectByNovelty, shuffleArray } from '../utils/quizSelection';
 import { MultipleChoiceQuestion } from '../components/quiz/MultipleChoiceQuestion';
 import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
 import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import type { LessonWithBanks } from '../types/domain';
+
+const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
+  if (new RegExp(`^第${lessonId}課`).test(title)) return title;
+  return `第${lessonId}課：${title}`;
+};
 
 type LessonStep =
   | {
@@ -24,6 +31,7 @@ type LessonStep =
   | {
       id: number;
       type: 'mcq';
+      sourceQuestionId: string;
       question: string;
       options: string[];
       correct: number;
@@ -33,6 +41,7 @@ type LessonStep =
   | {
       id: number;
       type: 'truefalse';
+      sourceQuestionId: string;
       question: string;
       correct: boolean;
       explanation: string;
@@ -41,9 +50,46 @@ type LessonStep =
   | {
       id: number;
       type: 'match';
+      sourceQuestionId: string;
       prompt: string;
       pairs: { left: string; right: string }[];
     };
+
+type LessonBankQuestion = {
+  id: string;
+  question: string;
+  options: string[];
+  correct: number;
+  explanation: string;
+  hint?: string;
+};
+
+type LessonBankTrueFalse = {
+  id: string;
+  question: string;
+  correct: boolean;
+  explanation: string;
+  hint?: string;
+};
+
+type LessonBankMatch = {
+  id: string;
+  prompt: string;
+  pairs: { left: string; right: string }[];
+};
+
+const isMcqQuestion = (question: QuizApiQuestion): question is QuizApiQuestion & { type: 'mcq'; options: string[]; answer: number } =>
+  question.type === 'mcq' && Array.isArray(question.options) && typeof question.answer === 'number';
+
+const isTrueFalseQuestion = (
+  question: QuizApiQuestion
+): question is QuizApiQuestion & { type: 'truefalse'; answer: boolean } =>
+  question.type === 'truefalse' && typeof question.answer === 'boolean';
+
+const isMatchQuestion = (
+  question: QuizApiQuestion
+): question is QuizApiQuestion & { type: 'match'; pairs: { left: string; right: string }[] } =>
+  question.type === 'match' && Array.isArray(question.pairs);
 
 interface LessonProps {
   lessonId: number;
@@ -57,16 +103,116 @@ interface LessonProps {
 export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit, userXp, onUseHint, onQuestionAnswered }) => {
   const lesson = mockLessons.find((l) => l.id === lessonId);
   const baseSteps = (lesson?.steps ?? []) as LessonStep[];
+  const [quizQuestions, setQuizQuestions] = useState<QuizApiQuestion[]>([]);
+  const [isQuizLoading, setIsQuizLoading] = useState(true);
+  const [quizLoadError, setQuizLoadError] = useState<string | null>(null);
 
   const lessonBanks = useMemo(() => {
-    const typedLesson = lesson as LessonWithBanks | undefined;
+    if (!useRemoteQuizApi) {
+      const typedLesson = lesson as LessonWithBanks | undefined;
+      return {
+        questionBank: (typedLesson?.questionBank ?? []).map((q): LessonBankQuestion => ({
+          id: String(q.id),
+          question: q.question,
+          options: q.options,
+          correct: q.correct,
+          explanation: q.explanation,
+          hint: q.hint,
+        })),
+        trueFalseBank: (typedLesson?.trueFalseBank ?? []).map((tf): LessonBankTrueFalse => ({
+          id: String(tf.id),
+          question: tf.question,
+          correct: tf.correct,
+          explanation: tf.explanation,
+          hint: tf.hint,
+        })),
+        matchBank: (typedLesson?.matchBank ?? []).map((m): LessonBankMatch => ({
+          id: String(m.id),
+          prompt: m.prompt,
+          pairs: m.pairs,
+        })),
+      };
+    }
 
     return {
-      questionBank: typedLesson?.questionBank ?? [],
-      trueFalseBank: typedLesson?.trueFalseBank ?? [],
-      matchBank: typedLesson?.matchBank ?? [],
+      questionBank: quizQuestions.filter(isMcqQuestion).map(
+        (question): LessonBankQuestion => ({
+          id: question.id,
+          question: question.prompt,
+          options: question.options,
+          correct: question.answer,
+          explanation: question.explanation,
+          hint: question.hint ?? undefined,
+        })
+      ),
+      trueFalseBank: quizQuestions.filter(isTrueFalseQuestion).map(
+        (question): LessonBankTrueFalse => ({
+          id: question.id,
+          question: question.prompt,
+          correct: question.answer,
+          explanation: question.explanation,
+          hint: question.hint ?? undefined,
+        })
+      ),
+      matchBank: quizQuestions.filter(isMatchQuestion).map(
+        (question): LessonBankMatch => ({
+          id: question.id,
+          prompt: question.prompt,
+          pairs: question.pairs,
+        })
+      ),
     };
-  }, [lesson]);
+  }, [lesson, quizQuestions]);
+
+  useEffect(() => {
+    if (!useRemoteQuizApi) {
+      setIsQuizLoading(false);
+      setQuizLoadError(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadLessonQuizQuestions = async () => {
+      setIsQuizLoading(true);
+      setQuizLoadError(null);
+
+      try {
+        const session = await loadQuizSessionQuestions({
+          userId: 'guest',
+          policy: {
+            totalCount: 10,
+            minGap: 10,
+            lessonIds: [lessonId],
+            typeTargets: {
+              mcq: 6,
+              truefalse: 2,
+              match: 2,
+            },
+          },
+        });
+
+        if (cancelled) return;
+
+        setQuizQuestions(session.questions);
+      } catch {
+        if (cancelled) return;
+
+        setQuizQuestions([]);
+        setQuizLoadError('課程測驗載入失敗，請確認測驗 API 已啟動。');
+      } finally {
+        if (!cancelled) {
+          setIsQuizLoading(false);
+        }
+      }
+    };
+
+    void loadLessonQuizQuestions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [lessonId]);
 
   const quizSteps = useMemo(() => {
     const isHeavenlyStemsLesson = lessonId === 2;
@@ -189,6 +335,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       steps.push({
         id: 1000 + index,
         type: 'mcq',
+        sourceQuestionId: q.id,
         question: q.question,
         options: q.options,
         correct: q.correct,
@@ -201,6 +348,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       steps.push({
         id: 1500 + index,
         type: 'truefalse',
+        sourceQuestionId: tf.id,
         question: tf.question,
         correct: tf.correct,
         explanation: tf.explanation,
@@ -212,6 +360,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       steps.push({
         id: 2000 + index,
         type: 'match',
+        sourceQuestionId: m.id,
         prompt: m.prompt,
         pairs: m.pairs,
       });
@@ -236,10 +385,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const [matchedPairs, setMatchedPairs] = useState<Array<[string, string]>>([]);
   const [matchMessage, setMatchMessage] = useState<string | null>(null);
   const [showHint, setShowHint] = useState(false);
-
-  if (!lesson) {
-    return <div>課程未找到</div>;
-  }
 
   const currentStep = steps[currentStepIndex];
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
@@ -303,6 +448,29 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     }
     return rightsWithIndex;
   }, [currentStepIndex, lessonBanks.matchBank]);
+
+  if (!lesson) {
+    return <div>課程未找到</div>;
+  }
+
+  if (isQuizLoading) {
+    return (
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
+        <h2 className="text-3xl font-bold mb-4">載入課程測驗中</h2>
+        <p className="text-lg text-gray-600">正在從題庫載入本課測驗題目...</p>
+      </div>
+    );
+  }
+
+  if (quizLoadError) {
+    return (
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
+        <h2 className="text-3xl font-bold mb-4">課程測驗無法載入</h2>
+        <p className="text-lg text-gray-600 mb-6">{quizLoadError}</p>
+        <QuizActionButton label="返回主頁" onClick={onExit} />
+      </div>
+    );
+  }
 
   const handleCheck = () => {
     if (!currentStep) return;
@@ -433,7 +601,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       <div className="mb-6">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3">
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{lesson.title_cn}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+              {ensureLessonTitlePrefix(lesson.id, lesson.title_cn)}
+            </h1>
             <p className="text-sm sm:text-lg text-gray-700">{lesson.title_en}</p>
           </div>
           <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3 sm:ml-auto">
@@ -709,6 +879,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               if (!answered) {
                 setScore((prev) => prev + 1);
                 setAnswered(true);
+                onQuestionAnswered(lessonId, true);
               }
               handleNext();
             }}

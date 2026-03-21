@@ -8,7 +8,7 @@ export const ROUTES = {
   totalQuiz: '/total-quiz',
 } as const;
 
-export type GameMode = 'menu' | 'elements' | 'lessons' | 'badges' | 'stems' | 'branches' | 'gods' | 'total-quiz';
+export type GameMode = 'menu' | 'elements' | 'lessons' | 'badges' | 'stems' | 'gods' | 'total-quiz';
 
 export const LESSON_ROUTE_PATTERN = '/lessons/:lessonId';
 

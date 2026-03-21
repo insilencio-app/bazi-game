@@ -277,7 +277,7 @@ export const useProgressionStore = <TBadgeId extends string>({
 
       const lessonPercent = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
       const nextHighScoreLessonIds = new Set(highScoreLessonIds);
-      if (lessonId <= 7 && lessonPercent >= 80) {
+      if (lessonId <= 11 && lessonPercent >= 80) {
         nextHighScoreLessonIds.add(lessonId);
       }
 

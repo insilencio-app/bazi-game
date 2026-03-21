@@ -1,6 +1,11 @@
 import React from 'react';
 import { mockLessons } from '../../data/mockData';
 
+const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
+  if (new RegExp(`^第${lessonId}課`).test(title)) return title;
+  return `第${lessonId}課：${title}`;
+};
+
 type LevelProgress = {
   level: number;
   xpIntoCurrentLevel: number;
@@ -60,13 +65,13 @@ export const MenuView: React.FC<MenuViewProps> = ({
   rewardOverlay,
 }) => {
   const lessonSteps = pathSteps
-    .filter((step) => step.id >= 0 && step.id <= 7)
+    .filter((step) => step.id >= 0 && step.id <= 11)
     .sort((a, b) => a.id - b.id);
   const lessonStepIds = new Set(lessonSteps.map((step) => step.id));
   const progressLessons = mockLessons
     .filter((lesson) => lessonStepIds.has(lesson.id))
     .sort((a, b) => a.id - b.id);
-  const totalQuizStep = pathSteps.find((step) => step.id === 8);
+  const totalQuizStep = pathSteps.find((step) => step.id === 12);
   const nextLessonStep = lessonSteps.find((step) => !completedLessonIds.has(step.id)) ?? lessonSteps[0];
   const isAllLessonsCompleted = lessonSteps.every((step) => completedLessonIds.has(step.id));
 
@@ -177,7 +182,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
                     <div key={lesson.id} className="border border-gray-100 rounded-lg p-2 sm:p-3">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex-1">
-                          <p className="text-xs sm:text-sm font-medium text-gray-700">{lesson.title_cn}</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-700">
+                            {ensureLessonTitlePrefix(lesson.id, lesson.title_cn)}
+                          </p>
                           <p className="text-xs text-gray-500">
                             {attempts > 0 ? `累計 ${correct}/${attempts} • ${cumulativePercent}%` : '尚未開始'}
                           </p>
@@ -317,7 +324,11 @@ export const MenuView: React.FC<MenuViewProps> = ({
                           </div>
                           <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold bg-white/20">{step.chip}</span>
                         </div>
-                        <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mt-3">{step.title}</h3>
+                        <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mt-3">
+                          {step.id >= 0 && step.id <= 11
+                            ? ensureLessonTitlePrefix(step.id, step.title)
+                            : step.title}
+                        </h3>
                         <p className="text-white/90 mt-1 text-xs sm:text-sm lg:text-base">{step.subtitle}</p>
                       </button>
                     </div>

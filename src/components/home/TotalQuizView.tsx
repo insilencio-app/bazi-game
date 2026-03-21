@@ -13,6 +13,7 @@ type TotalQuizQuestion = {
 
 interface TotalQuizViewProps {
   isLoading: boolean;
+  loadError: string | null;
   isQuizFinished: boolean;
   quizIndex: number;
   totalQuestions: number;
@@ -29,10 +30,12 @@ interface TotalQuizViewProps {
   selectedAnswer: number | null;
   answered: boolean;
   showTotalQuizHint: boolean;
+  autoAdvanceOnCorrect: boolean;
   userXp: number;
   hintXpCost: number;
   onBack: () => void;
   onUseHint: () => void;
+  onToggleAutoAdvance: () => void;
   onSelectAnswer: (index: number) => void;
   onCheck: () => void;
   onNext: () => void;
@@ -41,6 +44,7 @@ interface TotalQuizViewProps {
 
 export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
   isLoading,
+  loadError,
   isQuizFinished,
   quizIndex,
   totalQuestions,
@@ -57,15 +61,27 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
   selectedAnswer,
   answered,
   showTotalQuizHint,
+  autoAdvanceOnCorrect,
   userXp,
   hintXpCost,
   onBack,
   onUseHint,
+  onToggleAutoAdvance,
   onSelectAnswer,
   onCheck,
   onNext,
   rewardOverlay,
 }) => {
+  if (loadError) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h2>
+        <p className="text-gray-700 mt-4 mb-6">{loadError}</p>
+        <QuizActionButton label="返回主頁" onClick={onBack} fullWidth />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg text-center">
@@ -127,6 +143,15 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
           <span className="mx-2">•</span>
           <span className="font-semibold text-blue-700">目前正確率：{currentAccuracy}%</span>
         </div>
+        <label className="mt-3 inline-flex cursor-pointer items-center gap-3 rounded-lg bg-blue-50 px-3 py-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            checked={autoAdvanceOnCorrect}
+            onChange={onToggleAutoAdvance}
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span>答對後自動下一題</span>
+        </label>
       </div>
 
       <div className="mb-8">
@@ -154,7 +179,12 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
       )}
 
       {answered && (
-        <QuizActionButton label={quizIndex === totalQuestions - 1 ? '完成' : '繼續'} onClick={onNext} fullWidth />
+        <div className="space-y-3">
+          {autoAdvanceOnCorrect && selectedAnswer === currentQuestion.correct && (
+            <p className="text-center text-sm text-gray-600">答對後將自動進入下一題。</p>
+          )}
+          <QuizActionButton label={quizIndex === totalQuestions - 1 ? '完成' : '繼續'} onClick={onNext} fullWidth />
+        </div>
       )}
     </div>
   );

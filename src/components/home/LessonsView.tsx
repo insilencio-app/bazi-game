@@ -1,6 +1,11 @@
 import React from 'react';
 import { mockLessons } from '../../data/mockData';
 
+const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
+  if (new RegExp(`^第${lessonId}課`).test(title)) return title;
+  return `第${lessonId}課：${title}`;
+};
+
 interface LessonsViewProps {
   onLessonStart: (lessonId: number) => void;
   onBack: () => void;
@@ -25,7 +30,9 @@ export const LessonsView: React.FC<LessonsViewProps> = ({ onLessonStart, onBack 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {mockLessons.map((lesson) => (
             <div key={lesson.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{lesson.title_cn}</h3>
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
+                {ensureLessonTitlePrefix(lesson.id, lesson.title_cn)}
+              </h3>
               <p className="text-xs sm:text-sm lg:text-base text-gray-700 mb-4">{lesson.title_en}</p>
               <button
                 onClick={() => onLessonStart(lesson.id)}

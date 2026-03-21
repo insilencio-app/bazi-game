@@ -1,10 +1,20 @@
 import React from 'react';
 import { mockLessons } from '../data/mockData';
-import { createQuizSession, getQuizSession, submitQuizAttempts } from '../api/quizApi';
-import { useRemoteQuizApi } from '../config/env';
-import { selectByNovelty } from '../utils/quizSelection';
+import { loadQuizSessionQuestions, submitQuizAttempts } from '../api/quizApi';
 import type { GameMode } from '../routes';
-import type { LessonQuestion, LessonWithQuestionBank } from '../types/domain';
+
+const TOTAL_QUIZ_AUTO_ADVANCE_STORAGE_KEY = 'bazi-total-quiz-auto-advance-v1';
+const TOTAL_QUIZ_AUTO_ADVANCE_DELAY_MS = 1000;
+
+const loadAutoAdvancePreference = () => {
+  if (typeof window === 'undefined' || !window.localStorage) return false;
+
+  try {
+    return window.localStorage.getItem(TOTAL_QUIZ_AUTO_ADVANCE_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+};
 
 type TotalQuizQuestion = {
   id: string;
@@ -75,32 +85,21 @@ export const useTotalQuizSession = ({
   const [questionStartAt, setQuestionStartAt] = React.useState<number | null>(null);
   const [showTotalQuizHint, setShowTotalQuizHint] = React.useState(false);
   const [apiSessionId, setApiSessionId] = React.useState<string | null>(null);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [autoAdvanceOnCorrect, setAutoAdvanceOnCorrect] = React.useState(loadAutoAdvancePreference);
   const [attemptsToSync, setAttemptsToSync] = React.useState<
     Array<{ questionId: string; isCorrect: boolean; responseMs: number | null }>
   >([]);
 
-  const getLocalQuestions = React.useCallback((): TotalQuizQuestion[] => {
-    const allQuestions = mockLessons.flatMap((lesson) =>
-      (((lesson as LessonWithQuestionBank)?.questionBank ?? []) as LessonQuestion[]).map((question) => ({
-        id: `lesson-${lesson.id}-mcq-${question.id}`,
-        question: question.question,
-        options: question.options,
-        correct: question.correct,
-        explanation: question.explanation,
-        hint: question.hint,
-        lessonId: lesson.id,
-        lessonTitle: lesson.title_cn,
-      }))
-    );
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !window.localStorage) return;
 
-    return selectByNovelty(
-      allQuestions,
-      20,
-      (question) => question.id,
-      'bazi-total-quiz-history-v1',
-      30
-    );
-  }, []);
+    try {
+      window.localStorage.setItem(TOTAL_QUIZ_AUTO_ADVANCE_STORAGE_KEY, String(autoAdvanceOnCorrect));
+    } catch {
+      // Ignore persistence failures and keep runtime behavior.
+    }
+  }, [autoAdvanceOnCorrect]);
 
   React.useEffect(() => {
     if (currentMode !== 'total-quiz' || randomQuestions.length > 0) return;
@@ -108,13 +107,10 @@ export const useTotalQuizSession = ({
     let cancelled = false;
 
     const loadQuestions = async () => {
-      if (!useRemoteQuizApi) {
-        setRandomQuestions(getLocalQuestions());
-        return;
-      }
+      setLoadError(null);
 
       try {
-        const created = await createQuizSession({
+        const session = await loadQuizSessionQuestions({
           userId: 'guest',
           policy: {
             totalCount: 20,
@@ -126,10 +122,8 @@ export const useTotalQuizSession = ({
             },
           },
         });
-
-        const sessionDetail = await getQuizSession(created.sessionId, true);
         const lessonTitleById = new Map(mockLessons.map((lesson) => [lesson.id, lesson.title_cn]));
-        const remoteQuestions = sessionDetail.questions
+        const remoteQuestions = session.questions
           .filter((question) => question.type === 'mcq' && Array.isArray(question.options) && typeof question.answer === 'number')
           .map(
             (question): TotalQuizQuestion => ({
@@ -147,15 +141,17 @@ export const useTotalQuizSession = ({
         if (cancelled) return;
 
         if (remoteQuestions.length > 0) {
-          setApiSessionId(created.sessionId);
+          setApiSessionId(session.sessionId);
           setRandomQuestions(remoteQuestions);
           return;
         }
 
-        setRandomQuestions(getLocalQuestions());
+        setRandomQuestions([]);
+        setLoadError('總測驗題目載入失敗。');
       } catch {
         if (!cancelled) {
-          setRandomQuestions(getLocalQuestions());
+          setRandomQuestions([]);
+          setLoadError('總測驗題目載入失敗，請確認測驗 API 已啟動。');
         }
       }
     };
@@ -165,7 +161,7 @@ export const useTotalQuizSession = ({
     return () => {
       cancelled = true;
     };
-  }, [currentMode, randomQuestions.length, getLocalQuestions]);
+  }, [currentMode, randomQuestions.length]);
 
   React.useEffect(() => {
     if (currentMode !== 'total-quiz') {
@@ -183,6 +179,7 @@ export const useTotalQuizSession = ({
       setQuestionStartAt(null);
       setShowTotalQuizHint(false);
       setApiSessionId(null);
+      setLoadError(null);
       setAttemptsToSync([]);
     }
   }, [currentMode]);
@@ -201,6 +198,42 @@ export const useTotalQuizSession = ({
 
   const isLoading = randomQuestions.length === 0;
   const currentQuestion = isLoading ? null : randomQuestions[quizIndex];
+
+  React.useEffect(() => {
+    if (currentMode !== 'total-quiz' || !autoAdvanceOnCorrect || !answered || !currentQuestion) {
+      return;
+    }
+
+    const isCurrentAnswerCorrect = selectedAnswer === currentQuestion.correct;
+    if (!isCurrentAnswerCorrect) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (quizIndex < randomQuestions.length - 1) {
+        setQuizIndex((prev) => prev + 1);
+        setSelectedAnswer(null);
+        setAnswered(false);
+        setQuestionStartAt(Date.now());
+        setShowTotalQuizHint(false);
+        return;
+      }
+
+      setIsQuizFinished(true);
+    }, TOTAL_QUIZ_AUTO_ADVANCE_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    answered,
+    autoAdvanceOnCorrect,
+    currentMode,
+    currentQuestion,
+    quizIndex,
+    randomQuestions.length,
+    selectedAnswer,
+  ]);
   const totalQuestions = randomQuestions.length;
   const progress = totalQuestions ? ((quizIndex + 1) / totalQuestions) * 100 : 0;
   const latestPercent = totalQuestions ? Math.round((quizScore / totalQuestions) * 100) : 0;
@@ -287,8 +320,11 @@ export const useTotalQuizSession = ({
     fastCorrectInRun,
     totalQuizAnswerHistory,
     showTotalQuizHint,
+    autoAdvanceOnCorrect,
     setSelectedAnswer,
     setIsTotalQuizRewardApplied,
+    setAutoAdvanceOnCorrect,
+    loadError,
     isLoading,
     currentQuestion,
     totalQuestions,

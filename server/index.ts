@@ -153,6 +153,15 @@ const normalizePolicy = (raw: unknown): SelectionPolicy => {
     object.typeTargets && typeof object.typeTargets === 'object'
       ? (object.typeTargets as Record<string, unknown>)
       : {};
+  const lessonIds = Array.isArray(object.lessonIds)
+    ? Array.from(
+        new Set(
+          object.lessonIds
+            .map((value) => Number(value))
+            .filter((value) => Number.isInteger(value) && value >= 0)
+        )
+      )
+    : undefined;
 
   return {
     totalCount: clamp(Number(object.totalCount ?? 20), 1, 100),
@@ -162,6 +171,7 @@ const normalizePolicy = (raw: unknown): SelectionPolicy => {
       truefalse: Number(typeTargetsRaw.truefalse ?? 4),
       match: Number(typeTargetsRaw.match ?? 4),
     },
+    lessonIds: lessonIds && lessonIds.length > 0 ? lessonIds : undefined,
   };
 };
 
@@ -308,13 +318,15 @@ app.post('/api/quiz/sessions', (request, response) => {
       ? request.body.seed.trim()
       : `${Date.now()}-${Math.random()}`;
 
-  const questions = loadActiveQuestions(db).map((row) => ({
+  const questions = loadActiveQuestions(db)
+    .filter((row) => !policy.lessonIds || policy.lessonIds.includes(row.lesson_id))
+    .map((row) => ({
     id: row.id,
     lessonId: row.lesson_id,
     type: row.type,
     difficulty: row.difficulty,
     status: row.status,
-  }));
+    }));
 
   const exposures = loadExposureRows(db, userId);
   const cursor = exposures.reduce((maxCursor, row) => Math.max(maxCursor, row.lastSeenCursor), 0);

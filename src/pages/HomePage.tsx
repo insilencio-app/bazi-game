@@ -297,8 +297,11 @@ export const HomePage: React.FC = () => {
     recentAttempts,
     recentPercent,
     showTotalQuizHint,
+    autoAdvanceOnCorrect,
     setSelectedAnswer,
     setIsTotalQuizRewardApplied,
+    setAutoAdvanceOnCorrect,
+    loadError,
     isLoading,
     currentQuestion,
     totalQuestions,
@@ -350,10 +353,11 @@ export const HomePage: React.FC = () => {
     navigateToMode('menu');
   };
 
+  const lessonTitleMap = new Map(mockLessons.map(l => [l.id, l.title_cn]));
   const pathSteps = [
     {
       id: 0,
-      title: '第0課：四柱入門',
+      title: lessonTitleMap.get(0) ?? '第0課',
       subtitle: '先懂四柱與日主再學五行',
       emoji: '🧭',
       accent: 'from-indigo-500 to-violet-400',
@@ -362,7 +366,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 1,
-      title: '五行基礎',
+      title: lessonTitleMap.get(1) ?? '第1課',
       subtitle: '木火土金水入門',
       emoji: '🌳',
       accent: 'from-green-500 to-emerald-400',
@@ -371,7 +375,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 2,
-      title: '十天干',
+      title: lessonTitleMap.get(2) ?? '第2課',
       subtitle: '陰陽五行與天干',
       emoji: '☰',
       accent: 'from-blue-500 to-sky-400',
@@ -380,7 +384,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 3,
-      title: '十二地支',
+      title: lessonTitleMap.get(3) ?? '第3課',
       subtitle: '地支、生肖與時辰',
       emoji: '🐲',
       accent: 'from-teal-500 to-cyan-400',
@@ -389,7 +393,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 4,
-      title: '節氣與月份計算',
+      title: lessonTitleMap.get(4) ?? '第4課',
       subtitle: '太陽曆節氣與八字月份劃分',
       emoji: '🌱',
       accent: 'from-lime-500 to-green-400',
@@ -398,7 +402,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 5,
-      title: '十神詳解',
+      title: lessonTitleMap.get(5) ?? '第5課',
       subtitle: '官殺財印食傷比劫',
       emoji: '👥',
       accent: 'from-rose-500 to-pink-400',
@@ -407,7 +411,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 6,
-      title: '十二地支藏干',
+      title: lessonTitleMap.get(6) ?? '第6課',
       subtitle: '地支內的隱藏天干',
       emoji: '🌪️',
       accent: 'from-purple-500 to-indigo-400',
@@ -416,7 +420,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 7,
-      title: '地支關係',
+      title: lessonTitleMap.get(7) ?? '第7課',
       subtitle: '三合六合刑沖破害',
       emoji: '⚡',
       accent: 'from-orange-500 to-red-400',
@@ -424,7 +428,7 @@ export const HomePage: React.FC = () => {
       onClick: () => handleLessonStart(7),
     },
     {
-      id: 8,
+      id: 12,
       title: '總測驗',
       subtitle: '所有課程的綜合測驗',
       emoji: '🎯',
@@ -542,6 +546,7 @@ export const HomePage: React.FC = () => {
     return (
       <TotalQuizView
         isLoading={isLoading}
+        loadError={loadError}
         isQuizFinished={isQuizFinished}
         quizIndex={quizIndex}
         totalQuestions={totalQuestions}
@@ -558,10 +563,12 @@ export const HomePage: React.FC = () => {
         selectedAnswer={selectedAnswer}
         answered={answered}
         showTotalQuizHint={showTotalQuizHint}
+        autoAdvanceOnCorrect={autoAdvanceOnCorrect}
         userXp={userProgress.totalXp}
         hintXpCost={HINT_XP_COST}
         onBack={() => navigateToMode('menu')}
         onUseHint={handleUseTotalQuizHint}
+        onToggleAutoAdvance={() => setAutoAdvanceOnCorrect((prev) => !prev)}
         onSelectAnswer={setSelectedAnswer}
         onCheck={handleCheck}
         onNext={handleNext}

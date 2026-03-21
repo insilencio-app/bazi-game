@@ -1,106 +1,42 @@
-import { apiBaseUrl } from '../config/env';
+export type QuizQuestionType = 'mcq' | 'truefalse' | 'match';
 
-type QuestionType = 'mcq' | 'truefalse' | 'match';
-
-export type QuizApiQuestion = {
+export interface QuizApiQuestion {
   id: string;
   lessonId: number;
-  type: QuestionType;
+  type: QuizQuestionType;
   prompt: string;
-  explanation: string;
-  hint: string | null;
   options?: string[];
-  pairs?: { left: string; right: string }[];
   answer?: number | boolean;
-};
+  explanation: string;
+  hint?: string | null;
+  pairs?: Array<{ left: string; right: string }>;
+}
 
-export type CreateQuizSessionRequest = {
-  userId: string;
-  seed?: string;
-  policy?: {
-    totalCount?: number;
-    minGap?: number;
-    typeTargets?: Partial<Record<QuestionType, number>>;
-  };
-};
+export interface QuizSessionPolicy {
+  totalCount: number;
+  minGap?: number;
+  lessonIds?: number[];
+  typeTargets?: Partial<Record<QuizQuestionType, number>>;
+}
 
-export type CreateQuizSessionResponse = {
-  sessionId: string;
-  userId: string;
-  totalQuestions: number;
-  selectedByType: Record<QuestionType, number>;
-  questions: QuizApiQuestion[];
-};
-
-export type QuizSessionDetailResponse = {
+export interface QuizSessionResponse {
   sessionId: string;
   questions: QuizApiQuestion[];
-};
+}
 
-export type AnalyticsSummaryResponse = {
-  ok: true;
-  userId: string | null;
-  summary: {
-    sessions: number;
-    attempts: number;
-    correct: number;
-    accuracyPercent: number;
-    averageResponseMs: number | null;
-  };
-};
+interface LoadQuizSessionRequest {
+  userId: string;
+  policy: QuizSessionPolicy;
+}
 
-export type AnalyticsLessonsResponse = {
-  ok: true;
-  userId: string | null;
-  lessons: Array<{
-    lessonId: number;
-    lessonTitle: string;
-    attempts: number;
-    correct: number;
-    accuracyPercent: number;
-    averageResponseMs: number | null;
-  }>;
-};
+interface QuizAttemptPayload {
+  questionId: string;
+  isCorrect: boolean;
+  responseMs: number | null;
+}
 
-export type AnalyticsQuestionsResponse = {
-  ok: true;
-  userId: string | null;
-  questions: Array<{
-    questionId: string;
-    lessonId: number;
-    lessonTitle: string;
-    questionType: QuestionType;
-    prompt: string;
-    attempts: number;
-    correct: number;
-    accuracyPercent: number;
-    averageResponseMs: number | null;
-    totalExposure: number;
-  }>;
-};
-
-export type AnalyticsAlertsResponse = {
-  ok: true;
-  userId: string | null;
-  thresholds: {
-    weakAccuracyThreshold: number;
-    weakAttemptsThreshold: number;
-    overusedExposureThreshold: number;
-  };
-  alerts: Array<{
-    category: 'weak-question' | 'overused-question';
-    questionId: string;
-    lessonId: number;
-    lessonTitle: string;
-    questionType: QuestionType;
-    accuracyPercent: number;
-    attempts: number;
-    totalExposure: number;
-  }>;
-};
-
-const requestJson = async <T,>(url: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(url, {
+const requestJson = async <T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> => {
+  const response = await fetch(input, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -109,70 +45,29 @@ const requestJson = async <T,>(url: string, init?: RequestInit): Promise<T> => {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Request failed with status ${response.status}`);
+    const text = await response.text().catch(() => '');
+    throw new Error(`Quiz API request failed (${response.status}): ${text || response.statusText}`);
   }
 
-  return (await response.json()) as T;
+  return response.json() as Promise<T>;
 };
 
-export const createQuizSession = (payload: CreateQuizSessionRequest) =>
-  requestJson<CreateQuizSessionResponse>(`${apiBaseUrl}/quiz/sessions`, {
+export const loadQuizSessionQuestions = async ({
+  userId,
+  policy,
+}: LoadQuizSessionRequest): Promise<QuizSessionResponse> => {
+  return requestJson<QuizSessionResponse>('/api/quiz/sessions', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ userId, policy }),
   });
+};
 
-export const getQuizSession = (sessionId: string, includeAnswers = false) =>
-  requestJson<QuizSessionDetailResponse>(
-    `${apiBaseUrl}/quiz/sessions/${encodeURIComponent(sessionId)}?includeAnswers=${includeAnswers ? '1' : '0'}`
-  );
-
-export const submitQuizAttempts = (
+export const submitQuizAttempts = async (
   sessionId: string,
-  attempts: Array<{ questionId: string; isCorrect: boolean; responseMs: number | null }>
-) =>
-  requestJson<{ savedAttempts: number; correctCount: number }>(
-    `${apiBaseUrl}/quiz/sessions/${encodeURIComponent(sessionId)}/attempts`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ attempts }),
-    }
-  );
-
-export const getAnalyticsSummary = (userId?: string) => {
-  const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-  return requestJson<AnalyticsSummaryResponse>(`${apiBaseUrl}/analytics/summary${query}`);
-};
-
-export const getAnalyticsLessons = (userId?: string) => {
-  const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-  return requestJson<AnalyticsLessonsResponse>(`${apiBaseUrl}/analytics/lessons${query}`);
-};
-
-export const getAnalyticsQuestions = (userId?: string) => {
-  const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-  return requestJson<AnalyticsQuestionsResponse>(`${apiBaseUrl}/analytics/questions${query}`);
-};
-
-export const getAnalyticsAlerts = (args?: {
-  userId?: string;
-  weakAccuracyThreshold?: number;
-  weakAttemptsThreshold?: number;
-  overusedExposureThreshold?: number;
-}) => {
-  const params = new URLSearchParams();
-
-  if (args?.userId) params.set('userId', args.userId);
-  if (typeof args?.weakAccuracyThreshold === 'number') {
-    params.set('weakAccuracyThreshold', String(args.weakAccuracyThreshold));
-  }
-  if (typeof args?.weakAttemptsThreshold === 'number') {
-    params.set('weakAttemptsThreshold', String(args.weakAttemptsThreshold));
-  }
-  if (typeof args?.overusedExposureThreshold === 'number') {
-    params.set('overusedExposureThreshold', String(args.overusedExposureThreshold));
-  }
-
-  const query = params.toString();
-  return requestJson<AnalyticsAlertsResponse>(`${apiBaseUrl}/analytics/alerts${query ? `?${query}` : ''}`);
+  attempts: QuizAttemptPayload[]
+): Promise<void> => {
+  await requestJson(`/api/quiz/sessions/${encodeURIComponent(sessionId)}/attempts`, {
+    method: 'POST',
+    body: JSON.stringify({ attempts }),
+  });
 };

@@ -12,6 +12,7 @@ export type SelectionPolicy = {
   totalCount: number;
   minGap: number;
   typeTargets?: Partial<Record<QuestionType, number>>;
+  lessonIds?: number[];
 };
 
 export type ExposureState = {

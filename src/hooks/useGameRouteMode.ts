@@ -51,7 +51,7 @@ export const useGameRouteMode = () => {
         navigate(ROUTES.badges);
         return;
       }
-      if (mode === 'stems' || mode === 'branches') {
+      if (mode === 'stems') {
         navigate(ROUTES.stems);
         return;
       }
