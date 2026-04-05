@@ -471,7 +471,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 11,
-      title: lessonTitleMap.get(11) ?? '第11課',
+      title: '第10課：趨吉避凶實踐',
       subtitle: '把喜忌、制化與行為策略連起來',
       emoji: '🛡️',
       accent: 'from-emerald-500 to-teal-400',
@@ -493,7 +493,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 10,
-      title: lessonTitleMap.get(10) ?? '第10課',
+      title: '補充課：體用觀的特定師承解法',
       subtitle: '流派補充：體用觀的特定師承解法',
       emoji: '📚',
       accent: 'from-stone-500 to-zinc-400',

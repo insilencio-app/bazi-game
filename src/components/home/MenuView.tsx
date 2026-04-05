@@ -6,6 +6,11 @@ const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
   return `第${lessonId}課：${title}`;
 };
 
+const getHomepageDisplayLessonTitle = (lessonId: number, title: string): string => {
+  if (lessonId === 11) return '第10課：趨吉避凶實踐';
+  return ensureLessonTitlePrefix(lessonId, title);
+};
+
 type LevelProgress = {
   level: number;
   xpIntoCurrentLevel: number;
@@ -185,7 +190,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex-1">
                           <p className="text-xs sm:text-sm font-medium text-gray-700">
-                            {ensureLessonTitlePrefix(lesson.id, lesson.title_cn)}
+                            {getHomepageDisplayLessonTitle(lesson.id, lesson.title_cn)}
                           </p>
                           <p className="text-xs text-gray-500">
                             {attempts > 0 ? `累計 ${correct}/${attempts} • ${cumulativePercent}%` : '尚未開始'}
@@ -327,9 +332,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                           <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold bg-white/20">{step.chip}</span>
                         </div>
                         <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mt-3">
-                          {step.id >= 0 && step.id <= 11
-                            ? ensureLessonTitlePrefix(step.id, step.title)
-                            : step.title}
+                          {step.title}
                         </h3>
                         <p className="text-white/90 mt-1 text-xs sm:text-sm lg:text-base">{step.subtitle}</p>
                       </button>
