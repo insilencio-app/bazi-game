@@ -12,6 +12,7 @@
     "content:validate": "tsx tools/validate-question-import.ts",
     "content:import": "tsx tools/import-questions.ts",
     "content:export": "tsx tools/export-questions.ts",
+    "content:sync:mock": "tsx tools/sync-mock-lessons-to-runtime.ts",
     "content:diff": "tsx tools/diff-questions.ts",
     "test": "vitest",
     "test:run": "vitest run"

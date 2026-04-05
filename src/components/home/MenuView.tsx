@@ -36,6 +36,8 @@ type PathStep = {
   emoji: string;
   accent: string;
   chip: string;
+  isLesson: boolean;
+  isMainPath: boolean;
   onClick: () => void;
 };
 
@@ -65,7 +67,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   rewardOverlay,
 }) => {
   const lessonSteps = pathSteps
-    .filter((step) => step.id >= 0 && step.id <= 11)
+    .filter((step) => step.isLesson && step.isMainPath)
     .sort((a, b) => a.id - b.id);
   const lessonStepIds = new Set(lessonSteps.map((step) => step.id));
   const progressLessons = mockLessons

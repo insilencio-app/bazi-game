@@ -64,10 +64,11 @@ const TOTAL_QUIZ_MASTERY_BONUS_XP = 40;
 const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
 const HINT_XP_COST = 50;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
+const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11] as const;
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
   'first-step': { name: '初學者', emoji: '👣', hintShort: '1課', hintLong: '完成任意 1 個課程' },
-  'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: '8課', hintLong: '完成 8 個課程' },
+  'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: '11課', hintLong: '完成主線 11 個課程' },
   'quiz-starter': { name: '測驗新手', emoji: '🧠', hintShort: '答對1', hintLong: '累計答對 1 題' },
   'ten-correct': { name: '十題達成', emoji: '🔟', hintShort: '答對10', hintLong: '累計答對 10 題' },
   'twenty-correct': { name: '二十題高手', emoji: '2️⃣0️⃣', hintShort: '答對20', hintLong: '累計答對 20 題' },
@@ -95,13 +96,13 @@ const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShor
   'relations-master': { name: '關係達人', emoji: '⚡', hintShort: '完成關係', hintLong: '完成「地支關係」' },
   'daily-3': { name: '每日簽到3天', emoji: '📅', hintShort: '連玩3天', hintLong: '連續遊玩 3 天' },
   'daily-7': { name: '每日簽到7天', emoji: '🗓️', hintShort: '連玩7天', hintLong: '連續遊玩 7 天' },
-  'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: '8課80+', hintLong: '8 個課程都達 80%+' },
+  'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: '11課80+', hintLong: '主線 11 個課程都達 80%+' },
   'total-quiz-finisher': { name: '總測完成者', emoji: '🏁', hintShort: '總測1次', hintLong: '完成總測驗 1 次' },
   'total-quiz-finisher-5': { name: '測驗不放棄', emoji: '🎯', hintShort: '總測5次', hintLong: '完成總測驗 5 次' },
   'replay-3': { name: '回鍋高手', emoji: '🔁', hintShort: '同課3次', hintLong: '同一課程累計遊玩 3 次' },
-  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: '8課滿分', hintLong: '8 個課程都達 100%' },
+  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: '11課滿分', hintLong: '主線 11 個課程都達 100%' },
   'perfect-combo': { name: '完美連鎖', emoji: '✨', hintShort: '三課滿分', hintLong: '達成 3 個課程滿分' },
-  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: '8課完成', hintLong: '完成全部 8 個課程' },
+  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: '11課完成', hintLong: '完成主線全部 11 個課程' },
   'rising-star': { name: '冉冉上升', emoji: '⭐', hintShort: 'Lv.10', hintLong: '達到等級 10' },
   'ancient-sage': { name: '遠古聖賢', emoji: '🏔️', hintShort: 'Lv.20', hintLong: '達到等級 20' },
   'knowledge-hoarder': { name: '知識囤積者', emoji: '💰', hintShort: '500XP', hintLong: '累計獲得 500 XP' },
@@ -194,9 +195,12 @@ const getAchievedBadges = (
   lessonAttemptCounts: Record<number, number>
 ): BadgeId[] => {
   const achieved: BadgeId[] = [];
+  const completedMainPathCount = MAIN_PATH_LESSON_IDS.filter((lessonId) => completedLessonIds.has(lessonId)).length;
+  const highScoreMainPathCount = MAIN_PATH_LESSON_IDS.filter((lessonId) => highScoreLessonIds.has(lessonId)).length;
+  const perfectMainPathCount = MAIN_PATH_LESSON_IDS.filter((lessonId) => perfectLessonIds.has(lessonId)).length;
 
   if (completedLessonIds.size >= 1) achieved.push('first-step');
-  if (completedLessonIds.size >= 8) achieved.push('lesson-master');
+  if (completedMainPathCount >= MAIN_PATH_LESSON_IDS.length) achieved.push('lesson-master');
   if (progress.correctAnswers >= 1) achieved.push('quiz-starter');
   if (progress.correctAnswers >= 10) achieved.push('ten-correct');
   if (progress.correctAnswers >= 20) achieved.push('twenty-correct');
@@ -224,15 +228,15 @@ const getAchievedBadges = (
   if (completedLessonIds.has(7)) achieved.push('relations-master');
   if (progress.dailyStreak >= 3) achieved.push('daily-3');
   if (progress.dailyStreak >= 7) achieved.push('daily-7');
-  if (highScoreLessonIds.size >= 8) achieved.push('all-courses-80');
+  if (highScoreMainPathCount >= MAIN_PATH_LESSON_IDS.length) achieved.push('all-courses-80');
   if (progress.totalQuizAttempts >= 1) achieved.push('total-quiz-finisher');
   if (progress.totalQuizAttempts >= 5) achieved.push('total-quiz-finisher-5');
   if (Object.values(lessonAttemptCounts).some((count) => count >= 3)) achieved.push('replay-3');
 
   // New badges for learning milestones
-  if (perfectLessonIds.size >= 8) achieved.push('master-scholar');
+  if (perfectMainPathCount >= MAIN_PATH_LESSON_IDS.length) achieved.push('master-scholar');
   if (perfectLessonIds.size >= 3) achieved.push('perfect-combo');
-  if (completedLessonIds.size >= 8) achieved.push('late-bloomer');
+  if (completedMainPathCount >= MAIN_PATH_LESSON_IDS.length) achieved.push('late-bloomer');
   
   // Level-based badges
   const levelCalc = calculateLevelProgress(progress.totalXp);
@@ -362,6 +366,8 @@ export const HomePage: React.FC = () => {
       emoji: '🧭',
       accent: 'from-indigo-500 to-violet-400',
       chip: '必修',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(0),
     },
     {
@@ -371,6 +377,8 @@ export const HomePage: React.FC = () => {
       emoji: '🌳',
       accent: 'from-green-500 to-emerald-400',
       chip: '初級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(1),
     },
     {
@@ -380,6 +388,8 @@ export const HomePage: React.FC = () => {
       emoji: '☰',
       accent: 'from-blue-500 to-sky-400',
       chip: '初級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(2),
     },
     {
@@ -389,6 +399,8 @@ export const HomePage: React.FC = () => {
       emoji: '🐲',
       accent: 'from-teal-500 to-cyan-400',
       chip: '初級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(3),
     },
     {
@@ -398,15 +410,19 @@ export const HomePage: React.FC = () => {
       emoji: '🌱',
       accent: 'from-lime-500 to-green-400',
       chip: '初級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(4),
     },
     {
       id: 5,
       title: lessonTitleMap.get(5) ?? '第5課',
-      subtitle: '官殺財印食傷比劫',
+      subtitle: '十神作為關係系統，不作固定標籤',
       emoji: '👥',
       accent: 'from-rose-500 to-pink-400',
       chip: '中級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(5),
     },
     {
@@ -416,6 +432,8 @@ export const HomePage: React.FC = () => {
       emoji: '🌪️',
       accent: 'from-purple-500 to-indigo-400',
       chip: '中級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(6),
     },
     {
@@ -425,7 +443,42 @@ export const HomePage: React.FC = () => {
       emoji: '⚡',
       accent: 'from-orange-500 to-red-400',
       chip: '高級',
+      isLesson: true,
+      isMainPath: true,
       onClick: () => handleLessonStart(7),
+    },
+    {
+      id: 8,
+      title: lessonTitleMap.get(8) ?? '第8課',
+      subtitle: '根氣、得令、得地與強弱判斷',
+      emoji: '🏔️',
+      accent: 'from-slate-500 to-gray-400',
+      chip: '高級',
+      isLesson: true,
+      isMainPath: true,
+      onClick: () => handleLessonStart(8),
+    },
+    {
+      id: 9,
+      title: lessonTitleMap.get(9) ?? '第9課',
+      subtitle: '月令定格與古典用神判法',
+      emoji: '🧱',
+      accent: 'from-fuchsia-500 to-purple-400',
+      chip: '高級',
+      isLesson: true,
+      isMainPath: true,
+      onClick: () => handleLessonStart(9),
+    },
+    {
+      id: 11,
+      title: lessonTitleMap.get(11) ?? '第11課',
+      subtitle: '把喜忌、制化與行為策略連起來',
+      emoji: '🛡️',
+      accent: 'from-emerald-500 to-teal-400',
+      chip: '實戰',
+      isLesson: true,
+      isMainPath: true,
+      onClick: () => handleLessonStart(11),
     },
     {
       id: 12,
@@ -434,7 +487,20 @@ export const HomePage: React.FC = () => {
       emoji: '🎯',
       accent: 'from-amber-500 to-yellow-400',
       chip: '綜合',
+      isLesson: false,
+      isMainPath: false,
       onClick: () => navigateToMode('total-quiz'),
+    },
+    {
+      id: 10,
+      title: lessonTitleMap.get(10) ?? '第10課',
+      subtitle: '流派補充：體用觀的特定師承解法',
+      emoji: '📚',
+      accent: 'from-stone-500 to-zinc-400',
+      chip: '補充',
+      isLesson: true,
+      isMainPath: false,
+      onClick: () => handleLessonStart(10),
     },
   ];
 
