@@ -13,6 +13,8 @@
     "content:import": "tsx tools/import-questions.ts",
     "content:export": "tsx tools/export-questions.ts",
     "content:sync:mock": "tsx tools/sync-mock-lessons-to-runtime.ts",
+    "content:audit:lesson5": "tsx tools/audit-lesson-balance.ts",
+    "analytics:alerts:report": "tsx tools/export-analytics-alerts-report.ts",
     "content:diff": "tsx tools/diff-questions.ts",
     "test": "vitest",
     "test:run": "vitest run"

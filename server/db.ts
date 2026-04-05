@@ -59,7 +59,11 @@ export type AnalyticsQuestionRow = {
 };
 
 export type AnalyticsAlertRow = {
-  category: 'weak-question' | 'overused-question';
+  category:
+    | 'weak-question'
+    | 'overused-question'
+    | 'classical-modern-confusion'
+    | 'ten-god-structure-misread';
   questionId: string;
   lessonId: number;
   lessonTitle: string;
@@ -517,11 +521,55 @@ export const loadAnalyticsAlerts = (
   const weakAttemptsThreshold = args?.weakAttemptsThreshold ?? 8;
   const overusedExposureThreshold = args?.overusedExposureThreshold ?? 40;
 
+  const classicalModernKeywordPattern = /古典用神|喜用神|喜用五行|月令|天透地藏|本氣|成格|破格|格局/;
+  const tenGodStructureKeywordPattern =
+    /十神|結構|組合|旺衰|透根|透干|有透有根|有透無根|無透有根|無透無根|官印相生|食神制殺|傷官見官|財星壞印|日主/;
+  const categorySortOrder: Record<AnalyticsAlertRow['category'], number> = {
+    'classical-modern-confusion': 0,
+    'ten-god-structure-misread': 1,
+    'weak-question': 2,
+    'overused-question': 3,
+  };
+
+  const isClassicalModernConfusionQuestion = (question: AnalyticsQuestionRow) => {
+    return question.lessonId === 9 && classicalModernKeywordPattern.test(question.prompt);
+  };
+
+  const isTenGodStructureMisreadQuestion = (question: AnalyticsQuestionRow) => {
+    return question.lessonId === 5 && tenGodStructureKeywordPattern.test(question.prompt);
+  };
+
   const questions = loadQuestionAnalytics(db, args?.userId);
   const alerts: AnalyticsAlertRow[] = [];
 
   questions.forEach((question) => {
     if (question.attempts >= weakAttemptsThreshold && question.accuracyPercent <= weakAccuracyThreshold) {
+      if (isClassicalModernConfusionQuestion(question)) {
+        alerts.push({
+          category: 'classical-modern-confusion',
+          questionId: question.questionId,
+          lessonId: question.lessonId,
+          lessonTitle: question.lessonTitle,
+          questionType: question.questionType,
+          accuracyPercent: question.accuracyPercent,
+          attempts: question.attempts,
+          totalExposure: question.totalExposure,
+        });
+      }
+
+      if (isTenGodStructureMisreadQuestion(question)) {
+        alerts.push({
+          category: 'ten-god-structure-misread',
+          questionId: question.questionId,
+          lessonId: question.lessonId,
+          lessonTitle: question.lessonTitle,
+          questionType: question.questionType,
+          accuracyPercent: question.accuracyPercent,
+          attempts: question.attempts,
+          totalExposure: question.totalExposure,
+        });
+      }
+
       alerts.push({
         category: 'weak-question',
         questionId: question.questionId,
@@ -550,13 +598,24 @@ export const loadAnalyticsAlerts = (
 
   return alerts.sort((left, right) => {
     if (left.category !== right.category) {
-      return left.category.localeCompare(right.category);
+      return categorySortOrder[left.category] - categorySortOrder[right.category];
+    }
+
+    if (left.category === 'overused-question') {
+      return right.totalExposure - left.totalExposure;
+    }
+
+    if (left.category === 'classical-modern-confusion' || left.category === 'ten-god-structure-misread') {
+      if (left.accuracyPercent !== right.accuracyPercent) {
+        return left.accuracyPercent - right.accuracyPercent;
+      }
+      return right.attempts - left.attempts;
     }
 
     if (left.category === 'weak-question') {
       return left.accuracyPercent - right.accuracyPercent;
     }
 
-    return right.totalExposure - left.totalExposure;
+    return 0;
   });
 };

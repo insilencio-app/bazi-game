@@ -5229,6 +5229,17 @@ export const mockLessons = [
         ],
       },
       {
+        id: 65,
+        type: 'content',
+        title: '常見診斷誤判（請先避開）',
+        bullets: [
+          '把古典「用神」直接當成現代「喜用神」：兩者定義不同，先分清語境再下判斷。',
+          '捨月令而遠求：先定月令主氣，再談天干、年時，避免本末倒置。',
+          '只背格局名字，不查成破條件：名稱只是入口，關鍵在結構是否站得住。',
+          '只看單柱、不看全局：定格後還要看日主承格與三柱護破，不可單點定論。',
+        ],
+      },
+      {
         id: 7,
         type: 'content',
         title: '一分鐘心法',
@@ -5312,6 +5323,13 @@ export const mockLessons = [
         correct: 2,
         explanation: '正官格若見傷官直接剋官，便是典型破格例子；官逢財生與官印雙清則偏向成格。',
       },
+      {
+        id: 11,
+        question: '下列哪一項屬於本課強調的「常見診斷誤判」？',
+        options: ['先定月令主氣，再看其他三柱', '先分清古典用神與現代喜用神語境', '只記格局名稱就直接下高低判斷', '先看成格破格再談層次'],
+        correct: 2,
+        explanation: '常見誤判之一是只背格局名稱就下定論，未檢查成格、破格與清濁。',
+      },
     ],
     trueFalseBank: [
       {
@@ -5343,6 +5361,12 @@ export const mockLessons = [
         question: '羊刃格若有強官殺來駕馭，反而較容易形成能成事的結構。',
         correct: true,
         explanation: '正確。羊刃格本身氣勢強，若有官殺駕馭，往往更容易形成有權有勢的路線。',
+      },
+      {
+        id: 6,
+        question: '只要背出格局名稱，不必再看成格破格與日主承格能力。',
+        correct: false,
+        explanation: '錯誤。名稱只是入口，仍需檢查成敗條件與整體結構。',
       },
     ],
     matchBank: [
@@ -5405,6 +5429,13 @@ export const mockLessons = [
         <li><strong>破格：</strong>用神被剋損或遭忌神破壞</li>
         <li>同名格局也有高低，關鍵在清濁與結構是否站得住</li>
       </ul>
+      <h3>常見診斷誤判</h3>
+      <ul>
+        <li>把古典用神與現代喜用神混為一談</li>
+        <li>不先看月令主氣，反而先看枝節訊號</li>
+        <li>只背格局名稱，不檢查成格與破格條件</li>
+        <li>只看單點，不看全局護格與破格互動</li>
+      </ul>
       <h3>一分鐘心法</h3>
       <ul>
         <li>先定格，再看日主能否承格</li>
@@ -5416,8 +5447,8 @@ export const mockLessons = [
   },
   {
     id: 10,
-    title_cn: '第10課：八字體用觀念',
-    title_en: 'BaZi Body-Use Framework',
+    title_cn: '第10課：體用觀的特定師承解法',
+    title_en: 'Lineage-Specific Body-Use Interpretation',
     level: 'advanced',
     steps: [
       {
