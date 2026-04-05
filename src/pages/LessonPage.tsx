@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods } from '../data/mockData';
 import { loadQuizSessionQuestions, type QuizApiQuestion } from '../api/quizApi';
 import { useRemoteQuizApi } from '../config/env';
@@ -11,6 +11,19 @@ import type { LessonWithBanks } from '../types/domain';
 const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
   if (new RegExp(`^第${lessonId}課`).test(title)) return title;
   return `第${lessonId}課：${title}`;
+};
+
+const getDisplayLessonTitle = (lessonId: number, title: string): string => {
+  if (lessonId === 11) return '第10課：趨吉避凶實踐';
+  return ensureLessonTitlePrefix(lessonId, title);
+};
+
+const NARRATED_LESSON_ID = 5;
+
+const buildNarrationText = (step: Extract<LessonStep, { type: 'content' }>): string => {
+  const paragraphs = step.paragraphs ?? [];
+  const bullets = step.bullets ?? [];
+  return [step.title, ...paragraphs, ...bullets].join('。 ');
 };
 
 type LessonStep =
@@ -103,9 +116,13 @@ interface LessonProps {
 export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit, userXp, onUseHint, onQuestionAnswered }) => {
   const lesson = mockLessons.find((l) => l.id === lessonId);
   const baseSteps = (lesson?.steps ?? []) as LessonStep[];
+  const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
+  const narrationTimeoutRef = useRef<number | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<QuizApiQuestion[]>([]);
   const [isQuizLoading, setIsQuizLoading] = useState(useRemoteQuizApi);
   const [quizLoadError, setQuizLoadError] = useState<string | null>(null);
+  const [isNarrationSupported, setIsNarrationSupported] = useState(false);
+  const [isNarrating, setIsNarrating] = useState(false);
   const shouldUseLocalQuizBank = !useRemoteQuizApi || quizLoadError !== null;
 
   const getLocalLessonBanks = () => {
@@ -400,6 +417,71 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const currentStep = steps[currentStepIndex];
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
   const canSkipToQuiz = firstQuizStepIndex > -1 && currentStepIndex < firstQuizStepIndex;
+  const canNarrateCurrentStep = lessonId === NARRATED_LESSON_ID && currentStep?.type === 'content' && isNarrationSupported;
+
+  const stopNarration = () => {
+    if (narrationTimeoutRef.current !== null) {
+      window.clearTimeout(narrationTimeoutRef.current);
+      narrationTimeoutRef.current = null;
+    }
+
+    if (speechSynthesisRef.current) {
+      speechSynthesisRef.current.cancel();
+    }
+
+    setIsNarrating(false);
+  };
+
+  const startNarration = () => {
+    if (!canNarrateCurrentStep || currentStep?.type !== 'content' || !speechSynthesisRef.current) {
+      return;
+    }
+
+    stopNarration();
+
+    const utterance = new SpeechSynthesisUtterance(buildNarrationText(currentStep));
+    utterance.lang = 'zh-HK';
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.onstart = () => setIsNarrating(true);
+    utterance.onend = () => setIsNarrating(false);
+    utterance.onerror = () => setIsNarrating(false);
+
+    narrationTimeoutRef.current = window.setTimeout(() => {
+      speechSynthesisRef.current?.speak(utterance);
+      narrationTimeoutRef.current = null;
+    }, 0);
+  };
+
+  const handleNarrationToggle = () => {
+    if (!canNarrateCurrentStep) return;
+
+    if (isNarrating) {
+      stopNarration();
+      return;
+    }
+
+    startNarration();
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof SpeechSynthesisUtterance === 'undefined' || !("speechSynthesis" in window)) {
+      setIsNarrationSupported(false);
+      return;
+    }
+
+    speechSynthesisRef.current = window.speechSynthesis;
+    setIsNarrationSupported(true);
+
+    return () => {
+      if (narrationTimeoutRef.current !== null) {
+        window.clearTimeout(narrationTimeoutRef.current);
+        narrationTimeoutRef.current = null;
+      }
+
+      window.speechSynthesis.cancel();
+    };
+  }, []);
 
   useEffect(() => {
     setSelectedAnswer(null);
@@ -409,7 +491,24 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setMatchedPairs([]);
     setMatchMessage(null);
     setShowHint(false);
+
+    if (lessonId !== NARRATED_LESSON_ID || currentStep?.type !== 'content') {
+      stopNarration();
+    }
   }, [currentStepIndex]);
+
+  useEffect(() => {
+    if (!canNarrateCurrentStep || currentStep?.type !== 'content') {
+      stopNarration();
+      return;
+    }
+
+    startNarration();
+
+    return () => {
+      stopNarration();
+    };
+  }, [canNarrateCurrentStep, currentStepIndex, lessonId]);
 
   const shuffledRights = useMemo(() => {
     if (!currentStep || currentStep.type !== 'match') return [];
@@ -603,7 +702,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3">
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-              {ensureLessonTitlePrefix(lesson.id, lesson.title_cn)}
+              {getDisplayLessonTitle(lesson.id, lesson.title_cn)}
             </h1>
             <p className="text-sm sm:text-lg text-gray-700">{lesson.title_en}</p>
           </div>
@@ -636,7 +735,27 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {/* Step Content */}
       {currentStep?.type === 'content' && (
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-gray-800">{currentStep.title}</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-3xl font-bold text-gray-800">{currentStep.title}</h2>
+            {lessonId === NARRATED_LESSON_ID && (
+              <button
+                type="button"
+                onClick={handleNarrationToggle}
+                disabled={!isNarrationSupported}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isNarrationSupported
+                    ? isNarrating
+                      ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                      : 'border-blue-300 bg-blue-50 text-blue-800 hover:bg-blue-100'
+                    : 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
+                }`}
+                aria-label={isNarrating ? '停止語音播放' : '播放語音內容'}
+              >
+                <span aria-hidden="true">{isNarrating ? '■' : '▶'}</span>
+                <span>{isNarrating ? '停止語音' : '播放語音'}</span>
+              </button>
+            )}
+          </div>
           {currentStep.paragraphs?.map((text, idx) => (
             <p key={idx} className="text-xl text-gray-700 mb-3">
               {text}
