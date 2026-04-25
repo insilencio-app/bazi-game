@@ -72,13 +72,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
   pathSteps,
   rewardOverlay,
 }) => {
-  const lessonSteps = pathSteps
-    .filter((step) => step.isLesson && step.isMainPath)
-    .sort((a, b) => a.id - b.id);
-  const lessonStepIds = new Set(lessonSteps.map((step) => step.id));
-  const progressLessons = mockLessons
-    .filter((lesson) => lessonStepIds.has(lesson.id))
-    .sort((a, b) => a.id - b.id);
+  const lessonSteps = pathSteps.filter((step) => step.isLesson && step.isMainPath);
+  const progressLessons = lessonSteps
+    .map((step) => mockLessons.find((lesson) => lesson.id === step.id))
+    .filter((lesson): lesson is (typeof mockLessons)[number] => lesson !== undefined);
   const totalQuizStep = pathSteps.find((step) => step.id === 12);
   const nextLessonStep = lessonSteps.find((step) => !completedLessonIds.has(step.id)) ?? lessonSteps[0];
   const isAllLessonsCompleted = lessonSteps.every((step) => completedLessonIds.has(step.id));

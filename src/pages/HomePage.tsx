@@ -64,12 +64,13 @@ const TOTAL_QUIZ_MASTERY_BONUS_XP = 40;
 const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
 const HINT_XP_COST = 50;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
-const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 55, 6, 7, 8, 9, 11] as const;
+const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 55, 6, 65, 7, 8, 9, 11] as const;
+const MAIN_PATH_LESSON_COUNT = MAIN_PATH_LESSON_IDS.length;
 const LESSON_TITLE_PREFIX_PATTERN = /^第.+課/;
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
   'first-step': { name: '初學者', emoji: '👣', hintShort: '1課', hintLong: '完成任意 1 個課程' },
-  'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: '11課', hintLong: '完成主線 11 個課程' },
+  'lesson-master': { name: '課程達人', emoji: '🎓', hintShort: `${MAIN_PATH_LESSON_COUNT}課`, hintLong: `完成主線 ${MAIN_PATH_LESSON_COUNT} 個課程` },
   'quiz-starter': { name: '測驗新手', emoji: '🧠', hintShort: '答對1', hintLong: '累計答對 1 題' },
   'ten-correct': { name: '十題達成', emoji: '🔟', hintShort: '答對10', hintLong: '累計答對 10 題' },
   'twenty-correct': { name: '二十題高手', emoji: '2️⃣0️⃣', hintShort: '答對20', hintLong: '累計答對 20 題' },
@@ -97,13 +98,13 @@ const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShor
   'relations-master': { name: '關係達人', emoji: '⚡', hintShort: '完成關係', hintLong: '完成「地支關係」' },
   'daily-3': { name: '每日簽到3天', emoji: '📅', hintShort: '連玩3天', hintLong: '連續遊玩 3 天' },
   'daily-7': { name: '每日簽到7天', emoji: '🗓️', hintShort: '連玩7天', hintLong: '連續遊玩 7 天' },
-  'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: '11課80+', hintLong: '主線 11 個課程都達 80%+' },
+  'all-courses-80': { name: '全課通關', emoji: '🎖️', hintShort: `${MAIN_PATH_LESSON_COUNT}課80+`, hintLong: `主線 ${MAIN_PATH_LESSON_COUNT} 個課程都達 80%+` },
   'total-quiz-finisher': { name: '總測完成者', emoji: '🏁', hintShort: '總測1次', hintLong: '完成總測驗 1 次' },
   'total-quiz-finisher-5': { name: '測驗不放棄', emoji: '🎯', hintShort: '總測5次', hintLong: '完成總測驗 5 次' },
   'replay-3': { name: '回鍋高手', emoji: '🔁', hintShort: '同課3次', hintLong: '同一課程累計遊玩 3 次' },
-  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: '11課滿分', hintLong: '主線 11 個課程都達 100%' },
+  'master-scholar': { name: '博學大師', emoji: '👨‍🎓', hintShort: `${MAIN_PATH_LESSON_COUNT}課滿分`, hintLong: `主線 ${MAIN_PATH_LESSON_COUNT} 個課程都達 100%` },
   'perfect-combo': { name: '完美連鎖', emoji: '✨', hintShort: '三課滿分', hintLong: '達成 3 個課程滿分' },
-  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: '11課完成', hintLong: '完成主線全部 11 個課程' },
+  'late-bloomer': { name: '大器晚成', emoji: '🌸', hintShort: `${MAIN_PATH_LESSON_COUNT}課完成`, hintLong: `完成主線全部 ${MAIN_PATH_LESSON_COUNT} 個課程` },
   'rising-star': { name: '冉冉上升', emoji: '⭐', hintShort: 'Lv.10', hintLong: '達到等級 10' },
   'ancient-sage': { name: '遠古聖賢', emoji: '🏔️', hintShort: 'Lv.20', hintLong: '達到等級 20' },
   'knowledge-hoarder': { name: '知識囤積者', emoji: '💰', hintShort: '500XP', hintLong: '累計獲得 500 XP' },
@@ -451,6 +452,17 @@ export const HomePage: React.FC = () => {
       isLesson: true,
       isMainPath: true,
       onClick: () => handleLessonStart(6),
+    },
+    {
+      id: 65,
+      title: getPathLessonTitle(65, '第6.5課'),
+      subtitle: '用本氣把地支快速換成十神',
+      emoji: '🪄',
+      accent: 'from-fuchsia-500 to-pink-400',
+      chip: '練習',
+      isLesson: true,
+      isMainPath: true,
+      onClick: () => handleLessonStart(65),
     },
     {
       id: 7,
