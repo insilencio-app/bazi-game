@@ -39,3 +39,6 @@ content/local/
 # OS
 .DS_Store
 Thumbs.db
+
+# local archive
+.archive/
