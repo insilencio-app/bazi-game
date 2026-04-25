@@ -2,6 +2,7 @@ import React from 'react';
 import { mockLessons } from '../../data/mockData';
 
 const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
+  if (/^第.+課/.test(title)) return title;
   if (new RegExp(`^第${lessonId}課`).test(title)) return title;
   return `第${lessonId}課：${title}`;
 };

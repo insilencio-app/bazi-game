@@ -65,6 +65,7 @@ const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
 const HINT_XP_COST = 50;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
 const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 55, 6, 7, 8, 9, 11] as const;
+const LESSON_TITLE_PREFIX_PATTERN = /^第.+課/;
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
   'first-step': { name: '初學者', emoji: '👣', hintShort: '1課', hintLong: '完成任意 1 個課程' },
@@ -358,10 +359,14 @@ export const HomePage: React.FC = () => {
   };
 
   const lessonTitleMap = new Map(mockLessons.map(l => [l.id, l.title_cn]));
+  const getPathLessonTitle = (lessonId: number, fallbackTitle: string) => {
+    const title = lessonTitleMap.get(lessonId) ?? fallbackTitle;
+    return LESSON_TITLE_PREFIX_PATTERN.test(title) ? title : `第${lessonId}課：${title}`;
+  };
   const pathSteps = [
     {
       id: 0,
-      title: lessonTitleMap.get(0) ?? '第0課',
+      title: getPathLessonTitle(0, '第0課'),
       subtitle: '先懂四柱與日主再學五行',
       emoji: '🧭',
       accent: 'from-indigo-500 to-violet-400',
@@ -372,7 +377,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 1,
-      title: lessonTitleMap.get(1) ?? '第1課',
+      title: getPathLessonTitle(1, '第1課'),
       subtitle: '木火土金水入門',
       emoji: '🌳',
       accent: 'from-green-500 to-emerald-400',
@@ -383,7 +388,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 2,
-      title: lessonTitleMap.get(2) ?? '第2課',
+      title: getPathLessonTitle(2, '第2課'),
       subtitle: '陰陽五行與天干',
       emoji: '☰',
       accent: 'from-blue-500 to-sky-400',
@@ -394,7 +399,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 3,
-      title: lessonTitleMap.get(3) ?? '第3課',
+      title: getPathLessonTitle(3, '第3課'),
       subtitle: '地支、生肖與時辰',
       emoji: '🐲',
       accent: 'from-teal-500 to-cyan-400',
@@ -405,7 +410,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 4,
-      title: lessonTitleMap.get(4) ?? '第4課',
+      title: getPathLessonTitle(4, '第4課'),
       subtitle: '太陽曆節氣與八字月份劃分',
       emoji: '🌱',
       accent: 'from-lime-500 to-green-400',
@@ -416,7 +421,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 5,
-      title: lessonTitleMap.get(5) ?? '第5課',
+      title: getPathLessonTitle(5, '第5課'),
       subtitle: '十神作為關係系統，不作固定標籤',
       emoji: '👥',
       accent: 'from-rose-500 to-pink-400',
@@ -426,8 +431,19 @@ export const HomePage: React.FC = () => {
       onClick: () => handleLessonStart(5),
     },
     {
+      id: 55,
+      title: getPathLessonTitle(55, '第5.5課'),
+      subtitle: '十神關係速查雙向練習',
+      emoji: '🧩',
+      accent: 'from-amber-500 to-orange-400',
+      chip: '練習',
+      isLesson: true,
+      isMainPath: true,
+      onClick: () => handleLessonStart(55),
+    },
+    {
       id: 6,
-      title: lessonTitleMap.get(6) ?? '第6課',
+      title: getPathLessonTitle(6, '第6課'),
       subtitle: '地支內的隱藏天干',
       emoji: '🌪️',
       accent: 'from-purple-500 to-indigo-400',
@@ -438,7 +454,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 7,
-      title: lessonTitleMap.get(7) ?? '第7課',
+      title: getPathLessonTitle(7, '第7課'),
       subtitle: '三合六合刑沖破害',
       emoji: '⚡',
       accent: 'from-orange-500 to-red-400',
@@ -449,7 +465,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 8,
-      title: lessonTitleMap.get(8) ?? '第8課',
+      title: getPathLessonTitle(8, '第8課'),
       subtitle: '根氣、得令、得地與強弱判斷',
       emoji: '🏔️',
       accent: 'from-slate-500 to-gray-400',
@@ -460,7 +476,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 9,
-      title: lessonTitleMap.get(9) ?? '第9課',
+      title: getPathLessonTitle(9, '第9課'),
       subtitle: '月令定格與古典用神判法',
       emoji: '🧱',
       accent: 'from-fuchsia-500 to-purple-400',

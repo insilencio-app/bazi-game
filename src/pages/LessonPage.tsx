@@ -9,6 +9,7 @@ import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import type { LessonWithBanks } from '../types/domain';
 
 const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
+  if (/^第.+課/.test(title)) return title;
   if (new RegExp(`^第${lessonId}課`).test(title)) return title;
   return `第${lessonId}課：${title}`;
 };
