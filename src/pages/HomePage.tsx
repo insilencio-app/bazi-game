@@ -64,7 +64,7 @@ const TOTAL_QUIZ_MASTERY_BONUS_XP = 40;
 const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
 const HINT_XP_COST = 50;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
-const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11] as const;
+const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 55, 6, 7, 8, 9, 11] as const;
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
   'first-step': { name: '初學者', emoji: '👣', hintShort: '1課', hintLong: '完成任意 1 個課程' },
