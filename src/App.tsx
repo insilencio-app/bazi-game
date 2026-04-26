@@ -1,6 +1,7 @@
 import { HomePage } from './pages/HomePage';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LESSON_ROUTE_PATTERN, ROUTES } from './routes';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
         </Routes>
       </div>
+      <Analytics />
     </BrowserRouter>
   );
 }
