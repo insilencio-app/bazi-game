@@ -85,7 +85,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sm:p-8 shadow-lg">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-2">輕鬆學八字</h1>
+            <div className="flex items-center gap-3 sm:gap-4 mb-2">
+              <img
+                src="/bazi_logo.jpg"
+                alt="BaZi Game Logo"
+                className="h-12 w-12 sm:h-16 sm:w-16 rounded-xl object-cover border border-white/30 shadow"
+              />
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold">輕鬆學八字</h1>
+            </div>
             <p className="text-sm sm:text-lg lg:text-2xl opacity-90">Learn BaZi in an Interactive Way</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 sm:mt-6">

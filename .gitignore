@@ -42,3 +42,5 @@ Thumbs.db
 
 # local archive
 .archive/
+.vercel
+.env*.local

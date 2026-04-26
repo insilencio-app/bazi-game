@@ -17,7 +17,14 @@ export const LessonsView: React.FC<LessonsViewProps> = ({ onLessonStart, onBack 
     <div className="min-h-screen bg-gray-50">
       <header className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">課程與測驗</h1>
+          <div className="flex items-center gap-3">
+            <img
+              src="/bazi_logo.jpg"
+              alt="BaZi Game Logo"
+              className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover border border-white/30 shadow"
+            />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">課程與測驗</h1>
+          </div>
           <button
             onClick={onBack}
             className="bg-red-500 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-red-600 font-bold text-sm sm:text-base lg:text-lg transition-all hover:scale-105 whitespace-nowrap"
