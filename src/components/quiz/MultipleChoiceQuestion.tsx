@@ -36,6 +36,26 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 }) => {
   const isLarge = size === 'large';
 
+  const getOptionClasses = (index: number) => {
+    if (answered) {
+      if (index === correctIndex) {
+        return 'border-green-500 bg-green-50';
+      }
+
+      if (selectedAnswer === index) {
+        return 'border-red-500 bg-red-50';
+      }
+
+      return 'border-gray-300';
+    }
+
+    if (selectedAnswer === index) {
+      return 'border-blue-500 bg-blue-50';
+    }
+
+    return 'border-gray-300 hover:border-blue-500 hover:bg-blue-50';
+  };
+
   return (
     <>
       <h2 className={isLarge ? 'text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800' : 'text-xl sm:text-2xl font-bold mb-6 text-gray-800'}>
@@ -59,15 +79,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
             key={idx}
             onClick={() => onSelectAnswer(idx)}
             disabled={answered}
-            className={`w-full ${isLarge ? 'p-3 sm:p-5 text-sm sm:text-base lg:text-lg' : 'p-3 sm:p-4 text-sm sm:text-base'} text-left rounded-lg border-2 transition-all ${
-              selectedAnswer === idx
-                ? idx === correctIndex
-                  ? 'border-green-500 bg-green-50'
-                  : answered
-                  ? 'border-red-500 bg-red-50'
-                  : 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
-            } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`w-full ${isLarge ? 'p-3 sm:p-5 text-sm sm:text-base lg:text-lg' : 'p-3 sm:p-4 text-sm sm:text-base'} text-left rounded-lg border-2 transition-all ${getOptionClasses(idx)} ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span className="font-semibold">{String.fromCharCode(65 + idx)}.</span> {option}
           </button>
