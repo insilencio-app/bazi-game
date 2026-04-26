@@ -870,7 +870,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               disabled={answered}
               className={`p-3 sm:p-6 rounded-lg border-2 transition-all ${
                 selectedAnswer === 1
-                  ? currentStep.correct === true
+                  ? answered && currentStep.correct === true
                     ? 'border-green-500 bg-green-50'
                     : answered
                     ? 'border-red-500 bg-red-50'
@@ -889,7 +889,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               disabled={answered}
               className={`p-3 sm:p-6 rounded-lg border-2 transition-all ${
                 selectedAnswer === 0
-                  ? currentStep.correct === false
+                  ? answered && currentStep.correct === false
                     ? 'border-green-500 bg-green-50'
                     : answered
                     ? 'border-red-500 bg-red-50'
