@@ -989,15 +989,6 @@ export const mockLessons = [
     level: 'beginner',
     steps: [
       {
-        id: 1,
-        type: 'content',
-        title: '什麼是天干？',
-        paragraphs: [
-          '天干共有10個：甲、乙、丙、丁、戊、己、庚、辛、壬、癸。',
-          '每個天干都有陰陽屬性，並對應五行：木、火、土、金、水。',
-        ],
-      },
-      {
         id: 2,
         type: 'content',
         title: '十天干介紹',
@@ -1670,15 +1661,6 @@ export const mockLessons = [
     title_en: 'Earthly Branches Basics',
     level: 'intermediate',
     steps: [
-      {
-        id: 1,
-        type: 'content',
-        title: '什麼是地支？',
-        paragraphs: [
-          '地支共有12個：子、丑、寅、卯、辰、巳、午、未、申、酉、戌、亥。',
-          '地支對應12生肖與一天中的12個時辰。',
-        ],
-      },
       {
         id: 2,
         type: 'content',

@@ -21,10 +21,19 @@ const getDisplayLessonTitle = (lessonId: number, title: string): string => {
 
 const NARRATED_LESSON_ID = 5;
 
+const ELEMENT_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  '木': { bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200' },
+  '火': { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200'   },
+  '土': { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200' },
+  '金': { bg: 'bg-slate-50',  text: 'text-slate-600',  border: 'border-slate-200' },
+  '水': { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
+};
+
 const buildNarrationText = (step: Extract<LessonStep, { type: 'content' }>): string => {
   const paragraphs = step.paragraphs ?? [];
   const bullets = step.bullets ?? [];
-  return [step.title, ...paragraphs, ...bullets].join('。 ');
+  const raw = [step.title, ...paragraphs, ...bullets].join('。 ');
+  return raw.replace(/／/g, '或');
 };
 
 type LessonStep =
@@ -762,13 +771,618 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               {text}
             </p>
           ))}
-          {currentStep.bullets && (
+
+          {/* L2: Ten Heavenly Stems visual grid — grouped by element */}
+          {lessonId === 2 && currentStep.id === 2 ? (() => {
+            const ELEMENT_ORDER = ['木', '火', '土', '金', '水'] as const;
+            const grouped = ELEMENT_ORDER.map((el) => ({
+              element: el,
+              stems: mockHeavenlySteams.filter((s) => s.element === el),
+              style: ELEMENT_STYLES[el] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' },
+            }));
+            return (
+              <div className="grid grid-cols-5 gap-2 sm:gap-3">
+                {grouped.map(({ element, stems, style }) => (
+                  <div key={element} className="flex flex-col gap-2">
+                    <div className={`rounded-lg ${style.bg} ${style.border} border px-2 py-1 text-center`}>
+                      <span className={`text-base sm:text-lg font-bold ${style.text}`}>{element}</span>
+                    </div>
+                    {stems.map((stem) => (
+                      <div key={stem.id} className={`rounded-xl border ${style.border} ${style.bg} p-2 sm:p-3 flex flex-col items-center gap-1`}>
+                        <span className={`text-3xl sm:text-4xl font-bold ${style.text}`}>{stem.name_cn}</span>
+                        <span className="text-xs text-gray-500">{stem.name_en}</span>
+                        <span className={`text-xs sm:text-sm font-semibold ${style.text}`}>
+                          {stem.yin_yang === 'yang' ? '陽' : '陰'}
+                        </span>
+                        <span className="text-xs text-gray-600 text-center leading-tight hidden sm:block">{stem.personality_traits[0]}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            );
+          })() : lessonId === 3 && currentStep.id === 2 ? (() => {
+            /* L3: Twelve Earthly Branches — clock-face circle */
+            const SIZE = 420;
+            const RADIUS = 155;
+            const CARD = 68;
+            const cx = SIZE / 2;
+            const cy = SIZE / 2;
+            const fmtTime = (r: string) => r.replace(/:00/g, '').replace('-', '–');
+            return (
+              <div className="overflow-x-auto">
+                <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
+                  {/* Clock centre */}
+                  <div
+                    className="absolute rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center"
+                    style={{ width: 52, height: 52, left: cx - 26, top: cy - 26 }}
+                  >
+                    <span className="text-[10px] text-gray-400 text-center leading-tight">時辰<br/>環</span>
+                  </div>
+                  {mockEarthlyBranches.map((branch, idx) => {
+                    const angleRad = ((idx * 30 - 90) * Math.PI) / 180;
+                    const x = Math.round(cx + RADIUS * Math.cos(angleRad) - CARD / 2);
+                    const y = Math.round(cy + RADIUS * Math.sin(angleRad) - CARD / 2);
+                    const style = ELEMENT_STYLES[branch.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+                    return (
+                      <div
+                        key={branch.id}
+                        className={`absolute rounded-xl border ${style.border} ${style.bg} flex flex-col items-center justify-center`}
+                        style={{ left: x, top: y, width: CARD, height: CARD }}
+                      >
+                        <span className={`text-2xl font-bold leading-none ${style.text}`}>{branch.name_cn}</span>
+                        <span className="text-sm leading-none mt-0.5">{branch.zodiac_animal}</span>
+                        <span className={`text-[11px] font-semibold leading-none mt-0.5 ${style.text}`}>{branch.yin_yang === 'yang' ? '陽' : '陰'}{branch.element}</span>
+                        <span className="text-[10px] text-gray-500 tabular-nums leading-none mt-0.5">{fmtTime(branch.hour_range)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })() : lessonId === 4 && [2, 3, 4, 5].includes(currentStep.id) && currentStep.bullets ? (() => {
+            /* L4 steps 2-5: seasonal solar terms 2×3 card grid */
+            const SEASON_STYLES: Record<number, { bg: string; border: string; text: string; badge: string }> = {
+              2: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: 'bg-emerald-100' },
+              3: { bg: 'bg-red-50',     border: 'border-red-200',     text: 'text-red-700',     badge: 'bg-red-100'     },
+              4: { bg: 'bg-amber-50',   border: 'border-amber-200',   text: 'text-amber-700',   badge: 'bg-amber-100'   },
+              5: { bg: 'bg-blue-50',    border: 'border-blue-200',    text: 'text-blue-700',    badge: 'bg-blue-100'    },
+            };
+            const s = SEASON_STYLES[currentStep.id];
+            const parsed = (currentStep.bullets ?? []).map((b) => {
+              const m = b.match(/^(.+?)（(.+?)）\s*-\s*(.+)$/);
+              return m ? { name: m[1], date: m[2], desc: m[3] } : { name: b, date: '', desc: '' };
+            });
+            return (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {parsed.map((item, idx) => (
+                  <div key={idx} className={`rounded-xl border ${s.border} ${s.bg} p-3 flex flex-col gap-1`}>
+                    <span className={`text-xl font-bold ${s.text}`}>{item.name}</span>
+                    <span className={`text-xs font-medium px-1.5 py-0.5 rounded self-start ${s.badge} ${s.text}`}>{item.date}</span>
+                    <span className="text-xs text-gray-600 leading-snug mt-0.5">{item.desc}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })() : lessonId === 4 && currentStep.id === 7 && currentStep.bullets ? (() => {
+            /* L4 step 7: BaZi month ↔ solar term reference table */
+            const ROW_STYLES = [
+              'bg-emerald-50 text-emerald-700', 'bg-emerald-50 text-emerald-700', 'bg-emerald-50 text-emerald-700',
+              'bg-red-50 text-red-700',          'bg-red-50 text-red-700',          'bg-red-50 text-red-700',
+              'bg-amber-50 text-amber-700',      'bg-amber-50 text-amber-700',      'bg-amber-50 text-amber-700',
+              'bg-blue-50 text-blue-700',        'bg-blue-50 text-blue-700',        'bg-blue-50 text-blue-700',
+            ];
+            const parsed = (currentStep.bullets ?? []).map((b) => {
+              const m = b.match(/^(.+?)（(.+?)）：(.+?)（(.+?)）$/);
+              return m ? { month: m[1], branch: m[2], terms: m[3], approx: m[4] } : { month: b, branch: '', terms: '', approx: '' };
+            });
+            return (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100 text-gray-600">
+                      <th className="text-left px-3 py-2 font-semibold border border-gray-200">月份</th>
+                      <th className="text-left px-3 py-2 font-semibold border border-gray-200">地支</th>
+                      <th className="text-left px-3 py-2 font-semibold border border-gray-200">節氣跨度</th>
+                      <th className="text-left px-3 py-2 font-semibold border border-gray-200">約</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parsed.map((row, idx) => (
+                      <tr key={idx} className={`${ROW_STYLES[idx]} border-b border-gray-200`}>
+                        <td className="px-3 py-2 font-semibold border border-gray-200 whitespace-nowrap">{row.month}</td>
+                        <td className="px-3 py-2 font-bold border border-gray-200">{row.branch}</td>
+                        <td className="px-3 py-2 border border-gray-200">{row.terms}</td>
+                        <td className="px-3 py-2 border border-gray-200 whitespace-nowrap">{row.approx}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })() : lessonId === 5 && currentStep.id === 25 && currentStep.bullets ? (() => {
+            /* L5 id:25 — Five Ten-God families, 5 color-coded cards */
+            const FAMILY_META = [
+              { label: '印星', pair: '正印／偏印', color: 'bg-purple-50 border-purple-200 text-purple-700 badge-purple' },
+              { label: '比劫', pair: '比肩／劫財', color: 'bg-blue-50   border-blue-200   text-blue-700   badge-blue'   },
+              { label: '食傷', pair: '食神／傷官', color: 'bg-emerald-50 border-emerald-200 text-emerald-700 badge-emerald' },
+              { label: '財星', pair: '正財／偏財', color: 'bg-amber-50  border-amber-200  text-amber-700  badge-amber'  },
+              { label: '官殺', pair: '正官／七殺', color: 'bg-red-50    border-red-200    text-red-700    badge-red'    },
+            ];
+            const BADGE_BG: Record<string, string> = {
+              'badge-purple': 'bg-purple-100', 'badge-blue': 'bg-blue-100',
+              'badge-emerald': 'bg-emerald-100', 'badge-amber': 'bg-amber-100', 'badge-red': 'bg-red-100',
+            };
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                {FAMILY_META.map((fam, idx) => {
+                  const [, , ...keywords] = (bullets[idx] ?? '').split(/[：:]/);
+                  const kwStr = keywords.join('').replace(/。$/, '');
+                  const kws = kwStr.split('、').map(k => k.trim()).filter(Boolean);
+                  const [bgClass, borderClass, textClass, badgeKey] = fam.color.split(' ');
+                  const badgeBg = BADGE_BG[badgeKey] ?? 'bg-gray-100';
+                  return (
+                    <div key={fam.label} className={`rounded-xl border ${borderClass} ${bgClass} p-3 flex flex-col gap-2`}>
+                      <span className={`text-xl font-bold ${textClass}`}>{fam.label}</span>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full self-start ${badgeBg} ${textClass}`}>{fam.pair}</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {kws.map((kw) => (
+                          <span key={kw} className={`text-xs px-1.5 py-0.5 rounded ${badgeBg} ${textClass}`}>{kw}</span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : lessonId === 5 && currentStep.id === 3 && currentStep.bullets ? (() => {
+            /* L5 id:3 — 十神判定規則: 2-step header + 5-row lookup table */
+            const ROWS = [
+              { rel: '同我', yang: '比肩', yin: '劫財' },
+              { rel: '我生', yang: '食神', yin: '傷官' },
+              { rel: '我剋', yang: '偏財', yin: '正財' },
+              { rel: '剋我', yang: '七殺', yin: '正官' },
+              { rel: '生我', yang: '偏印', yin: '正印' },
+            ];
+            return (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {['第1步：確認五行關係（同我、我生、我剋、剋我、生我）', '第2步：看陰陽同異定正偏（同→偏/比肩，異→正/劫財）'].map((s, i) => (
+                    <div key={i} className="flex items-start gap-2 flex-1 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                      <span className="text-sm text-blue-800">{s.replace(/^第\d步：/, '')}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="bg-gray-100 text-gray-600">
+                        <th className="px-3 py-2 text-left font-semibold border border-gray-200">五行關係</th>
+                        <th className="px-3 py-2 text-left font-semibold border border-gray-200">同陰陽</th>
+                        <th className="px-3 py-2 text-left font-semibold border border-gray-200">異陰陽</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ROWS.map((row) => (
+                        <tr key={row.rel} className="border-b border-gray-200 even:bg-gray-50">
+                          <td className="px-3 py-2 font-semibold border border-gray-200 text-gray-700">{row.rel}</td>
+                          <td className="px-3 py-2 font-bold border border-gray-200 text-indigo-700">{row.yang}</td>
+                          <td className="px-3 py-2 font-bold border border-gray-200 text-rose-700">{row.yin}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })() : lessonId === 5 && currentStep.id === 45 && currentStep.bullets ? (() => {
+            /* L5 id:45 — 實戰流程: vertical numbered stepper */
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="flex flex-col gap-0">
+                {bullets.map((b, idx) => {
+                  const m = b.match(/^第\d步：(.+?)。(.*)$/);
+                  const label = m ? m[1] : b.replace(/^第\d步：/, '');
+                  const desc  = m ? m[2].trim() : '';
+                  const isLast = idx === bullets.length - 1;
+                  return (
+                    <div key={idx} className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">{idx + 1}</div>
+                        {!isLast && <div className="w-0.5 bg-blue-200 flex-1 my-1" />}
+                      </div>
+                      <div className={`pb-4 ${isLast ? '' : ''}`}>
+                        <p className="font-semibold text-gray-800">{label}</p>
+                        {desc && <p className="text-sm text-gray-600 mt-0.5">{desc}</p>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : lessonId === 5 && currentStep.id === 46 && currentStep.bullets ? (() => {
+            /* L5 id:46 — 十神互動: 2×2 tiles */
+            const TILE_META = [
+              { tone: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+              { tone: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+              { tone: 'bg-red-50 border-red-200 text-red-700' },
+              { tone: 'bg-red-50 border-red-200 text-red-700' },
+            ];
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {bullets.map((b, idx) => {
+                  const colonIdx = b.indexOf('：');
+                  const name = colonIdx > -1 ? b.slice(0, colonIdx) : b;
+                  const outcome = colonIdx > -1 ? b.slice(colonIdx + 1) : '';
+                  const { tone } = TILE_META[idx] ?? { tone: 'bg-gray-50 border-gray-200 text-gray-700' };
+                  const [bgClass, borderClass, textClass] = tone.split(' ');
+                  return (
+                    <div key={idx} className={`rounded-xl border ${borderClass} ${bgClass} p-4`}>
+                      <p className={`font-bold text-base ${textClass}`}>{name}</p>
+                      {outcome && <p className="text-sm text-gray-600 mt-1">{outcome}</p>}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : lessonId === 5 && currentStep.id === 5 && currentStep.bullets ? (() => {
+            /* L5 id:5 — 透干有根: 2×2 quadrant */
+            const QUAD = [
+              { label: '有透有根', desc: '外顯且站得住，通常最穩', bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: 'bg-emerald-100' },
+              { label: '有透無根', desc: '看得見，但續航未必足',   bg: 'bg-amber-50',   border: 'border-amber-200',   text: 'text-amber-700',   badge: 'bg-amber-100'   },
+              { label: '無透有根', desc: '內在有力，但不一定直接外顯', bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100' },
+              { label: '無透無根', desc: '有名無勢，不能放大解讀', bg: 'bg-gray-50',    border: 'border-gray-200',   text: 'text-gray-500',   badge: 'bg-gray-100'  },
+            ];
+            return (
+              <div className="grid grid-cols-2 gap-3">
+                {QUAD.map((q) => (
+                  <div key={q.label} className={`rounded-xl border ${q.border} ${q.bg} p-4 flex flex-col gap-2`}>
+                    <span className={`text-sm font-bold px-2 py-0.5 rounded-full self-start ${q.badge} ${q.text}`}>{q.label}</span>
+                    <p className="text-sm text-gray-700">{q.desc}</p>
+                  </div>
+                ))}
+              </div>
+            );
+          })() : lessonId === 5 && currentStep.id === 71 && currentStep.bullets ? (() => {
+            /* L5 id:71 — 體用分層: 3-tier ladder */
+            const TIERS = [
+              { label: '本命層',     indent: 'ml-0',   size: 'text-base', bg: 'bg-indigo-50',  border: 'border-indigo-200',  text: 'text-indigo-700'  },
+              { label: '大運流年層', indent: 'ml-4',   size: 'text-sm',   bg: 'bg-purple-50',  border: 'border-purple-200',  text: 'text-purple-700'  },
+              { label: '流月流日層', indent: 'ml-8',   size: 'text-xs',   bg: 'bg-pink-50',    border: 'border-pink-200',    text: 'text-pink-700'    },
+            ];
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="flex flex-col gap-2">
+                {TIERS.map((tier, idx) => {
+                  const b = bullets[idx] ?? '';
+                  const desc = b.replace(/^.+?：/, '');
+                  return (
+                    <div key={tier.label} className={`${tier.indent} rounded-xl border ${tier.border} ${tier.bg} px-4 py-3 flex items-start gap-3`}>
+                      <span className={`font-bold whitespace-nowrap ${tier.text} ${tier.size}`}>{tier.label}</span>
+                      <span className={`text-gray-600 ${tier.size}`}>{desc}</span>
+                    </div>
+                  );
+                })}
+                {bullets[3] && <p className="text-sm text-gray-500 mt-1 ml-1">⚠ {bullets[3].replace(/^.+?：/, '')}</p>}
+              </div>
+            );
+          })() : lessonId === 6 && [2, 3, 4].includes(currentStep.id) && currentStep.bullets ? (() => {
+            /* L6 id:2,3,4 — Tiered stem cards for branch groups */
+            const STEM_ELEMENT_MAP: Record<string, string> = {
+              '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', 
+              '庚': '金', '辛': '金', '壬': '水', '癸': '水'
+            };
+            
+            const getStemElement = (stemChar: string): string => {
+              return STEM_ELEMENT_MAP[stemChar] || '';
+            };
+            
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {bullets.map((bullet, idx) => {
+                  // Parse: '子支藏干：癸（本氣）' or '丑支藏干：己、癸、辛（本氣是己）'
+                  const branchMatch = bullet.match(/^(.)\s*支藏干：/);
+                  const branchName = branchMatch ? branchMatch[1] : '';
+                  
+                  // Extract all stems and identify primary
+                  // Parse: '子支藏干：癸（本氣）' or '丑支藏干：己、癸、辛（本氣是己）'
+                  const stemsMatch = bullet.match(/：([^（]+)(?:（|$)/);
+                  const stemsStr = stemsMatch ? stemsMatch[1] : '';
+                  const stemChars = stemsStr.split('、').map(s => s.trim()).filter(s => s && /^[甲乙丙丁戊己庚辛壬癸]$/.test(s));
+                  
+                  const primaryMatch = bullet.match(/本氣[是]*\s*([甲乙丙丁戊己庚辛壬癸])/);
+                  const primary = primaryMatch ? primaryMatch[1] : (stemChars[0] || '');
+                  
+                  const primaryElement = getStemElement(primary);
+                  let primaryStyle = ELEMENT_STYLES[primaryElement];
+                  
+                  // Fallback: if not found, try to determine from branch name or stem
+                  if (!primaryStyle) {
+                    const BRANCH_ELEMENT: Record<string, string> = {
+                      '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', 
+                      '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金', 
+                      '戌': '土', '亥': '水'
+                    };
+                    const branchElement = BRANCH_ELEMENT[branchName] || '木';
+                    primaryStyle = ELEMENT_STYLES[branchElement];
+                  }
+                  
+                  return (
+                    <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-3 space-y-2`}>
+                      {/* Branch name - large */}
+                      <div className={`text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
+                      {/* Primary stem - emphasized with label */}
+                      <div className={`text-xl font-bold ${primaryStyle.text} text-center`}>
+                        {primary}
+                        <span className="text-xs ml-1 font-normal text-gray-500">（本氣）</span>
+                      </div>
+                      {/* Secondary & tertiary if present */}
+                      {stemChars.length > 1 && (
+                        <div className="text-center space-y-1">
+                          {stemChars.slice(1).map((stem, i) => {
+                            const el = getStemElement(stem);
+                            const style = ELEMENT_STYLES[el];
+                            const tierLabel = i === 0 ? '（中氣）' : '（餘氣）';
+                            return (
+                              <div key={i} className={`text-base ${style ? style.text : 'text-gray-500'} font-semibold`}>
+                                {stem}
+                                <span className="text-xs ml-1 font-normal text-gray-400">{tierLabel}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : lessonId === 6 && currentStep.id === 5 && currentStep.bullets ? (() => {
+            /* L6 id:5 — Hierarchy ladder: 本氣 > 中氣 > 餘氣 */
+            const HIERARCHY = [
+              { label: '本氣',  width: 'w-full',   color: 'from-emerald-600 to-emerald-500' },
+              { label: '中氣',  width: 'w-5/6',   color: 'from-emerald-500 to-emerald-400' },
+              { label: '餘氣',  width: 'w-4/6',   color: 'from-emerald-400 to-emerald-300' },
+            ];
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="space-y-4">
+                {HIERARCHY.map((tier, idx) => {
+                  const desc = bullets[idx]?.split('：')[1] || '';
+                  return (
+                    <div key={tier.label} className={`${tier.width} mx-auto`}>
+                      <div className={`bg-gradient-to-r ${tier.color} rounded-lg px-5 py-3 text-white flex items-center gap-3 shadow-md`}>
+                        <span className="font-bold whitespace-nowrap text-lg">{tier.label}</span>
+                        <span className="text-sm flex-1">{desc}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+                {bullets[3] && (
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg px-5 py-3 text-blue-700 font-semibold text-sm mt-4">
+                    <strong>💡 {bullets[3].split('：')[1] || bullets[3]}</strong>
+                  </div>
+                )}
+              </div>
+            );
+          })() : lessonId === 7 && currentStep.id === 2 && currentStep.bullets ? (() => {
+            /* L7 id:2 — 三合局: 4 trinity formation cards */
+            const TRINITY_META = [
+              { branches: ['寅','午','戌'], element: '火', color: 'bg-red-50 border-red-300',   text: 'text-red-700',   badge: 'bg-red-100 text-red-700'   },
+              { branches: ['申','子','辰'], element: '水', color: 'bg-blue-50 border-blue-300',  text: 'text-blue-700',  badge: 'bg-blue-100 text-blue-700'  },
+              { branches: ['亥','卯','未'], element: '木', color: 'bg-green-50 border-green-300', text: 'text-green-700', badge: 'bg-green-100 text-green-700' },
+              { branches: ['巳','酉','丑'], element: '金', color: 'bg-slate-50 border-slate-300', text: 'text-slate-600',  badge: 'bg-slate-100 text-slate-600'  },
+            ];
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {TRINITY_META.map((tri, idx) => {
+                  const desc = (bullets[idx] ?? '').replace(/^.+? - /, '');
+                  return (
+                    <div key={idx} className={`rounded-xl border-2 ${tri.color} p-4`}>
+                      <div className="flex items-center justify-center gap-2 mb-3">
+                        {tri.branches.map((b, i) => (
+                          <React.Fragment key={b}>
+                            <span className={`text-2xl font-bold ${tri.text} w-10 h-10 flex items-center justify-center rounded-full border-2 ${tri.color}`}>{b}</span>
+                            {i < 2 && <span className={`text-sm ${tri.text}`}>＋</span>}
+                          </React.Fragment>
+                        ))}
+                        <span className={`text-sm ${tri.text} mx-1`}>→</span>
+                        <span className={`text-xl font-bold px-3 py-1 rounded-full ${tri.badge}`}>{tri.element}局</span>
+                      </div>
+                      <p className={`text-sm text-center ${tri.text}`}>{desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : lessonId === 7 && currentStep.id === 3 && currentStep.bullets ? (() => {
+            /* L7 id:3 — 六合: 6 harmony pair cards */
+            const SIX_HE_ELEMENT: Record<string, { bg: string; text: string; border: string }> = {
+              '土': ELEMENT_STYLES['土'], '木': ELEMENT_STYLES['木'],
+              '火': ELEMENT_STYLES['火'], '金': ELEMENT_STYLES['金'], '水': ELEMENT_STYLES['水'],
+            };
+            const bullets = currentStep.bullets ?? [];
+            return (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {bullets.map((bullet, idx) => {
+                  // '子丑合土 - 鼠牛合，智慧與穩重結合'
+                  const pairMatch = bullet.match(/^(.)(.)\s*合([木火土金水])/);
+                  if (!pairMatch) return null;
+                  const [, b1, b2, el] = pairMatch;
+                  const style = SIX_HE_ELEMENT[el] || ELEMENT_STYLES['木'];
+                  const desc = bullet.replace(/^.+? - /, '').replace(/^.+?合，/, '');
+                  return (
+                    <div key={idx} className={`rounded-xl border-2 ${style.border} ${style.bg} p-3 text-center`}>
+                      <div className="flex items-center justify-center gap-1 mb-2">
+                        <span className={`text-2xl font-bold ${style.text}`}>{b1}</span>
+                        <span className="text-gray-400 text-sm">＋</span>
+                        <span className={`text-2xl font-bold ${style.text}`}>{b2}</span>
+                        <span className={`text-sm ${style.text} ml-1`}>→ {el}</span>
+                      </div>
+                      <p className={`text-xs ${style.text}`}>{desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : lessonId === 7 && currentStep.id === 4 && currentStep.bullets ? (() => {
+            /* L7 id:4 — 六沖: zodiac clock */
+            const BRANCHES_CLOCK = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+            const BRANCH_EL: Record<string, string> = {
+              '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火',
+              '午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水',
+            };
+            const EL_FILL: Record<string, string> = {
+              '木':'#16a34a','火':'#ef4444','土':'#d97706','金':'#64748b','水':'#3b82f6',
+            };
+            const EL_STROKE: Record<string, string> = {
+              '木':'#15803d','火':'#dc2626','土':'#b45309','金':'#475569','水':'#1d4ed8',
+            };
+            // distinct colors for each of the 6 clash lines
+            const LINE_COLORS = ['#a855f7','#0891b2','#16a34a','#f97316','#e11d48','#6366f1'];
+            const SIZE = 260, cx2 = 130, cy2 = 130, clockR = 95, nodeR = 19;
+            const pos = (i: number) => {
+              const a = (i * 30 - 90) * Math.PI / 180;
+              return { x: cx2 + clockR * Math.cos(a), y: cy2 + clockR * Math.sin(a) };
+            };
+            // hour labels (12, 2, 4, 6, 8, 10 pattern matching branch time slots)
+            const HOUR_LABELS = ['子時\n23-1','丑時\n1-3','寅時\n3-5','卯時\n5-7','辰時\n7-9','巳時\n9-11',
+                                  '午時\n11-13','未時\n13-15','申時\n15-17','酉時\n17-19','戌時\n19-21','亥時\n21-23'];
+            // parse pair descriptions from bullets for the legend
+            const bullets = currentStep.bullets ?? [];
+            const pairs: { b1: string; b2: string; desc: string; el1: string; el2: string }[] = [];
+            bullets.forEach(bullet => {
+              const m = bullet.match(/^(.)(.)\s*沖/);
+              const em = bullet.match(/（([木火土金水])([木火土金水])沖）/);
+              if (!m) return;
+              pairs.push({ b1: m[1], b2: m[2], desc: bullet.replace(/^.*?[，,]/, '').trim(),
+                el1: em ? em[1] : BRANCH_EL[m[1]] ?? '', el2: em ? em[2] : BRANCH_EL[m[2]] ?? '' });
+            });
+            return (
+              <div className="flex flex-row items-center gap-2">
+                {/* Clock SVG — larger on the left */}
+                <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-72 h-72 shrink-0 sm:w-80 sm:h-80">
+                  {/* Outer ring */}
+                  <circle cx={cx2} cy={cy2} r={clockR + nodeR + 5} fill="none" stroke="#e2e8f0" strokeWidth="1.5" />
+                  {/* Clash lines */}
+                  {[0,1,2,3,4,5].map(i => {
+                    const p1 = pos(i), p2 = pos(i + 6);
+                    return <line key={i} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
+                      stroke={LINE_COLORS[i]} strokeWidth="1.5" strokeOpacity="0.55" strokeDasharray="5 3" />;
+                  })}
+                  {/* Branch nodes */}
+                  {BRANCHES_CLOCK.map((b, i) => {
+                    const { x, y } = pos(i);
+                    const el = BRANCH_EL[b];
+                    return (
+                      <g key={b}>
+                        <circle cx={x} cy={y} r={nodeR} fill={EL_FILL[el]} stroke={EL_STROKE[el]} strokeWidth="1.5" />
+                        <text x={x} y={y} textAnchor="middle" dominantBaseline="central"
+                          fontSize="15" fontWeight="bold" fill="white">{b}</text>
+                      </g>
+                    );
+                  })}
+                  {/* Centre label */}
+                  <text x={cx2} y={cy2 - 7} textAnchor="middle" fontSize="11" fontWeight="bold" fill="#94a3b8">六沖</text>
+                  <text x={cx2} y={cy2 + 8} textAnchor="middle" fontSize="9" fill="#cbd5e1">對沖圖</text>
+                </svg>
+                {/* Pair legend — stacked on the right */}
+                <div className="flex flex-col gap-1 flex-1 min-w-0">
+                  {pairs.map((p, i) => (
+                    <div key={i} className="flex items-center gap-1 bg-gray-50 rounded-lg px-1.5 py-1 border border-gray-100">
+                      <span style={{ color: EL_FILL[p.el1] }} className="text-lg font-bold leading-none">{p.b1}</span>
+                      <span className="text-red-400 text-xs">⚡</span>
+                      <span style={{ color: EL_FILL[p.el2] }} className="text-lg font-bold leading-none">{p.b2}</span>
+                      <span className="text-xs text-gray-400 ml-auto whitespace-nowrap">{p.el1}沖{p.el2}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })() : lessonId === 7 && currentStep.id === 9 && currentStep.bullets ? (() => {
+            /* L7 id:9 — Intensity spectrum bar */
+            const SPECTRUM = [
+              { label: '合', tone: 'bg-emerald-500', desc: '吸引、和諧、長期融合', width: 'w-full'  },
+              { label: '沖', tone: 'bg-red-500',     desc: '對抗、衝突、直接爆發', width: 'w-5/6'  },
+              { label: '刑', tone: 'bg-orange-400',  desc: '互傷、懲罰、複雜反覆', width: 'w-4/6'  },
+              { label: '破', tone: 'bg-yellow-400',  desc: '破壞、衰落、逐漸消退', width: 'w-3/6'  },
+              { label: '害', tone: 'bg-gray-400',    desc: '暗傷、阻礙、隱性影響', width: 'w-2/6'  },
+            ];
+            return (
+              <div className="space-y-3">
+                {SPECTRUM.map((item) => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <span className="text-xl font-bold text-gray-700 w-6 shrink-0 text-center">{item.label}</span>
+                    <div className="w-28 shrink-0">
+                      <div className={`${item.width} h-8 ${item.tone} rounded-lg`} />
+                    </div>
+                    <span className="text-sm text-gray-600 whitespace-nowrap">{item.desc}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })() : lessonId === 7 && currentStep.id === 11 && currentStep.bullets ? (() => {
+            /* L7 id:11 — Priority rules stepper */
+            const bullets = currentStep.bullets ?? [];
+            const STEP_COLORS = [
+              { circle: 'bg-blue-600',   border: 'border-blue-200',   bg: 'bg-blue-50',   text: 'text-blue-700'   },
+              { circle: 'bg-indigo-600', border: 'border-indigo-200', bg: 'bg-indigo-50', text: 'text-indigo-700' },
+              { circle: 'bg-violet-600', border: 'border-violet-200', bg: 'bg-violet-50', text: 'text-violet-700' },
+              { circle: 'bg-purple-600', border: 'border-purple-200', bg: 'bg-purple-50', text: 'text-purple-700' },
+              { circle: 'bg-fuchsia-600',border: 'border-fuchsia-200',bg: 'bg-fuchsia-50',text: 'text-fuchsia-700'},
+            ];
+            // Collect main steps (第X步) and sub-bullets
+            const mainSteps: { num: string; title: string; subs: string[] }[] = [];
+            let recallLine = '';
+            bullets.forEach((b) => {
+              const stepMatch = b.match(/^第(\d+)步(.+)/);
+              if (stepMatch) {
+                mainSteps.push({ num: stepMatch[1], title: stepMatch[2].replace(/^[：:]\s*/, ''), subs: [] });
+              } else if (b.startsWith('速記')) {
+                recallLine = b.replace(/^速記[：:]\s*/, '');
+              } else if (mainSteps.length > 0 && !b.startsWith('合化條件') && !b.startsWith('判斷口訣') && !b.startsWith('如何判斷') && !b.startsWith('實戰小例')) {
+                // skip
+              } else if (mainSteps.length > 0) {
+                mainSteps[mainSteps.length - 1].subs.push(b);
+              }
+            });
+            return (
+              <div className="space-y-2">
+                {mainSteps.map((step, idx) => {
+                  const c = STEP_COLORS[idx] || STEP_COLORS[0];
+                  return (
+                    <div key={idx} className="flex gap-3 items-start">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-8 h-8 rounded-full ${c.circle} text-white flex items-center justify-center font-bold text-sm shrink-0`}>
+                          {step.num}
+                        </div>
+                        {idx < mainSteps.length - 1 && <div className="w-0.5 h-4 bg-gray-200 mt-1" />}
+                      </div>
+                      <div className={`flex-1 rounded-xl border ${c.border} ${c.bg} px-4 py-2 mb-1`}>
+                        <p className={`font-semibold text-sm ${c.text}`}>{step.title}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+                {recallLine && (
+                  <div className="mt-2 bg-gray-800 text-white rounded-xl px-4 py-3 text-sm font-medium">
+                    🔖 速記：{recallLine}
+                  </div>
+                )}
+              </div>
+            );
+          })() : currentStep.bullets ? (
             <ul className="list-disc list-inside text-xl text-gray-700 space-y-2">
               {currentStep.bullets.map((item, idx) => (
                 <li key={idx}>{item}</li>
               ))}
             </ul>
-          )}
+          ) : null}
         </div>
       )}
 
