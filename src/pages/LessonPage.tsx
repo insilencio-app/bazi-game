@@ -1250,9 +1250,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               const a = (i * 30 - 90) * Math.PI / 180;
               return { x: cx2 + clockR * Math.cos(a), y: cy2 + clockR * Math.sin(a) };
             };
-            // hour labels (12, 2, 4, 6, 8, 10 pattern matching branch time slots)
-            const HOUR_LABELS = ['子時\n23-1','丑時\n1-3','寅時\n3-5','卯時\n5-7','辰時\n7-9','巳時\n9-11',
-                                  '午時\n11-13','未時\n13-15','申時\n15-17','酉時\n17-19','戌時\n19-21','亥時\n21-23'];
             // parse pair descriptions from bullets for the legend
             const bullets = currentStep.bullets ?? [];
             const pairs: { b1: string; b2: string; desc: string; el1: string; el2: string }[] = [];
