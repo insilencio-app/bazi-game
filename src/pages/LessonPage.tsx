@@ -917,8 +917,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             return (
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                 {FAMILY_META.map((fam, idx) => {
-                  const [, , ...keywords] = (bullets[idx] ?? '').split(/[：:]/);
-                  const kwStr = keywords.join('').replace(/。$/, '');
+                  const [, keywordPart = ''] = (bullets[idx] ?? '').split(/[：:]/);
+                  const kwStr = keywordPart.replace(/。$/, '');
                   const kws = kwStr.split('、').map(k => k.trim()).filter(Boolean);
                   const [bgClass, borderClass, textClass, badgeKey] = fam.color.split(' ');
                   const badgeBg = BADGE_BG[badgeKey] ?? 'bg-gray-100';
