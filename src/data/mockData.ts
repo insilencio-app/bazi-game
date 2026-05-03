@@ -4063,7 +4063,7 @@ export const mockLessons = [
         title: '第二組：辰巳午未',
         bullets: [
           '辰支藏干：戊、乙、癸（本氣是戊）',
-          '巳支藏干：丙、戊、庚（本氣是丙）',
+          '巳支藏干：丙、庚、戊（本氣是丙）',
           '午支藏干：丁、己（本氣是丁）',
           '未支藏干：己、丁、乙（本氣是己）',
         ],
@@ -4177,7 +4177,7 @@ export const mockLessons = [
         question: '巳支的本氣是什麼？',
         options: ['庚', '丙', '戊', '丁'],
         correct: 1,
-        explanation: '巳支藏干丙、戊、庚，丙是本氣。',
+        explanation: '巳支藏干丙、庚、戊，丙是本氣。',
       },
       {
         id: 7,
@@ -4265,10 +4265,10 @@ export const mockLessons = [
       },
       {
         id: 19,
-        question: '哪個地支藏干包含丙、戊、庚？',
+        question: '哪個地支藏干包含丙、庚、戊？',
         options: ['巳', '午', '申', '戌'],
         correct: 0,
-        explanation: '巳支藏干為丙、戊、庚。',
+        explanation: '巳支藏干為丙、庚、戊。',
       },
       {
         id: 20,
@@ -4357,7 +4357,7 @@ export const mockLessons = [
       {
         id: 32,
         question: '地支「午」的完整藏干是？',
-        options: ['丁、己', '丙、戊、庚', '己、丁、乙', '壬、甲'],
+        options: ['丁、己', '丙、庚、戊', '己、丁、乙', '壬、甲'],
         correct: 0,
         explanation: '午支藏干為丁、己。',
       },
@@ -4542,9 +4542,9 @@ export const mockLessons = [
       },
       {
         id: 18,
-        question: '巳支藏干為丙、戊、庚。',
+        question: '巳支藏干為丙、庚、戊。',
         correct: true,
-        explanation: '正確！巳支藏干為丙、戊、庚。',
+        explanation: '正確！巳支藏干為丙、庚、戊。',
       },
       {
         id: 19,
@@ -4631,7 +4631,7 @@ export const mockLessons = [
         id: 6,
         prompt: '配對地支與藏干（補充）',
         pairs: [
-          { left: '巳', right: '丙、戊、庚' },
+          { left: '巳', right: '丙、庚、戊' },
           { left: '亥', right: '壬、甲' },
           { left: '卯', right: '乙' },
           { left: '酉', right: '辛' },
