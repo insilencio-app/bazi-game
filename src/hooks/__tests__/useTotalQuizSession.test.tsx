@@ -52,6 +52,9 @@ describe('useTotalQuizSession', () => {
 
     act(() => {
       result.current.setSelectedAnswer(0);
+    });
+
+    act(() => {
       result.current.handleCheck();
     });
 
@@ -69,6 +72,9 @@ describe('useTotalQuizSession', () => {
 
     act(() => {
       result.current.setSelectedAnswer(0);
+    });
+
+    act(() => {
       result.current.handleCheck();
     });
 

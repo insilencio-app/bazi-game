@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeLessonsToDataset } from '../migration/normalizeLessons';
+import { mockLessons } from '../../data/mockData';
 
 describe('normalizeLessonsToDataset', () => {
   it('creates normalized rows for all supported question types', () => {
     const dataset = normalizeLessonsToDataset();
 
-    expect(dataset.lessons.length).toBe(8);
+    expect(dataset.lessons.length).toBe(mockLessons.length);
 
     const typeCounts = dataset.questions.reduce(
       (accumulator, question) => {

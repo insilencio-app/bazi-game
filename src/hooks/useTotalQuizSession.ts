@@ -281,8 +281,16 @@ export const useTotalQuizSession = ({
   const recentPercent = recentAttempts > 0 ? Math.round((recentCorrect / recentAttempts) * 100) : 0;
   const latestBarPercent = Math.min(100, Math.max(0, latestPercent));
   const currentAttemptedCount = quizIndex + (answered ? 1 : 0);
-  const currentCorrectCount =
-    quizScore + (answered && currentQuestion && selectedAnswer === currentQuestion.correct ? 1 : 0);
+  const recordedCorrectCount = totalQuizAnswerHistory.filter(Boolean).length;
+  const hasRecordedCurrentAnswer = totalQuizAnswerHistory.length >= currentAttemptedCount;
+  const pendingCurrentCorrectCount =
+    answered &&
+    !hasRecordedCurrentAnswer &&
+    currentQuestion !== null &&
+    selectedAnswer === currentQuestion.correct
+      ? 1
+      : 0;
+  const currentCorrectCount = recordedCorrectCount + pendingCurrentCorrectCount;
   const currentAccuracy = currentAttemptedCount > 0 ? Math.round((currentCorrectCount / currentAttemptedCount) * 100) : 0;
 
   const handleCheck = () => {
@@ -339,10 +347,13 @@ export const useTotalQuizSession = ({
   };
 
   const handleUseTotalQuizHint = () => {
-    if (userXp >= hintXpCost && !showTotalQuizHint) {
-      setShowTotalQuizHint(true);
+    if (userXp < hintXpCost) return;
+
+    setShowTotalQuizHint((previous) => {
+      if (previous) return previous;
       onUseHint();
-    }
+      return true;
+    });
   };
 
   return {
