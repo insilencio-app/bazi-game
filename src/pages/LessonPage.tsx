@@ -29,6 +29,33 @@ const ELEMENT_STYLES: Record<string, { bg: string; text: string; border: string 
   '水': { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
 };
 
+type Lesson1ElementName = '木' | '火' | '土' | '金' | '水';
+type Lesson1MapMode = 'sheng' | 'ke';
+
+const LESSON1_ELEMENT_ORDER: Lesson1ElementName[] = ['木', '火', '土', '金', '水'];
+
+const LESSON1_RELATIONS: Record<Lesson1MapMode, Record<Lesson1ElementName, Lesson1ElementName>> = {
+  sheng: { 木: '火', 火: '土', 土: '金', 金: '水', 水: '木' },
+  ke: { 木: '土', 火: '金', 土: '水', 金: '木', 水: '火' },
+};
+
+const LESSON1_MEMORY_PHRASES: Record<Lesson1ElementName, string> = {
+  木: '向上生長',
+  火: '向外發散',
+  土: '承載轉化',
+  金: '收斂成形',
+  水: '向下流動',
+};
+
+const LESSON1_CHALLENGES: Array<{ prompt: string; answer: Lesson1ElementName }> = [
+  { prompt: '誰會生金？', answer: '土' },
+  { prompt: '誰會剋火？', answer: '水' },
+  { prompt: '木會生誰？', answer: '火' },
+  { prompt: '金會剋誰？', answer: '木' },
+  { prompt: '誰會生木？', answer: '水' },
+  { prompt: '土會剋誰？', answer: '水' },
+];
+
 const buildNarrationText = (step: Extract<LessonStep, { type: 'content' }>): string => {
   const paragraphs = step.paragraphs ?? [];
   const bullets = step.bullets ?? [];
@@ -423,6 +450,25 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const [matchedPairs, setMatchedPairs] = useState<Array<[string, string]>>([]);
   const [matchMessage, setMatchMessage] = useState<string | null>(null);
   const [showHint, setShowHint] = useState(false);
+  const [lesson1SelectedElement, setLesson1SelectedElement] = useState<Lesson1ElementName>('木');
+  const [lesson1MapMode, setLesson1MapMode] = useState<Lesson1MapMode>('sheng');
+  const [lesson1Challenge, setLesson1Challenge] = useState(LESSON1_CHALLENGES[0]);
+  const [lesson1ChallengeFeedback, setLesson1ChallengeFeedback] = useState<string | null>(null);
+  const [lesson1CollectedElements, setLesson1CollectedElements] = useState<Lesson1ElementName[]>([]);
+
+  const lesson1Elements = useMemo(
+    () =>
+      LESSON1_ELEMENT_ORDER
+        .map((name) => mockElements.find((el) => el.name_cn === name))
+        .filter((el): el is (typeof mockElements)[number] => Boolean(el)),
+    []
+  );
+
+  const rollLesson1Challenge = React.useCallback(() => {
+    const next = LESSON1_CHALLENGES[Math.floor(Math.random() * LESSON1_CHALLENGES.length)];
+    setLesson1Challenge(next);
+    setLesson1ChallengeFeedback(null);
+  }, []);
 
   const currentStep = steps[currentStepIndex];
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
@@ -519,6 +565,17 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       stopNarration();
     };
   }, [canNarrateCurrentStep, currentStepIndex, lessonId]);
+
+  useEffect(() => {
+    if (lessonId !== 1) return;
+
+    const defaultChallenge = LESSON1_CHALLENGES[0];
+    setLesson1SelectedElement('木');
+    setLesson1MapMode('sheng');
+    setLesson1Challenge(defaultChallenge);
+    setLesson1ChallengeFeedback(null);
+    setLesson1CollectedElements([]);
+  }, [lessonId]);
 
   const shuffledRights = useMemo(() => {
     if (!currentStep || currentStep.type !== 'match') return [];
@@ -840,7 +897,192 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 </div>
               </div>
             );
-          })() : lessonId === 4 && [2, 3, 4, 5].includes(currentStep.id) && currentStep.bullets ? (() => {
+          })() : lessonId === 1 && currentStep.id === 3 ? (() => {
+              /* L1 id:3 — interactive 生剋 map + quick challenge */
+              const circleSize = 320;
+              const center = circleSize / 2;
+              const nodeRadius = 22;
+              const orbit = 110;
+              const activeMap = LESSON1_RELATIONS[lesson1MapMode];
+              const selectedTarget = activeMap[lesson1SelectedElement];
+              const positions = LESSON1_ELEMENT_ORDER.map((element, idx) => {
+                const angle = ((idx * 72 - 90) * Math.PI) / 180;
+                return {
+                  element,
+                  x: Math.round(center + orbit * Math.cos(angle)),
+                  y: Math.round(center + orbit * Math.sin(angle)),
+                };
+              });
+              const selectedPos = positions.find((p) => p.element === lesson1SelectedElement);
+              const targetPos = positions.find((p) => p.element === selectedTarget);
+
+              const handleLesson1NodeClick = (element: Lesson1ElementName) => {
+                setLesson1SelectedElement(element);
+                setLesson1ChallengeFeedback(element === lesson1Challenge.answer ? '✓ 命中！' : '✗ 再試一次');
+              };
+
+              return (
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setLesson1MapMode('sheng')}
+                      className={`px-4 py-2 rounded-full border text-sm font-semibold transition-colors ${
+                        lesson1MapMode === 'sheng'
+                          ? 'bg-emerald-100 border-emerald-300 text-emerald-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:bg-emerald-50'
+                      }`}
+                    >
+                      生模式
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLesson1MapMode('ke')}
+                      className={`px-4 py-2 rounded-full border text-sm font-semibold transition-colors ${
+                        lesson1MapMode === 'ke'
+                          ? 'bg-rose-100 border-rose-300 text-rose-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:bg-rose-50'
+                      }`}
+                    >
+                      剋模式
+                    </button>
+                    <button
+                      type="button"
+                      onClick={rollLesson1Challenge}
+                      className="px-4 py-2 rounded-full border border-amber-300 bg-amber-50 text-amber-800 text-sm font-semibold hover:bg-amber-100 transition-colors"
+                    >
+                      換一題
+                    </button>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <p className="text-sm text-gray-600">挑戰：{lesson1Challenge.prompt}</p>
+                      {lesson1ChallengeFeedback && (
+                        <p className={`text-sm font-semibold ${lesson1ChallengeFeedback.startsWith('✓') ? 'text-green-700' : 'text-red-700'}`}>
+                          {lesson1ChallengeFeedback}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <div className="mx-auto relative" style={{ width: circleSize, height: circleSize }}>
+                        <svg className="absolute inset-0 w-full h-full" viewBox={`0 0 ${circleSize} ${circleSize}`}>
+                          {positions.map((point) => {
+                            const target = activeMap[point.element];
+                            const targetPoint = positions.find((p) => p.element === target);
+                            if (!targetPoint) return null;
+                            const isActivePath = point.element === lesson1SelectedElement;
+                            return (
+                              <line
+                                key={`${point.element}-${target}`}
+                                x1={point.x}
+                                y1={point.y}
+                                x2={targetPoint.x}
+                                y2={targetPoint.y}
+                                stroke={lesson1MapMode === 'sheng' ? '#14b8a6' : '#f43f5e'}
+                                strokeOpacity={isActivePath ? 0.95 : 0.32}
+                                strokeWidth={isActivePath ? 3.5 : 2}
+                                strokeDasharray={lesson1MapMode === 'ke' ? '7 4' : undefined}
+                              />
+                            );
+                          })}
+                          {selectedPos && targetPos && (
+                            <line
+                              x1={selectedPos.x}
+                              y1={selectedPos.y}
+                              x2={targetPos.x}
+                              y2={targetPos.y}
+                              stroke={lesson1MapMode === 'sheng' ? '#0f766e' : '#be123c'}
+                              strokeWidth={4}
+                            />
+                          )}
+                        </svg>
+
+                        {positions.map((point) => {
+                          const style = ELEMENT_STYLES[point.element] ?? ELEMENT_STYLES['木'];
+                          const isSelected = point.element === lesson1SelectedElement;
+                          return (
+                            <button
+                              key={point.element}
+                              type="button"
+                              onClick={() => handleLesson1NodeClick(point.element)}
+                              className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${style.border} ${style.bg} ${style.text} font-bold transition-transform ${
+                                isSelected ? 'scale-110 shadow-md' : 'hover:scale-105'
+                              }`}
+                              style={{ left: point.x, top: point.y, width: nodeRadius * 2.4, height: nodeRadius * 2.4 }}
+                            >
+                              {point.element}
+                            </button>
+                          );
+                        })}
+
+                        <div className="absolute -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gray-300 bg-white px-4 py-3 text-center"
+                          style={{ left: center, top: center }}>
+                          <p className="text-xs text-gray-500">目前聚焦</p>
+                          <p className="text-2xl font-bold text-gray-700">{lesson1SelectedElement}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {lesson1MapMode === 'sheng' ? '生到' : '剋到'}：{selectedTarget}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })() : lessonId === 1 && currentStep.id === 4 ? (() => {
+              /* L1 id:4 — emotion lane */
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                  {lesson1Elements.map((element) => {
+                    const style = ELEMENT_STYLES[element.name_cn] ?? ELEMENT_STYLES['木'];
+                    return (
+                      <div key={element.id} className={`rounded-xl border ${style.border} ${style.bg} p-3`}>
+                        <p className={`text-2xl font-bold ${style.text}`}>{element.name_cn}</p>
+                        <p className="text-xs text-gray-500">{element.name_en}</p>
+                        <p className="mt-2 text-sm text-gray-700">情感：<span className="font-semibold">{element.emotion}</span></p>
+                        <p className="mt-1 text-xs text-gray-600">{LESSON1_MEMORY_PHRASES[element.name_cn as Lesson1ElementName]}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })() : lessonId === 1 && currentStep.id === 5 ? (() => {
+              /* L1 id:5 — mastery board */
+              const boardItems = [
+                { label: '五行速覽', done: lesson1CollectedElements.length >= 5 },
+                { label: '相生相剋圖', done: lesson1ChallengeFeedback?.startsWith('✓') ?? false },
+                { label: '情感記憶', done: true },
+              ];
+
+              return (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+                    <p className="text-sm text-indigo-800 font-semibold mb-3">Lesson 1 Mastery Board</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {boardItems.map((item) => (
+                        <div key={item.label} className="rounded-xl border border-indigo-100 bg-white px-3 py-2 flex items-center gap-2">
+                          <span className={`text-lg ${item.done ? 'text-green-600' : 'text-gray-300'}`}>{item.done ? '✓' : '○'}</span>
+                          <span className="text-sm text-gray-700 font-medium">{item.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {LESSON1_ELEMENT_ORDER.map((element) => {
+                      const style = ELEMENT_STYLES[element] ?? ELEMENT_STYLES['木'];
+                      const done = lesson1CollectedElements.includes(element);
+                      return (
+                        <div key={element} className={`rounded-lg border ${style.border} ${done ? style.bg : 'bg-gray-50'} px-3 py-2 text-center`}>
+                          <p className={`text-xl font-bold ${done ? style.text : 'text-gray-400'}`}>{element}</p>
+                          <p className="text-[11px] text-gray-500">{done ? '已解鎖' : '待探索'}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })() : lessonId === 4 && [2, 3, 4, 5].includes(currentStep.id) && currentStep.bullets ? (() => {
             /* L4 steps 2-5: seasonal solar terms 2×3 card grid */
             const SEASON_STYLES: Record<number, { bg: string; border: string; text: string; badge: string }> = {
               2: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: 'bg-emerald-100' },
@@ -1389,8 +1631,86 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           {currentStep.description && (
             <p className="text-lg text-gray-600 mb-4">{currentStep.description}</p>
           )}
+          {lessonId === 1 && currentStep.source === 'elements' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {lesson1Elements.map((element) => {
+                  const style = ELEMENT_STYLES[element.name_cn] ?? ELEMENT_STYLES['木'];
+                  const isSelected = lesson1SelectedElement === element.name_cn;
+
+                  return (
+                    <button
+                      key={element.id}
+                      type="button"
+                      onClick={() => {
+                        const name = element.name_cn as Lesson1ElementName;
+                        setLesson1SelectedElement(name);
+                        setLesson1CollectedElements((prev) => (prev.includes(name) ? prev : [...prev, name]));
+                      }}
+                      className={`rounded-xl border-2 ${style.border} ${style.bg} px-3 py-4 text-left transition-all ${
+                        isSelected ? 'ring-2 ring-offset-2 ring-blue-300 shadow-md' : 'hover:shadow-md'
+                      }`}
+                    >
+                      <p className={`text-3xl font-bold ${style.text}`}>{element.name_cn}</p>
+                      <p className="text-xs text-gray-500">{element.name_en}</p>
+                      <p className={`mt-1 text-sm font-semibold ${style.text}`}>{element.direction} / {element.season}</p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                {lesson1Elements
+                  .filter((element) => element.name_cn === lesson1SelectedElement)
+                  .map((element) => {
+                    const style = ELEMENT_STYLES[element.name_cn] ?? ELEMENT_STYLES['木'];
+                    return (
+                      <div key={element.id} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <div className={`rounded-xl border ${style.border} ${style.bg} p-3 sm:col-span-1`}>
+                          <p className={`text-4xl font-bold ${style.text}`}>{element.name_cn}</p>
+                          <p className="text-sm text-gray-500">{element.name_en}</p>
+                        </div>
+                        <div className="sm:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-500">方向</p>
+                            <p className="text-sm font-semibold text-gray-700">{element.direction}</p>
+                          </div>
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-500">季節</p>
+                            <p className="text-sm font-semibold text-gray-700">{element.season}</p>
+                          </div>
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-500">情感</p>
+                            <p className="text-sm font-semibold text-gray-700">{element.emotion}</p>
+                          </div>
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-500">心法</p>
+                            <p className="text-sm font-semibold text-gray-700">{LESSON1_MEMORY_PHRASES[element.name_cn as Lesson1ElementName]}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {LESSON1_ELEMENT_ORDER.map((element) => {
+                  const done = lesson1CollectedElements.includes(element);
+                  const style = ELEMENT_STYLES[element] ?? ELEMENT_STYLES['木'];
+                  return (
+                    <span
+                      key={element}
+                      className={`px-3 py-1 rounded-full border text-sm ${done ? `${style.bg} ${style.border} ${style.text}` : 'bg-gray-100 border-gray-200 text-gray-400'}`}
+                    >
+                      {done ? '✓ ' : ''}{element}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           {currentStep.source === 'elements' && (
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className={`grid grid-cols-2 sm:grid-cols-5 gap-3 ${lessonId === 1 ? 'hidden' : ''}`}>
               {mockElements.map((el) => (
                 <div key={el.id} className="p-3 bg-green-50 rounded text-center">
                   <p className="text-2xl font-bold">{el.name_cn}</p>
