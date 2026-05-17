@@ -1421,7 +1421,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             ];
 
             const isCombinedOverview = currentStep.id === 41;
-            const isSingleRowStep2 = currentStep.id === 2;
 
             return (
               <div className="space-y-4">
@@ -1492,12 +1491,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                               const stem = stemChars[rowIdx + 1] ?? '';
                               const el = stem ? getStemElement(stem) : '';
                               const style = el ? ELEMENT_STYLES[el] : undefined;
-                              const tierLabel = rowIdx === 0
-                                ? '（中氣）'
-                                : lessonId === 6 && currentStep.id === 3 && stem === '戊'
-                                  ? '（墓庫）'
-                                  : '（餘氣）';
-
                               return (
                                 <div key={rowIdx} className={`text-sm md:text-base font-semibold ${stem ? (style ? style.text : 'text-gray-500') : 'text-transparent'}`}>
                                   {stem || '・'}
