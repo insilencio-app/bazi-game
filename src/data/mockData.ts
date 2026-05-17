@@ -995,16 +995,6 @@ export const mockLessons = [
         ],
       },
       {
-        id: 3,
-        type: 'content',
-        title: '陰陽分類',
-        bullets: [
-          '陽干：甲、丙、戊、庚、壬',
-          '陰干：乙、丁、己、辛、癸',
-          '記憶口訣：單數為陽，雙數為陰',
-        ],
-      },
-      {
         id: 31,
         type: 'content',
         title: '陰陽日元分流：陽怕弱、陰怕旺',

@@ -830,8 +830,48 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             </p>
           ))}
 
-          {/* L2: Ten Heavenly Stems visual grid — grouped by element */}
-          {lessonId === 2 && currentStep.id === 2 ? (() => {
+          {/* L0: Four Pillars intro visual map */}
+          {lessonId === 0 && currentStep.id === 1 ? (() => {
+            const PILLAR_MAP = [
+              { key: '年柱', cue: '背景', icon: '山', tone: 'bg-slate-50 border-slate-200 text-slate-700' },
+              { key: '月柱', cue: '主氣', icon: '月', tone: 'bg-blue-50 border-blue-200 text-blue-700' },
+              { key: '日柱', cue: '自己', icon: '日', tone: 'bg-amber-50 border-amber-200 text-amber-700' },
+              { key: '時柱', cue: '行動/結果', icon: '時', tone: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+            ] as const;
+
+            const READING_ORDER = [
+              '1 日主',
+              '2 月令',
+              '3 其餘干支',
+              '4 合沖刑害',
+            ] as const;
+
+            return (
+              <div className="space-y-4">
+                <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory">
+                  {PILLAR_MAP.map((p) => (
+                    <div key={p.key} className={`min-w-[138px] shrink-0 rounded-xl border p-3 snap-start ${p.tone}`}>
+                      <p className="text-xs font-semibold opacity-80">{p.icon}</p>
+                      <p className="text-2xl font-bold leading-none mt-1">{p.key}</p>
+                      <p className="text-sm font-semibold mt-2">{p.cue}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm sm:text-base font-semibold text-indigo-800 text-center">
+                  年看背景，月看主氣，日看自己，時看行動與結果
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {READING_ORDER.map((item) => (
+                    <div key={item} className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-center text-xs sm:text-sm font-medium text-gray-700">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })() : lessonId === 2 && currentStep.id === 2 ? (() => {
             const ELEMENT_ORDER = ['木', '火', '土', '金', '水'] as const;
             const grouped = ELEMENT_ORDER.map((el) => ({
               element: el,
@@ -1023,7 +1063,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
                     <p className="text-sm text-indigo-800 font-semibold mb-3">Lesson 1 Mastery Board</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       {boardItems.map((item) => (
                         <div key={item.label} className="rounded-xl border border-indigo-100 bg-white px-3 py-2 flex items-center gap-2">
                           <span className={`text-lg ${item.done ? 'text-green-600' : 'text-gray-300'}`}>{item.done ? '✓' : '○'}</span>
@@ -1722,8 +1762,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     >
                       <p className={`text-3xl font-bold ${style.text}`}>{element.name_cn}</p>
                       <p className="text-xs text-gray-500">{element.name_en}</p>
-                      <p className={`mt-1 text-sm font-semibold ${style.text}`}>{element.direction} / {element.season}</p>
-                      <p className="mt-1 text-xs text-gray-600">五常：{LESSON1_VIRTUES[element.name_cn as Lesson1ElementName]}</p>
+                      <p className={`mt-1 text-sm font-semibold ${style.text}`}>{element.direction}/{element.season}/{LESSON1_VIRTUES[element.name_cn as Lesson1ElementName]}</p>
                     </button>
                   );
                 })}
