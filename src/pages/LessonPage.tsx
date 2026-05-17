@@ -40,6 +40,14 @@ const LESSON1_MEMORY_PHRASES: Record<Lesson1ElementName, string> = {
   水: '向下流動',
 };
 
+const LESSON1_VIRTUES: Record<Lesson1ElementName, string> = {
+  木: '仁',
+  火: '禮',
+  土: '信',
+  金: '義',
+  水: '智',
+};
+
 const LESSON1_CHALLENGES: Array<{ prompt: string; answer: Lesson1ElementName }> = [
   { prompt: '誰會生金？', answer: '土' },
   { prompt: '誰會剋火？', answer: '水' },
@@ -1024,7 +1032,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       ))}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  <div className="grid grid-cols-5 gap-2">
                     {LESSON1_ELEMENT_ORDER.map((element) => {
                       const style = ELEMENT_STYLES[element] ?? ELEMENT_STYLES['木'];
                       const done = lesson1CollectedElements.includes(element);
@@ -1694,7 +1702,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           )}
           {lessonId === 1 && currentStep.source === 'elements' && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-5 gap-2 md:gap-3">
                 {lesson1Elements.map((element) => {
                   const style = ELEMENT_STYLES[element.name_cn] ?? ELEMENT_STYLES['木'];
                   const isSelected = lesson1SelectedElement === element.name_cn;
@@ -1715,6 +1723,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       <p className={`text-3xl font-bold ${style.text}`}>{element.name_cn}</p>
                       <p className="text-xs text-gray-500">{element.name_en}</p>
                       <p className={`mt-1 text-sm font-semibold ${style.text}`}>{element.direction} / {element.season}</p>
+                      <p className="mt-1 text-xs text-gray-600">五常：{LESSON1_VIRTUES[element.name_cn as Lesson1ElementName]}</p>
                     </button>
                   );
                 })}
@@ -1731,7 +1740,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                           <p className={`text-4xl font-bold ${style.text}`}>{element.name_cn}</p>
                           <p className="text-sm text-gray-500">{element.name_en}</p>
                         </div>
-                        <div className="sm:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div className="sm:col-span-3 grid grid-cols-2 sm:grid-cols-5 gap-2">
                           <div className="rounded-lg bg-gray-50 p-2">
                             <p className="text-xs text-gray-500">方向</p>
                             <p className="text-sm font-semibold text-gray-700">{element.direction}</p>
@@ -1743,6 +1752,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                           <div className="rounded-lg bg-gray-50 p-2">
                             <p className="text-xs text-gray-500">情感</p>
                             <p className="text-sm font-semibold text-gray-700">{element.emotion}</p>
+                          </div>
+                          <div className="rounded-lg bg-gray-50 p-2">
+                            <p className="text-xs text-gray-500">五常</p>
+                            <p className="text-sm font-semibold text-gray-700">{LESSON1_VIRTUES[element.name_cn as Lesson1ElementName]}</p>
                           </div>
                           <div className="rounded-lg bg-gray-50 p-2">
                             <p className="text-xs text-gray-500">心法</p>
