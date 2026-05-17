@@ -1323,6 +1323,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             ];
 
             const isCombinedOverview = currentStep.id === 41;
+            const isSingleRowStep2 = currentStep.id === 2;
 
             return (
               <div className="space-y-4">
@@ -1367,11 +1368,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className={isSingleRowStep2 ? 'flex gap-2 overflow-x-auto pb-1' : 'grid grid-cols-2 sm:grid-cols-4 gap-3'}>
                     {parsedCards.map((item, idx) => {
                       const { branchName, stemChars, primary, primaryStyle } = item;
                       return (
-                      <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-3 space-y-2`}>
+                      <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-3 space-y-2 ${isSingleRowStep2 ? 'min-w-[145px] shrink-0' : ''}`}>
                         {/* Branch name - large */}
                         <div className={`text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
                         {/* Primary stem - emphasized with label */}

@@ -3998,7 +3998,7 @@ export const mockLessons = [
       {
         id: 2,
         type: 'content',
-        title: '四專純（最先背，午為例外）',
+        title: '四專純（午為例外）',
         bullets: [
           '子支藏干：癸（本氣）',
           '午支藏干：丁、己（例外：雖為雙藏，先跟單藏骨架一起記）',
