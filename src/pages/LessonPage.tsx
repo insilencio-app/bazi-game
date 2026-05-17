@@ -1466,9 +1466,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     </div>
                   </div>
                 ) : (
-                  <div className="sm:grid sm:grid-cols-[56px_minmax(0,1fr)] sm:items-start sm:gap-2">
-                    <div className="hidden sm:block pt-2 md:pt-3">
-                      <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-sm md:text-base font-semibold text-gray-400">
+                  <div className="grid grid-cols-[48px_minmax(0,1fr)] sm:grid-cols-[56px_minmax(0,1fr)] items-start gap-2">
+                    <div className="pt-2 md:pt-3">
+                      <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-[11px] sm:text-sm md:text-base font-semibold text-gray-400">
                         <span aria-hidden="true" />
                         <span>本氣</span>
                         <span>中氣</span>
@@ -1476,17 +1476,16 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       </div>
                     </div>
 
-                    <div className={isSingleRowStep2 ? 'flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory sm:grid sm:grid-cols-4 sm:gap-2 md:gap-3 sm:overflow-visible sm:pb-0 sm:snap-none' : 'grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3'}>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3">
                       {parsedCards.map((item, idx) => {
                         const { branchName, stemChars, primary, primaryStyle } = item;
                         return (
-                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 h-full ${isSingleRowStep2 ? 'min-w-[122px] shrink-0 snap-start sm:min-w-0 sm:shrink sm:snap-none' : ''}`}>
+                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 h-full`}>
                           <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-center">
                             <div className={`text-2xl md:text-3xl font-bold ${primaryStyle.text}`}>{branchName}</div>
 
                             <div className={`text-base md:text-xl font-bold ${primaryStyle.text}`}>
                               {primary}
-                              <span className="sm:hidden text-[10px] ml-1 font-normal text-gray-500">（本氣）</span>
                             </div>
 
                             {([0, 1] as const).map((rowIdx) => {
@@ -1502,7 +1501,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                               return (
                                 <div key={rowIdx} className={`text-sm md:text-base font-semibold ${stem ? (style ? style.text : 'text-gray-500') : 'text-transparent'}`}>
                                   {stem || '・'}
-                                  {stem && <span className="sm:hidden text-[10px] ml-1 font-normal text-gray-400">{tierLabel}</span>}
                                 </div>
                               );
                             })}
