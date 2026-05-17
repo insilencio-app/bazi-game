@@ -1475,32 +1475,34 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3">
-                      {parsedCards.map((item, idx) => {
-                        const { branchName, stemChars, primary, primaryStyle } = item;
-                        return (
-                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 h-full`}>
-                          <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-center">
-                            <div className={`text-2xl md:text-3xl font-bold ${primaryStyle.text}`}>{branchName}</div>
+                    <div className="overflow-x-auto">
+                      <div className="grid grid-cols-4 gap-2 md:gap-3 min-w-[320px] sm:min-w-0">
+                        {parsedCards.map((item, idx) => {
+                          const { branchName, stemChars, primary, primaryStyle } = item;
+                          return (
+                          <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 h-full`}>
+                            <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-center">
+                              <div className={`text-2xl md:text-3xl font-bold ${primaryStyle.text}`}>{branchName}</div>
 
-                            <div className={`text-base md:text-xl font-bold ${primaryStyle.text}`}>
-                              {primary}
+                              <div className={`text-base md:text-xl font-bold ${primaryStyle.text}`}>
+                                {primary}
+                              </div>
+
+                              {([0, 1] as const).map((rowIdx) => {
+                                const stem = stemChars[rowIdx + 1] ?? '';
+                                const el = stem ? getStemElement(stem) : '';
+                                const style = el ? ELEMENT_STYLES[el] : undefined;
+                                return (
+                                  <div key={rowIdx} className={`text-sm md:text-base font-semibold ${stem ? (style ? style.text : 'text-gray-500') : 'text-transparent'}`}>
+                                    {stem || '・'}
+                                  </div>
+                                );
+                              })}
                             </div>
-
-                            {([0, 1] as const).map((rowIdx) => {
-                              const stem = stemChars[rowIdx + 1] ?? '';
-                              const el = stem ? getStemElement(stem) : '';
-                              const style = el ? ELEMENT_STYLES[el] : undefined;
-                              return (
-                                <div key={rowIdx} className={`text-sm md:text-base font-semibold ${stem ? (style ? style.text : 'text-gray-500') : 'text-transparent'}`}>
-                                  {stem || '・'}
-                                </div>
-                              );
-                            })}
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                      </div>
                     </div>
                   </div>
                 )}
