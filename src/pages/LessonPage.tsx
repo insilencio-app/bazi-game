@@ -824,16 +824,66 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               </button>
             )}
           </div>
-          {currentStep.paragraphs?.map((text, idx) => (
+          {!(lessonId === 6 && currentStep.id === 1) && currentStep.paragraphs?.map((text, idx) => (
             <p key={idx} className="text-xl text-gray-700 mb-3">
               {text}
             </p>
           ))}
 
-          {/* L0: Four Pillars intro visual map */}
-          {lessonId === 0 && currentStep.id === 1 ? (() => {
+          {/* L6: Hidden stems intro visual map */}
+          {lessonId === 6 && currentStep.id === 1 ? (() => {
+            const INTRO_CARDS = [
+              { title: '什麼是藏干', desc: '地支裡面藏著的天干能量', tone: 'bg-blue-50 border-blue-200 text-blue-700' },
+              { title: '為什麼重要', desc: '不看藏干，容易誤判地支真實力量', tone: 'bg-amber-50 border-amber-200 text-amber-700' },
+              { title: '用在哪裡', desc: '十神、旺衰、根氣都要回到藏干', tone: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+            ] as const;
+
+            const EXAMPLES = [
+              { branch: '子', stems: '癸' },
+              { branch: '寅', stems: '甲丙戊' },
+              { branch: '丑', stems: '己癸辛' },
+            ] as const;
+
+            return (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm sm:text-base font-semibold text-indigo-800 text-center">
+                  藏干 = 地支裡面藏著的天干能量
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {INTRO_CARDS.map((item) => (
+                    <div key={item.title} className={`rounded-xl border p-3 ${item.tone}`}>
+                      <p className="text-sm font-bold">{item.title}</p>
+                      <p className="text-xs sm:text-sm mt-1">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm">
+                  <span className="rounded-full border border-gray-200 bg-white px-2 py-1 font-semibold text-gray-700">地支（外在符號）</span>
+                  <span className="text-gray-400">→</span>
+                  <span className="rounded-full border border-gray-200 bg-white px-2 py-1 font-semibold text-gray-700">藏干（內在結構）</span>
+                  <span className="text-gray-400">→</span>
+                  <span className="rounded-full border border-gray-200 bg-white px-2 py-1 font-semibold text-gray-700">判讀結果</span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {EXAMPLES.map((e) => (
+                    <div key={e.branch} className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-center">
+                      <p className="text-xl font-bold text-gray-800">{e.branch}</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-700">{e.stems}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm sm:text-base font-semibold text-indigo-800 text-center">
+                  看地支，先看表面；要判準，必看藏干
+                </div>
+              </div>
+            );
+          })() : lessonId === 0 && currentStep.id === 1 ? (() => {
             const PILLAR_MAP = [
-              { key: '年柱', cue: '背景', icon: '山', tone: 'bg-slate-50 border-slate-200 text-slate-700' },
+              { key: '年柱', cue: '背景', icon: '年', tone: 'bg-slate-50 border-slate-200 text-slate-700' },
               { key: '月柱', cue: '主氣', icon: '月', tone: 'bg-blue-50 border-blue-200 text-blue-700' },
               { key: '日柱', cue: '自己', icon: '日', tone: 'bg-amber-50 border-amber-200 text-amber-700' },
               { key: '時柱', cue: '行動/結果', icon: '時', tone: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
@@ -850,10 +900,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               <div className="space-y-4">
                 <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory">
                   {PILLAR_MAP.map((p) => (
-                    <div key={p.key} className={`min-w-[138px] shrink-0 rounded-xl border p-3 snap-start ${p.tone}`}>
-                      <p className="text-xs font-semibold opacity-80">{p.icon}</p>
-                      <p className="text-2xl font-bold leading-none mt-1">{p.key}</p>
-                      <p className="text-sm font-semibold mt-2">{p.cue}</p>
+                    <div key={p.key} className={`min-w-[112px] md:min-w-[138px] shrink-0 rounded-xl border p-2 md:p-3 snap-start ${p.tone}`}>
+                      <p className="text-[11px] md:text-xs font-semibold opacity-80">{p.icon}</p>
+                      <p className="text-xl md:text-2xl font-bold leading-none mt-1">{p.key}</p>
+                      <p className="text-xs md:text-sm font-semibold mt-1.5 md:mt-2">{p.cue}</p>
                     </div>
                   ))}
                 </div>
@@ -1100,7 +1150,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               return m ? { name: m[1], date: m[2], desc: m[3] } : { name: b, date: '', desc: '' };
             });
             return (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {parsed.map((item, idx) => (
                   <div key={idx} className={`rounded-xl border ${s.border} ${s.bg} p-3 flex flex-col gap-1`}>
                     <span className={`text-xl font-bold ${s.text}`}>{item.name}</span>
@@ -1416,41 +1466,51 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     </div>
                   </div>
                 ) : (
-                  <div className={isSingleRowStep2 ? 'flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory' : 'grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3'}>
-                    {parsedCards.map((item, idx) => {
-                      const { branchName, stemChars, primary, primaryStyle } = item;
-                      return (
-                      <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 space-y-1 md:space-y-2 ${isSingleRowStep2 ? 'min-w-[122px] shrink-0 snap-start' : ''}`}>
-                        {/* Branch name - large */}
-                        <div className={`text-2xl md:text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
-                        {/* Primary stem - emphasized with label */}
-                        <div className={`text-base md:text-xl font-bold ${primaryStyle.text} text-center`}>
-                          {primary}
-                          <span className="hidden md:inline text-xs ml-1 font-normal text-gray-500">（本氣）</span>
-                        </div>
-                        {/* Secondary & tertiary if present */}
-                        {stemChars.length > 1 && (
-                          <div className="text-center space-y-1">
-                            {stemChars.slice(1).map((stem, i) => {
-                              const el = getStemElement(stem);
-                              const style = ELEMENT_STYLES[el];
-                              const tierLabel = i === 0
+                  <div className="sm:grid sm:grid-cols-[56px_minmax(0,1fr)] sm:items-start sm:gap-2">
+                    <div className="hidden sm:block pt-2 md:pt-3">
+                      <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-sm md:text-base font-semibold text-gray-400">
+                        <span aria-hidden="true" />
+                        <span>本氣</span>
+                        <span>中氣</span>
+                        <span>餘氣</span>
+                      </div>
+                    </div>
+
+                    <div className={isSingleRowStep2 ? 'flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory sm:grid sm:grid-cols-4 sm:gap-2 md:gap-3 sm:overflow-visible sm:pb-0 sm:snap-none' : 'grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3'}>
+                      {parsedCards.map((item, idx) => {
+                        const { branchName, stemChars, primary, primaryStyle } = item;
+                        return (
+                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 h-full ${isSingleRowStep2 ? 'min-w-[122px] shrink-0 snap-start sm:min-w-0 sm:shrink sm:snap-none' : ''}`}>
+                          <div className="grid grid-rows-[40px_28px_28px_28px] items-center text-center">
+                            <div className={`text-2xl md:text-3xl font-bold ${primaryStyle.text}`}>{branchName}</div>
+
+                            <div className={`text-base md:text-xl font-bold ${primaryStyle.text}`}>
+                              {primary}
+                              <span className="sm:hidden text-[10px] ml-1 font-normal text-gray-500">（本氣）</span>
+                            </div>
+
+                            {([0, 1] as const).map((rowIdx) => {
+                              const stem = stemChars[rowIdx + 1] ?? '';
+                              const el = stem ? getStemElement(stem) : '';
+                              const style = el ? ELEMENT_STYLES[el] : undefined;
+                              const tierLabel = rowIdx === 0
                                 ? '（中氣）'
                                 : lessonId === 6 && currentStep.id === 3 && stem === '戊'
                                   ? '（墓庫）'
                                   : '（餘氣）';
+
                               return (
-                                <div key={i} className={`text-sm md:text-base ${style ? style.text : 'text-gray-500'} font-semibold`}>
-                                  {stem}
-                                  <span className="hidden md:inline text-xs ml-1 font-normal text-gray-400">{tierLabel}</span>
+                                <div key={rowIdx} className={`text-sm md:text-base font-semibold ${stem ? (style ? style.text : 'text-gray-500') : 'text-transparent'}`}>
+                                  {stem || '・'}
+                                  {stem && <span className="sm:hidden text-[10px] ml-1 font-normal text-gray-400">{tierLabel}</span>}
                                 </div>
                               );
                             })}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                        </div>
+                      );
+                    })}
+                    </div>
                   </div>
                 )}
 
