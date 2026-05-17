@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods } from '../data/mockData';
+import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods, ELEMENT_STYLES } from '../data/mockData';
 import { loadQuizSessionQuestions, type QuizApiQuestion } from '../api/quizApi';
 import { useRemoteQuizApi } from '../config/env';
 import { selectByNovelty, shuffleArray } from '../utils/quizSelection';
 import { MultipleChoiceQuestion } from '../components/quiz/MultipleChoiceQuestion';
 import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
 import { QuizActionButton } from '../components/quiz/QuizActionButton';
+import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
 import type { LessonWithBanks } from '../types/domain';
 
 const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
@@ -20,14 +21,6 @@ const getDisplayLessonTitle = (lessonId: number, title: string): string => {
 };
 
 const NARRATED_LESSON_ID = 5;
-
-const ELEMENT_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  '木': { bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200' },
-  '火': { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200'   },
-  '土': { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200' },
-  '金': { bg: 'bg-slate-50',  text: 'text-slate-600',  border: 'border-slate-200' },
-  '水': { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
-};
 
 type Lesson1ElementName = '木' | '火' | '土' | '金' | '水';
 type Lesson1MapMode = 'sheng' | 'ke';
@@ -859,44 +852,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               </div>
             );
           })() : lessonId === 3 && currentStep.id === 2 ? (() => {
-            /* L3: Twelve Earthly Branches — clock-face circle */
-            const SIZE = 420;
-            const RADIUS = 155;
-            const CARD = 68;
-            const cx = SIZE / 2;
-            const cy = SIZE / 2;
-            const fmtTime = (r: string) => r.replace(/:00/g, '').replace('-', '–');
-            return (
-              <div className="overflow-x-auto">
-                <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
-                  {/* Clock centre */}
-                  <div
-                    className="absolute rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center"
-                    style={{ width: 52, height: 52, left: cx - 26, top: cy - 26 }}
-                  >
-                    <span className="text-[10px] text-gray-400 text-center leading-tight">時辰<br/>環</span>
-                  </div>
-                  {mockEarthlyBranches.map((branch, idx) => {
-                    const angleRad = ((idx * 30 - 90) * Math.PI) / 180;
-                    const x = Math.round(cx + RADIUS * Math.cos(angleRad) - CARD / 2);
-                    const y = Math.round(cy + RADIUS * Math.sin(angleRad) - CARD / 2);
-                    const style = ELEMENT_STYLES[branch.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
-                    return (
-                      <div
-                        key={branch.id}
-                        className={`absolute rounded-xl border ${style.border} ${style.bg} flex flex-col items-center justify-center`}
-                        style={{ left: x, top: y, width: CARD, height: CARD }}
-                      >
-                        <span className={`text-2xl font-bold leading-none ${style.text}`}>{branch.name_cn}</span>
-                        <span className="text-sm leading-none mt-0.5">{branch.zodiac_animal}</span>
-                        <span className={`text-[11px] font-semibold leading-none mt-0.5 ${style.text}`}>{branch.yin_yang === 'yang' ? '陽' : '陰'}{branch.element}</span>
-                        <span className="text-[10px] text-gray-500 tabular-nums leading-none mt-0.5">{fmtTime(branch.hour_range)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
+            return <EarthlyBranchRing showStems={false} showSeasons={true} />;
           })() : lessonId === 1 && currentStep.id === 3 ? (() => {
               /* L1 id:3 — interactive 生剋 map + quick challenge */
               const circleSize = 320;
@@ -1311,8 +1267,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 {bullets[3] && <p className="text-sm text-gray-500 mt-1 ml-1">⚠ {bullets[3].replace(/^.+?：/, '')}</p>}
               </div>
             );
-          })() : lessonId === 6 && [2, 3, 4].includes(currentStep.id) && currentStep.bullets ? (() => {
-            /* L6 id:2,3,4 — Tiered stem cards for branch groups */
+          })() : lessonId === 6 && [2, 3, 4, 41].includes(currentStep.id) && currentStep.bullets ? (() => {
+            /* L6 id:2,3,4,41 — Tiered stem cards for memory groups + combined overview */
             const STEM_ELEMENT_MAP: Record<string, string> = {
               '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', 
               '庚': '金', '辛': '金', '壬': '水', '癸': '水'
@@ -1323,64 +1279,168 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             };
             
             const bullets = currentStep.bullets ?? [];
+            const parsedCards = bullets.map((bullet) => {
+              const branchMatch = bullet.match(/^(.)\s*支藏干：/);
+              const branchName = branchMatch ? branchMatch[1] : '';
+
+              const stemsMatch = bullet.match(/：([^（]+)(?:（|$)/);
+              const stemsStr = stemsMatch ? stemsMatch[1] : '';
+              const stemChars = stemsStr
+                .split('、')
+                .map((s) => s.trim())
+                .filter((s) => s && /^[甲乙丙丁戊己庚辛壬癸]$/.test(s));
+
+              const primaryMatch = bullet.match(/本氣[是]*\s*([甲乙丙丁戊己庚辛壬癸])/);
+              const primary = primaryMatch ? primaryMatch[1] : (stemChars[0] || '');
+
+              const primaryElement = getStemElement(primary);
+              let primaryStyle = ELEMENT_STYLES[primaryElement];
+
+              if (!primaryStyle) {
+                const BRANCH_ELEMENT: Record<string, string> = {
+                  '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土',
+                  '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金',
+                  '戌': '土', '亥': '水',
+                };
+                const branchElement = BRANCH_ELEMENT[branchName] || '木';
+                primaryStyle = ELEMENT_STYLES[branchElement];
+              }
+
+              return {
+                bullet,
+                branchName,
+                stemChars,
+                primary,
+                primaryStyle,
+              };
+            });
+
+            const COMBINED_SEASON_BOXES = [
+              { name: '春季(木旺)', color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200' },
+              { name: '夏季(火旺)', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200' },
+              { name: '秋季(金旺)', color: 'text-slate-600', bg: 'bg-slate-50', border: 'border-slate-200' },
+              { name: '冬季(水旺)', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' },
+            ];
+
+            const isCombinedOverview = currentStep.id === 41;
+
             return (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {bullets.map((bullet, idx) => {
-                  // Parse: '子支藏干：癸（本氣）' or '丑支藏干：己、癸、辛（本氣是己）'
-                  const branchMatch = bullet.match(/^(.)\s*支藏干：/);
-                  const branchName = branchMatch ? branchMatch[1] : '';
-                  
-                  // Extract all stems and identify primary
-                  // Parse: '子支藏干：癸（本氣）' or '丑支藏干：己、癸、辛（本氣是己）'
-                  const stemsMatch = bullet.match(/：([^（]+)(?:（|$)/);
-                  const stemsStr = stemsMatch ? stemsMatch[1] : '';
-                  const stemChars = stemsStr.split('、').map(s => s.trim()).filter(s => s && /^[甲乙丙丁戊己庚辛壬癸]$/.test(s));
-                  
-                  const primaryMatch = bullet.match(/本氣[是]*\s*([甲乙丙丁戊己庚辛壬癸])/);
-                  const primary = primaryMatch ? primaryMatch[1] : (stemChars[0] || '');
-                  
-                  const primaryElement = getStemElement(primary);
-                  let primaryStyle = ELEMENT_STYLES[primaryElement];
-                  
-                  // Fallback: if not found, try to determine from branch name or stem
-                  if (!primaryStyle) {
-                    const BRANCH_ELEMENT: Record<string, string> = {
-                      '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', 
-                      '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金', 
-                      '戌': '土', '亥': '水'
-                    };
-                    const branchElement = BRANCH_ELEMENT[branchName] || '木';
-                    primaryStyle = ELEMENT_STYLES[branchElement];
-                  }
-                  
-                  return (
-                    <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-3 space-y-2`}>
-                      {/* Branch name - large */}
-                      <div className={`text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
-                      {/* Primary stem - emphasized with label */}
-                      <div className={`text-xl font-bold ${primaryStyle.text} text-center`}>
-                        {primary}
-                        <span className="text-xs ml-1 font-normal text-gray-500">（本氣）</span>
-                      </div>
-                      {/* Secondary & tertiary if present */}
-                      {stemChars.length > 1 && (
-                        <div className="text-center space-y-1">
-                          {stemChars.slice(1).map((stem, i) => {
-                            const el = getStemElement(stem);
-                            const style = ELEMENT_STYLES[el];
-                            const tierLabel = i === 0 ? '（中氣）' : '（餘氣）';
-                            return (
-                              <div key={i} className={`text-base ${style ? style.text : 'text-gray-500'} font-semibold`}>
-                                {stem}
-                                <span className="text-xs ml-1 font-normal text-gray-400">{tierLabel}</span>
-                              </div>
-                            );
-                          })}
+              <div className="space-y-4">
+                {isCombinedOverview ? (
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-12 gap-1">
+                      {parsedCards.map((item, idx) => {
+                        const { branchName, stemChars, primary, primaryStyle } = item;
+                        return (
+                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-1 space-y-1`}>
+                          {/* Branch name - large */}
+                          <div className={`text-xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
+                          {/* Primary stem - emphasized with label */}
+                          <div className={`text-sm font-bold ${primaryStyle.text} text-center`}>
+                            {primary}
+                          </div>
+                          {/* Secondary & tertiary if present */}
+                          {stemChars.length > 1 && (
+                            <div className="text-center space-y-1">
+                              {stemChars.slice(1).map((stem, i) => {
+                                const el = getStemElement(stem);
+                                const style = ELEMENT_STYLES[el];
+                                return (
+                                  <div key={i} className={`text-xs ${style ? style.text : 'text-gray-500'} font-semibold`}>
+                                    {stem}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      );
+                    })}
                     </div>
-                  );
-                })}
+
+                    <div className="grid grid-cols-4 gap-2">
+                      {COMBINED_SEASON_BOXES.map((season) => (
+                        <div key={season.name} className={`rounded-lg border ${season.border} ${season.bg} px-2 py-1.5 text-center`}>
+                          <p className={`text-xs sm:text-sm font-bold ${season.color}`}>{season.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {parsedCards.map((item, idx) => {
+                      const { branchName, stemChars, primary, primaryStyle } = item;
+                      return (
+                      <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-3 space-y-2`}>
+                        {/* Branch name - large */}
+                        <div className={`text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
+                        {/* Primary stem - emphasized with label */}
+                        <div className={`text-xl font-bold ${primaryStyle.text} text-center`}>
+                          {primary}
+                          <span className="text-xs ml-1 font-normal text-gray-500">（本氣）</span>
+                        </div>
+                        {/* Secondary & tertiary if present */}
+                        {stemChars.length > 1 && (
+                          <div className="text-center space-y-1">
+                            {stemChars.slice(1).map((stem, i) => {
+                              const el = getStemElement(stem);
+                              const style = ELEMENT_STYLES[el];
+                              const tierLabel = i === 0
+                                ? '（中氣）'
+                                : lessonId === 6 && currentStep.id === 3 && stem === '戊'
+                                  ? '（墓庫）'
+                                  : '（餘氣）';
+                              return (
+                                <div key={i} className={`text-base ${style ? style.text : 'text-gray-500'} font-semibold`}>
+                                  {stem}
+                                  <span className="text-xs ml-1 font-normal text-gray-400">{tierLabel}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  </div>
+                )}
+
+                {lessonId === 6 && currentStep.id === 2 && (
+                  <EarthlyBranchRing 
+                    showStems={true} 
+                    highlightedBranches={['子', '午', '卯', '酉']}
+                    showSeasons={true}
+                    title="十二地支四季參考環（四專純）"
+                  />
+                )}
+
+                {lessonId === 6 && currentStep.id === 3 && (
+                  <EarthlyBranchRing 
+                    showStems={true} 
+                    highlightedBranches={['寅', '申', '巳', '亥']}
+                    showSeasons={true}
+                    title="十二地支四季參考環（四長生）"
+                  />
+                )}
+
+                {lessonId === 6 && currentStep.id === 4 && (
+                  <EarthlyBranchRing 
+                    showStems={true} 
+                    highlightedBranches={['辰', '戌', '丑', '未']}
+                    showSeasons={true}
+                    title="十二地支四季參考環（四墓庫）"
+                  />
+                )}
+
+                {lessonId === 6 && currentStep.id === 41 && (
+                  <EarthlyBranchRing 
+                    showStems={true}
+                    showSeasons={true}
+                    showTrinityLines={true}
+                    showTrinityLegend={true}
+                    title="十二地支四季參考環（綜合總覽）"
+                  />
+                )}
               </div>
             );
           })() : lessonId === 6 && currentStep.id === 5 && currentStep.bullets ? (() => {
