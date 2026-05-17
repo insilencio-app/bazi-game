@@ -1368,17 +1368,17 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     </div>
                   </div>
                 ) : (
-                  <div className={isSingleRowStep2 ? 'flex gap-2 overflow-x-auto pb-1' : 'grid grid-cols-2 sm:grid-cols-4 gap-3'}>
+                  <div className={isSingleRowStep2 ? 'flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory' : 'grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3'}>
                     {parsedCards.map((item, idx) => {
                       const { branchName, stemChars, primary, primaryStyle } = item;
                       return (
-                      <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-3 space-y-2 ${isSingleRowStep2 ? 'min-w-[145px] shrink-0' : ''}`}>
+                      <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-2 md:p-3 space-y-1 md:space-y-2 ${isSingleRowStep2 ? 'min-w-[122px] shrink-0 snap-start' : ''}`}>
                         {/* Branch name - large */}
-                        <div className={`text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
+                        <div className={`text-2xl md:text-3xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
                         {/* Primary stem - emphasized with label */}
-                        <div className={`text-xl font-bold ${primaryStyle.text} text-center`}>
+                        <div className={`text-base md:text-xl font-bold ${primaryStyle.text} text-center`}>
                           {primary}
-                          <span className="text-xs ml-1 font-normal text-gray-500">（本氣）</span>
+                          <span className="hidden md:inline text-xs ml-1 font-normal text-gray-500">（本氣）</span>
                         </div>
                         {/* Secondary & tertiary if present */}
                         {stemChars.length > 1 && (
@@ -1392,9 +1392,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                                   ? '（墓庫）'
                                   : '（餘氣）';
                               return (
-                                <div key={i} className={`text-base ${style ? style.text : 'text-gray-500'} font-semibold`}>
+                                <div key={i} className={`text-sm md:text-base ${style ? style.text : 'text-gray-500'} font-semibold`}>
                                   {stem}
-                                  <span className="text-xs ml-1 font-normal text-gray-400">{tierLabel}</span>
+                                  <span className="hidden md:inline text-xs ml-1 font-normal text-gray-400">{tierLabel}</span>
                                 </div>
                               );
                             })}
