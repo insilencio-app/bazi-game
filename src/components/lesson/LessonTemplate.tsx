@@ -1,6 +1,5 @@
 import React from 'react';
 import type { LessonWithBanks } from '../../types/domain';
-import { MultipleChoiceQuestion } from '../quiz/MultipleChoiceQuestion';
 
 interface LessonTemplateProps {
   lesson: LessonWithBanks;
@@ -17,31 +16,6 @@ export const LessonTemplate: React.FC<LessonTemplateProps> = ({ lesson }) => {
   );
 };
 
-const IndependentMcq: React.FC<{ q: { id: number | string; question: string; options: string[]; correct: number; explanation: string }; onAnswered?: (id: number | string, correct: boolean) => void } > = ({ q, onAnswered }) => {
-  const [selected, setSelected] = React.useState<number | null>(null);
-  const [answered, setAnswered] = React.useState(false);
 
-  return (
-    <MultipleChoiceQuestion
-      question={q.question}
-      options={q.options}
-      correctIndex={q.correct}
-      explanation={q.explanation}
-      selectedAnswer={selected}
-      answered={answered}
-      showFeedback={answered}
-      onSelectAnswer={(idx) => {
-        if (answered) return;
-        setSelected(idx);
-        setAnswered(true);
-        const isCorrect = idx === q.correct;
-        onAnswered?.(q.id, isCorrect);
-      }}
-      showHint={false}
-      canUseHint={false}
-      size="compact"
-    />
-  );
-};
 
 export default LessonTemplate;
