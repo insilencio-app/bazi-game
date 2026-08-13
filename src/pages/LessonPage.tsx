@@ -7,6 +7,7 @@ import { MultipleChoiceQuestion } from '../components/quiz/MultipleChoiceQuestio
 import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
 import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
+import LessonTemplate from '../components/lesson/LessonTemplate';
 import type { LessonWithBanks } from '../types/domain';
 
 const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
@@ -20,7 +21,8 @@ const getDisplayLessonTitle = (lessonId: number, title: string): string => {
   return ensureLessonTitlePrefix(lessonId, title);
 };
 
-const NARRATED_LESSON_ID = 5;
+// Disable built-in narration by default. Previously lesson 5 used narration.
+const NARRATED_LESSON_ID = -1;
 
 type Lesson1ElementName = '木' | '火' | '土' | '金' | '水';
 type Lesson1MapMode = 'sheng' | 'ke';
@@ -223,6 +225,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       ),
     };
   }, [lesson, quizQuestions, shouldUseLocalQuizBank]);
+
+  
 
   useEffect(() => {
     if (!useRemoteQuizApi) {
@@ -797,6 +801,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
             {quizLoadError}
           </div>
+        )}
+      
+        {/* Standardized lesson template: objective, example, guided practice, independent checks */}
+        {lesson && currentStepIndex === 0 && (
+          <LessonTemplate lesson={lesson as LessonWithBanks} />
         )}
       </div>
 

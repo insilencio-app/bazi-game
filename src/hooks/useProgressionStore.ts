@@ -245,6 +245,10 @@ export const useProgressionStore = <TBadgeId extends string>({
 
       return {
         ...prev,
+        // Immediately reflect correct answer counts and award per-question XP so
+        // dashboard aggregates match lesson-level state shown in the UI.
+        correctAnswers: prev.correctAnswers + (correct ? 1 : 0),
+        totalXp: prev.totalXp + (correct ? xpConfig.correctAnswerXp : 0),
         lessonPerformance: {
           ...prev.lessonPerformance,
           [lessonId]: {

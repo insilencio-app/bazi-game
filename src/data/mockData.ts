@@ -382,6 +382,7 @@ export const mockLessons = [
     id: 0,
     title_cn: '第0課：四柱與日主入門',
     title_en: 'Pillars and Day Master Foundations',
+    learning_objectives_cn: '識別四柱與日主，掌握判讀順序（先定日主→看月令→全局判斷）。',
     level: 'beginner',
     steps: [
       {
@@ -581,6 +582,7 @@ export const mockLessons = [
     id: 1,
     title_cn: '第1課：五行基礎：木火土金水',
     title_en: 'Five Elements Basics',
+    learning_objectives_cn: '理解五行相生相剋與方向、季節與情感對應，能判斷基本生剋關係。',
     level: 'beginner',
     steps: [
       {
@@ -975,6 +977,7 @@ export const mockLessons = [
     id: 2,
     title_cn: '第2課：十天干入門',
     title_en: 'Heavenly Stems Basics',
+    learning_objectives_cn: '熟記十天干與陰陽屬性，掌握天干五合及身強弱判斷要點。',
     level: 'beginner',
     steps: [
       {
@@ -1628,6 +1631,7 @@ export const mockLessons = [
     id: 3,
     title_cn: '第3課：十二地支入門',
     title_en: 'Earthly Branches Basics',
+    learning_objectives_cn: '認識十二地支與對應生肖時辰，能在盤面上正確應用地支資訊。',
     level: 'intermediate',
     steps: [
       {
@@ -2176,6 +2180,7 @@ export const mockLessons = [
     id: 4,
     title_cn: '第4課：節氣與月份計算',
     title_en: 'Solar Terms and Bazi Months',
+    learning_objectives_cn: '理解24節氣與八字月份劃分，能以節氣精確判定月令與邊界時刻。',
     level: 'intermediate',
     steps: [
       {
@@ -3060,6 +3065,7 @@ export const mockLessons = [
     id: 5,
     title_cn: '第5課：十神詳解',
     title_en: 'Ten Gods Explained',
+    learning_objectives_cn: '掌握十神系統與判讀流程：五行關係→陰陽定正偏→旺衰→透根→互動。',
     level: 'intermediate',
     steps: [
       {
@@ -3427,6 +3433,7 @@ export const mockLessons = [
     id: 55,
     title_cn: '第5.5課：十神速查練習',
     title_en: 'Ten Gods Lookup Drill',
+    learning_objectives_cn: '透過速查練習內化十神判定規則，能快速正逆向查表並答題。',
     level: 'beginner',
     steps: [
       {
@@ -3962,6 +3969,7 @@ export const mockLessons = [
     id: 6,
     title_cn: '第6課：十二地支藏干',
     title_en: 'Hidden Stems in Earthly Branches',
+    learning_objectives_cn: '理解藏干與透干概念，會判斷本氣、中氣、餘氣及有透/有根四象。',
     level: 'intermediate',
     steps: [
       {
@@ -4648,6 +4656,7 @@ export const mockLessons = [
     id: 65,
     title_cn: '第6.5課：藏干十神速查練習',
     title_en: 'Hidden Stem Ten Gods Drill',
+    learning_objectives_cn: '練習把藏干與十神對照，快速在題目中應用判讀流程與速查技巧。',
     level: 'intermediate',
     steps: [
       {
@@ -5286,6 +5295,7 @@ export const mockLessons = [
     id: 7,
     title_cn: '第7課：地支關係：三合六合刑沖破害',
     title_en: 'Branch Relationships: Harmony, Clash, Punishment & Harm',
+    learning_objectives_cn: '辨識三合、六合、刑沖、破害等關係，並評估其在命局中的組合影響。',
     level: 'advanced',
     steps: [
       {
@@ -5853,6 +5863,7 @@ export const mockLessons = [
     id: 8,
     title_cn: '第8課：日元根氣與強弱進階',
     title_en: 'Advanced Day Master: Root Energy & Strength Levels',
+    learning_objectives_cn: '深入判斷日元根氣（本根/得令/受損），並能用四檢核評估強弱。',
     level: 'advanced',
     steps: [
       {
@@ -6089,6 +6100,7 @@ export const mockLessons = [
     id: 9,
     title_cn: '第9課：格局取用：月令與古典用神',
     title_en: 'Chart Patterns: Month Pillar & the Classical Useful God',
+    learning_objectives_cn: '學會格局判定與用神選擇原則，能結合月令與古典法提出喜忌。',
     level: 'advanced',
     steps: [
       {
@@ -6379,6 +6391,7 @@ export const mockLessons = [
     id: 10,
     title_cn: '第10課：體用觀的特定師承解法',
     title_en: 'Lineage-Specific Body-Use Interpretation',
+    learning_objectives_cn: '理解體用分層與不同師承解法，能分層分析本命與運勢並提出策略。',
     level: 'advanced',
     steps: [
       {
@@ -6608,6 +6621,7 @@ export const mockLessons = [
     id: 11,
     title_cn: '第11課：趨吉避凶實踐',
     title_en: 'Practical BaZi: Fortune Optimization',
+    learning_objectives_cn: '把判讀結果轉為實務策略（制化忌神、放大喜神），能為案例設計趨吉避凶方案。',
     level: 'advanced',
     steps: [
       {
