@@ -78,6 +78,8 @@ const CollapsibleParagraph: React.FC<{preview: string; full?: string}> = ({ prev
 
 const InlineQuiz: React.FC<{lesson: LessonWithBanks}> = ({ lesson }) => {
   const q = lesson.questionBank?.[0];
+  const [selected, setSelected] = React.useState<number | null>(null);
+  const [answered, setAnswered] = React.useState(false);
   if (!q) return null;
   return (
     <div className="mt-4">
@@ -86,6 +88,10 @@ const InlineQuiz: React.FC<{lesson: LessonWithBanks}> = ({ lesson }) => {
         options={q.options}
         correctIndex={q.correct}
         explanation={q.explanation}
+        selectedAnswer={selected}
+        answered={answered}
+        showFeedback={answered}
+        onSelectAnswer={(idx) => { if (answered) return; setSelected(idx); setAnswered(true); }}
         showHint={false}
         canUseHint={false}
       />
@@ -107,7 +113,15 @@ const LessonVisuals: React.FC<Props> = ({ lesson }) => {
       <TakeawaysRow items={takeaways} />
       <StrengthRow />
       <CompareColumns />
-      <CollapsibleParagraph preview={lesson.steps?.[2]?.paragraphs?.[0] ?? ''} full={lesson.steps?.[2]?.paragraphs?.join('\n\n')} />
+      {/* Safely read a step for preview (prefer step with title '強弱是層次，不是二分法' or index 2) */}
+      {
+        (() => {
+          const step = lesson.steps?.find?.((s: any) => s.title && s.title.includes('強弱')) ?? lesson.steps?.[2];
+          const preview = step?.paragraphs?.[0] ?? '';
+          const full = step?.paragraphs?.join('\n\n') ?? '';
+          return <CollapsibleParagraph preview={preview} full={full} />;
+        })()
+      }
       <InlineQuiz lesson={lesson} />
     </div>
   );

@@ -27,6 +27,7 @@ export type LessonWithBanks = {
   id: number;
   title_cn?: string;
   learning_objectives_cn?: string;
+  steps?: any[];
   questionBank?: LessonQuestion[];
   trueFalseBank?: LessonTrueFalse[];
   matchBank?: LessonMatch[];
