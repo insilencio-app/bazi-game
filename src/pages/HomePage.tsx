@@ -5,7 +5,6 @@ import { LessonsView } from '../components/home/LessonsView';
 import { StemsView } from '../components/home/StemsView';
 import { GodsView } from '../components/home/GodsView';
 import { MenuView } from '../components/home/MenuView';
-import OnboardingPanel from '../components/home/OnboardingPanel';
 import { TotalQuizView } from '../components/home/TotalQuizView';
 import { BadgesView } from '../components/home/BadgesView';
 import { LessonPage } from './LessonPage';
@@ -255,7 +254,6 @@ const getAchievedBadges = (
 
 export const HomePage: React.FC = () => {
   const { currentMode, selectedLesson, navigateToMode } = useGameRouteMode();
-  const [showOnboarding, setShowOnboarding] = React.useState(false);
   const [selectedElement, setSelectedElement] = useState<ElementItem | null>(null);
   const [isProgressChartsOpen, setIsProgressChartsOpen] = useState(false);
   const allBadgeIds = React.useMemo(() => Object.keys(BADGE_DEFINITIONS) as BadgeId[], []);
@@ -353,32 +351,6 @@ export const HomePage: React.FC = () => {
 
   const handleLessonStart = (lessonId: number) => {
     navigateToMode('lessons', lessonId);
-  };
-
-  React.useEffect(() => {
-    try {
-      const flag = window.localStorage.getItem('bazi-first-visit-complete');
-      setShowOnboarding(flag !== 'true');
-    } catch {
-      setShowOnboarding(true);
-    }
-  }, []);
-
-  const handleOnboardingStart = () => {
-    try {
-      window.localStorage.setItem('bazi-first-visit-complete', 'true');
-    } catch {}
-
-    setShowOnboarding(false);
-    handleLessonStart(0);
-  };
-
-  const handleOnboardingSkip = () => {
-    try {
-      window.localStorage.setItem('bazi-first-visit-complete', 'true');
-    } catch {}
-
-    setShowOnboarding(false);
   };
 
   const handleLessonComplete = (lessonId: number, score: number, totalQuestions: number) => {
@@ -598,14 +570,6 @@ export const HomePage: React.FC = () => {
 
   // Main Menu
   if (currentMode === 'menu') {
-    if (showOnboarding) {
-      return (
-        <div className="p-6">
-          <OnboardingPanel onStart={handleOnboardingStart} onSkip={handleOnboardingSkip} />
-        </div>
-      );
-    }
-
     return (
       <MenuView
         levelProgress={levelProgress}
