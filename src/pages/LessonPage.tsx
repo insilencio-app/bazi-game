@@ -1,3 +1,4 @@
+// Lesson 1 style: the atlas flow uses archival indigo, parchment, and gold hierarchy without changing quiz logic.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods, ELEMENT_STYLES } from '../data/mockData';
 import { loadQuizSessionQuestions, type QuizApiQuestion } from '../api/quizApi';
@@ -487,6 +488,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
   const canSkipToQuiz = firstQuizStepIndex > -1 && currentStepIndex < firstQuizStepIndex;
   const canNarrateCurrentStep = lessonId === NARRATED_LESSON_ID && currentStep?.type === 'content' && isNarrationSupported;
+  const lessonAtlasActionClass = (tone: 'previous' | 'primary' | 'skip') =>
+    isLessonOneAtlas ? `lesson-atlas-action lesson-atlas-action--${tone}` : undefined;
 
   const stopNarration = () => {
     if (narrationTimeoutRef.current !== null) {
@@ -2105,21 +2108,21 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {/* Action Buttons */}
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && !answered && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
-          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
-          <QuizActionButton label="檢查" onClick={handleCheck} disabled={selectedAnswer === null} />
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
+          <QuizActionButton label="檢查" onClick={handleCheck} disabled={selectedAnswer === null} className={lessonAtlasActionClass('primary')} />
         </div>
       )}
 
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
-          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
-          <QuizActionButton label="繼續" onClick={handleNext} />
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
+          <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
         </div>
       )}
 
       {currentStep?.type === 'match' && isMatchComplete && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
-          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
           <QuizActionButton
             label="繼續"
             onClick={() => {
@@ -2130,26 +2133,27 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               }
               handleNext();
             }}
+            className={lessonAtlasActionClass('primary')}
           />
         </div>
       )}
 
       {currentStep?.type === 'content' && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
-          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
-          <QuizActionButton label="繼續" onClick={handleNext} />
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
+          <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
           {canSkipToQuiz && (
-            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" />
+            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
           )}
         </div>
       )}
 
       {currentStep?.type === 'cards' && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
-          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
-          <QuizActionButton label="繼續" onClick={handleNext} />
+          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
+          <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
           {canSkipToQuiz && (
-            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" />
+            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
           )}
         </div>
       )}

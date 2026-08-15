@@ -1,3 +1,4 @@
+// Lesson 1 callers may append archival navigation classes without changing the default quiz appearance elsewhere.
 import React from 'react';
 
 interface QuizActionButtonProps {
@@ -8,6 +9,7 @@ interface QuizActionButtonProps {
   size?: 'compact' | 'default';
   stretch?: boolean;
   fullWidth?: boolean;
+  className?: string;
 }
 
 export const QuizActionButton: React.FC<QuizActionButtonProps> = ({
@@ -18,6 +20,7 @@ export const QuizActionButton: React.FC<QuizActionButtonProps> = ({
   size = 'default',
   stretch = true,
   fullWidth = false,
+  className,
 }) => {
   const widthClassName = [stretch ? 'flex-1' : '', fullWidth ? 'w-full' : ''].filter(Boolean).join(' ');
   const sizeClassName =
@@ -38,7 +41,7 @@ export const QuizActionButton: React.FC<QuizActionButtonProps> = ({
       : 'bg-blue-600 text-white hover:bg-blue-700';
 
   return (
-    <button onClick={onClick} disabled={disabled} className={`${baseClassName} ${variantClassName}`}>
+    <button onClick={onClick} disabled={disabled} className={`${baseClassName} ${variantClassName} ${className ?? ''}`.trim()}>
       {label}
     </button>
   );

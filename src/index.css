@@ -213,10 +213,11 @@ body {
 .lesson-atlas-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.1rem;
-  padding-top: 1rem;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem;
   border-top: 1px solid #dfd2bc;
+  background: rgba(247, 241, 229, 0.68);
 }
 
 .lesson-atlas-actions > button {
@@ -226,8 +227,62 @@ body {
   line-height: 1.5;
 }
 
-.lesson-atlas-actions > button:last-child {
-  box-shadow: 4px 4px 0 #d8b36d;
+.lesson-atlas-action {
+  min-height: 3.1rem;
+  border: 1px solid #bca77f !important;
+  border-radius: 2px !important;
+  box-shadow: 3px 3px 0 #d9c7a5 !important;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.98rem !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lesson-atlas-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.lesson-atlas-action:active:not(:disabled) {
+  transform: translate(2px, 2px) scale(0.98);
+  box-shadow: 1px 1px 0 #d9c7a5 !important;
+}
+
+.lesson-atlas-action:disabled {
+  box-shadow: none !important;
+  opacity: 0.46;
+}
+
+.lesson-atlas-action--previous {
+  background: #fffdf7 !important;
+  color: #526474 !important;
+}
+
+.lesson-atlas-action--previous:hover:not(:disabled) {
+  background: #f1eadc !important;
+  color: #173650 !important;
+}
+
+.lesson-atlas-action--primary {
+  border-color: #0d2a4a !important;
+  background: #0d2a4a !important;
+  color: #fffdf7 !important;
+  box-shadow: 3px 3px 0 #b48a43 !important;
+}
+
+.lesson-atlas-action--primary:hover:not(:disabled) {
+  background: #153b61 !important;
+}
+
+.lesson-atlas-action--skip {
+  border-color: #b48a43 !important;
+  background: #f3e3b7 !important;
+  color: #735522 !important;
+  box-shadow: 3px 3px 0 #d7b96c !important;
+}
+
+.lesson-atlas-action--skip:hover:not(:disabled) {
+  background: #ecd69d !important;
 }
 
 .lesson-atlas-stage,
@@ -523,6 +578,19 @@ body {
 
   .lesson-atlas-actions > button {
     min-width: calc(50% - 0.4rem);
+  }
+
+  .lesson-atlas-actions {
+    gap: 0.5rem;
+    padding: 0.65rem;
+  }
+
+  .lesson-atlas-action {
+    min-height: 3rem;
+  }
+
+  .lesson-atlas-action--skip {
+    flex-basis: 100%;
   }
 
   .lesson-atlas-question-title {
