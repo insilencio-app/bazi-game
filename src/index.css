@@ -325,6 +325,24 @@ body {
   font-size: 0.85rem;
 }
 
+.lesson-atlas-element-label {
+  display: block;
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+  opacity: 0.65;
+}
+
+.lesson-atlas-element-value {
+  display: block;
+  margin-top: 0.2rem;
+  overflow-wrap: anywhere;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .lesson-atlas-feedback {
   margin-top: 0.9rem;
   padding: 0.95rem 1rem;
@@ -515,6 +533,15 @@ body {
     min-height: 3.25rem;
     padding: 0.6rem 0.75rem;
     font-size: 1rem;
+  }
+
+  .lesson-atlas-element-label {
+    font-size: 0.75rem;
+  }
+
+  .lesson-atlas-element-value {
+    font-size: 1rem;
+    line-height: 1.45;
   }
 
   .lesson-atlas-truefalse-card {
