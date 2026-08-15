@@ -8,6 +8,7 @@ import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
 import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
 import LessonTemplate from '../components/lesson/LessonTemplate';
+import { LessonOneAtlas, type LessonOneAtlasStage } from '../components/lesson/LessonOneAtlas';
 import type { LessonWithBanks } from '../types/domain';
 
 const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
@@ -476,6 +477,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   }, []);
 
   const currentStep = steps[currentStepIndex];
+  const lessonOneStage: LessonOneAtlasStage | null = lessonId === 1 && currentStep
+    ? ({ 1: 'intro', 2: 'elements', 3: 'relations', 4: 'practice', 5: 'recap' } as Record<number, LessonOneAtlasStage>)[currentStep.id] ?? null
+    : null;
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
   const canSkipToQuiz = firstQuizStepIndex > -1 && currentStepIndex < firstQuizStepIndex;
   const canNarrateCurrentStep = lessonId === NARRATED_LESSON_ID && currentStep?.type === 'content' && isNarrationSupported;
@@ -804,13 +808,17 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         )}
       
         {/* Standardized lesson template: objective, example, guided practice, independent checks */}
-        {lesson && currentStepIndex === 0 && (
+        {lesson && currentStepIndex === 0 && lessonId !== 1 && (
           <LessonTemplate lesson={lesson as LessonWithBanks} />
         )}
       </div>
 
       {/* Step Content */}
-      {currentStep?.type === 'content' && (
+      {lessonOneStage ? (
+        <div className="mb-8">
+          <LessonOneAtlas stage={lessonOneStage} />
+        </div>
+      ) : currentStep?.type === 'content' && (
         <div className="mb-8">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-3xl font-bold text-gray-800">{currentStep.title}</h2>

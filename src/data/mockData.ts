@@ -622,6 +622,14 @@ export const mockLessons = [
           '水元素對應：恐（謹慎與本能）',
         ],
       },
+      {
+        id: 5,
+        type: 'content',
+        title: '五行重點回顧',
+        paragraphs: [
+          '先記五行，再分相生與相剋；先看結構，後談解讀。',
+        ],
+      },
     ],
     questionBank: [
       {
@@ -6915,4 +6923,3 @@ export const mockLessons = [
     duration: 20,
   },
 ];
-
