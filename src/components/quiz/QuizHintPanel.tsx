@@ -7,6 +7,7 @@ interface QuizHintPanelProps {
   canUseHint: boolean;
   hintXpCost?: number;
   onUseHint?: () => void;
+  appearance?: 'default' | 'atlas';
 }
 
 export const QuizHintPanel: React.FC<QuizHintPanelProps> = ({
@@ -16,16 +17,17 @@ export const QuizHintPanel: React.FC<QuizHintPanelProps> = ({
   canUseHint,
   hintXpCost = 50,
   onUseHint,
+  appearance = 'default',
 }) => {
   if (answered) return null;
 
   return (
-    <div className="mb-4">
+    <div className={appearance === 'atlas' ? 'lesson-atlas-hint' : 'mb-4'}>
       {!showHint ? (
         <button
           onClick={onUseHint}
           disabled={!canUseHint}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
+          className={`${appearance === 'atlas' ? 'lesson-atlas-hint-button' : 'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base'} ${
             canUseHint
               ? 'border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
               : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -36,12 +38,12 @@ export const QuizHintPanel: React.FC<QuizHintPanelProps> = ({
           {!canUseHint && <span className="text-xs">(XP不足)</span>}
         </button>
       ) : (
-        <div className="p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
-          <p className="font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base">
+        <div className={appearance === 'atlas' ? 'lesson-atlas-hint-panel' : 'p-3 sm:p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500'}>
+          <p className={appearance === 'atlas' ? 'lesson-atlas-hint-title' : 'font-semibold text-yellow-700 mb-1 flex items-center gap-2 text-sm sm:text-base'}>
             <span className="text-lg">💡</span>
             提示：
           </p>
-          <p className="text-gray-700 text-sm sm:text-base">{hint}</p>
+          <p className={appearance === 'atlas' ? 'lesson-atlas-hint-copy' : 'text-gray-700 text-sm sm:text-base'}>{hint}</p>
         </div>
       )}
     </div>

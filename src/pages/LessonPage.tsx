@@ -480,6 +480,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const lessonOneStage: LessonOneAtlasStage | null = lessonId === 1 && currentStep
     ? ({ 1: 'intro', 2: 'elements', 3: 'relations', 4: 'practice', 5: 'recap' } as Record<number, LessonOneAtlasStage>)[currentStep.id] ?? null
     : null;
+  const isLessonOneAtlas = lessonId === 1;
+  const lessonOneSectionLabel = lessonOneStage
+    ? ({ intro: '課前定位', elements: '五行速覽', relations: '關係圖譜', practice: '導師帶做', recap: '重點回顧' } as Record<LessonOneAtlasStage, string>)[lessonOneStage]
+    : '正式測驗';
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
   const canSkipToQuiz = firstQuizStepIndex > -1 && currentStepIndex < firstQuizStepIndex;
   const canNarrateCurrentStep = lessonId === NARRATED_LESSON_ID && currentStep?.type === 'content' && isNarrationSupported;
@@ -753,7 +757,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
   if (finished) {
     return (
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
+      <div className={isLessonOneAtlas ? 'lesson-atlas-shell lesson-atlas-finish' : 'max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center'}>
         <h2 className="text-5xl font-bold mb-4">課程完成！</h2>
         <p className="text-xl text-gray-600 mb-6">做得很好！你已完成此課程的所有步驟。</p>
         {totalQuestions > 0 && (
@@ -772,17 +776,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className={isLessonOneAtlas ? 'lesson-atlas-shell' : 'max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg'}>
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3">
+      <div className={isLessonOneAtlas ? 'lesson-atlas-header' : 'mb-6'}>
+        <div className={isLessonOneAtlas ? 'lesson-atlas-header-row' : 'flex flex-wrap items-center gap-3 sm:gap-4 mb-3'}>
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            {isLessonOneAtlas && <p className="lesson-atlas-kicker">第 1 課／五行基礎　<span>BAZI LEARNING ATLAS</span></p>}
+            <h1 className={isLessonOneAtlas ? 'lesson-atlas-title' : 'text-2xl sm:text-3xl font-bold text-gray-800'}>
               {getDisplayLessonTitle(lesson.id, lesson.title_cn)}
             </h1>
-            <p className="text-sm sm:text-lg text-gray-700">{lesson.title_en}</p>
+            <p className={isLessonOneAtlas ? 'lesson-atlas-subtitle' : 'text-sm sm:text-lg text-gray-700'}>{isLessonOneAtlas ? '用一張關係圖，讀懂五行的方向。' : lesson.title_en}</p>
           </div>
-          <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3 sm:ml-auto">
+          <div className={isLessonOneAtlas ? 'lesson-atlas-header-actions' : 'flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3 sm:ml-auto'}>
             <QuizActionButton
               label="返回主頁"
               onClick={onExit}
@@ -790,14 +795,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               size="compact"
               stretch={false}
             />
-            <div className="text-sm sm:text-base text-gray-600 whitespace-nowrap">
-              <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>
+            <div className={isLessonOneAtlas ? 'lesson-atlas-step' : 'text-sm sm:text-base text-gray-600 whitespace-nowrap'}>
+              {isLessonOneAtlas ? <><span>{lessonOneSectionLabel}</span><b>{currentStepIndex + 1}/{steps.length}</b></> : <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>}
             </div>
           </div>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-progress' : 'w-full bg-gray-200 rounded-full h-2 mt-4'}>
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className={isLessonOneAtlas ? 'lesson-atlas-progress-fill' : 'bg-blue-600 h-2 rounded-full transition-all duration-300'}
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           ></div>
         </div>
@@ -815,7 +820,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
       {/* Step Content */}
       {lessonOneStage ? (
-        <div className="mb-8">
+        <div className="lesson-atlas-stage">
           <LessonOneAtlas stage={lessonOneStage} />
         </div>
       ) : currentStep?.type === 'content' && (
@@ -1804,7 +1809,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
         </div>
       )}
 
-      {currentStep?.type === 'cards' && (
+      {!lessonOneStage && currentStep?.type === 'cards' && (
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2 text-gray-800">{currentStep.title}</h2>
           {currentStep.description && (
@@ -1943,7 +1948,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       )}
 
       {currentStep?.type === 'mcq' && (
-        <div className="mb-8">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-quiz' : 'mb-8'}>
           <MultipleChoiceQuestion
             question={currentStep.question}
             options={currentStep.options}
@@ -1959,13 +1964,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             canUseHint={userXp >= 50}
             hintXpCost={50}
             size="large"
+            appearance={isLessonOneAtlas ? 'atlas' : 'default'}
           />
         </div>
       )}
 
       {currentStep?.type === 'truefalse' && (
-        <div className="mb-8">
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">{currentStep.question}</h2>
+        <div className={isLessonOneAtlas ? 'lesson-atlas-quiz' : 'mb-8'}>
+          <h2 className={isLessonOneAtlas ? 'lesson-atlas-question-title' : 'text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800'}>{currentStep.question}</h2>
 
           {currentStep.hint && !answered && (
             <QuizHintPanel
@@ -1975,14 +1981,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               onUseHint={handleUseHint}
               canUseHint={userXp >= 50}
               hintXpCost={50}
+              appearance={isLessonOneAtlas ? 'atlas' : 'default'}
             />
           )}
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
+          <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-grid' : 'grid grid-cols-2 gap-3 sm:gap-4 mb-6'}>
             <button
               onClick={() => setSelectedAnswer(1)}
               disabled={answered}
-              className={`p-3 sm:p-6 rounded-lg border-2 transition-all ${
+              className={`${isLessonOneAtlas ? 'lesson-atlas-truefalse-card' : 'p-3 sm:p-6 rounded-lg border-2'} transition-all ${
                 selectedAnswer === 1
                   ? answered && currentStep.correct === true
                     ? 'border-green-500 bg-green-50'
@@ -1993,15 +2000,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2">✓</div>
-                <div className="text-lg sm:text-2xl lg:text-3xl font-bold">正確</div>
-                <div className="text-xs sm:text-sm lg:text-base text-gray-600">True</div>
+                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-mark' : 'text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2'}>✓</div>
+                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-label' : 'text-lg sm:text-2xl lg:text-3xl font-bold'}>正確</div>
+                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-copy' : 'text-xs sm:text-sm lg:text-base text-gray-600'}>True</div>
               </div>
             </button>
             <button
               onClick={() => setSelectedAnswer(0)}
               disabled={answered}
-              className={`p-3 sm:p-6 rounded-lg border-2 transition-all ${
+              className={`${isLessonOneAtlas ? 'lesson-atlas-truefalse-card' : 'p-3 sm:p-6 rounded-lg border-2'} transition-all ${
                 selectedAnswer === 0
                   ? answered && currentStep.correct === false
                     ? 'border-green-500 bg-green-50'
@@ -2012,31 +2019,31 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="text-center">
-                <div className="text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2">✗</div>
-                <div className="text-lg sm:text-2xl lg:text-3xl font-bold">錯誤</div>
-                <div className="text-xs sm:text-sm lg:text-base text-gray-600">False</div>
+                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-mark' : 'text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2'}>✗</div>
+                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-label' : 'text-lg sm:text-2xl lg:text-3xl font-bold'}>錯誤</div>
+                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-copy' : 'text-xs sm:text-sm lg:text-base text-gray-600'}>False</div>
               </div>
             </button>
           </div>
 
           {showFeedback && (
-            <div className={`p-4 rounded-lg ${(selectedAnswer === 1 && currentStep.correct) || (selectedAnswer === 0 && !currentStep.correct) ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
-              <p className="text-xl font-semibold mb-2">
+            <div className={`${isLessonOneAtlas ? 'lesson-atlas-feedback' : 'p-4 rounded-lg'} ${(selectedAnswer === 1 && currentStep.correct) || (selectedAnswer === 0 && !currentStep.correct) ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
+              <p className={isLessonOneAtlas ? 'lesson-atlas-feedback-title' : 'text-xl font-semibold mb-2'}>
                 {(selectedAnswer === 1 && currentStep.correct) || (selectedAnswer === 0 && !currentStep.correct) ? '✓ 正確!' : '✗ 錯誤'}
               </p>
-              <p className="text-lg text-gray-700">{currentStep.explanation}</p>
+              <p className={isLessonOneAtlas ? 'lesson-atlas-feedback-copy' : 'text-lg text-gray-700'}>{currentStep.explanation}</p>
             </div>
           )}
         </div>
       )}
 
       {currentStep?.type === 'match' && (
-        <div className="mb-8">
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800">{currentStep.prompt}</h2>
-          <p className="text-sm sm:text-base text-gray-700 mb-4">先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5 sm:space-y-2">
-              <h3 className="text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">選擇項目：</h3>
+        <div className={isLessonOneAtlas ? 'lesson-atlas-match' : 'mb-8'}>
+          <h2 className={isLessonOneAtlas ? 'lesson-atlas-question-title' : 'text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800'}>{currentStep.prompt}</h2>
+          <p className={isLessonOneAtlas ? 'lesson-atlas-match-instruction' : 'text-sm sm:text-base text-gray-700 mb-4'}>先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
+          <div className={isLessonOneAtlas ? 'lesson-atlas-match-grid' : 'grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4'}>
+            <div className={isLessonOneAtlas ? 'lesson-atlas-match-column' : 'space-y-1.5 sm:space-y-2'}>
+              <h3 className={isLessonOneAtlas ? 'lesson-atlas-match-heading' : 'text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2'}>選擇項目：</h3>
               {currentStep.pairs.map((pair, index) => {
                 const uniqueKey = `${pair.left}-${index}`;
                 const isMatched = matchedPairs.some((mp) => mp[0] === uniqueKey);
@@ -2045,7 +2052,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     key={uniqueKey}
                     onClick={() => handleMatchLeft(pair.left, index)}
                     disabled={isMatched}
-                    className={`w-full p-1.5 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
+                    className={`${isLessonOneAtlas ? 'lesson-atlas-match-option' : 'w-full p-1.5 sm:p-3 rounded-lg border-2 text-left text-xs sm:text-base lg:text-lg font-semibold'} transition-all ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
                         : selectedLeft === uniqueKey
@@ -2058,8 +2065,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 );
               })}
             </div>
-            <div className="space-y-1.5 sm:space-y-2">
-              <h3 className="text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2">配對選項：</h3>
+            <div className={isLessonOneAtlas ? 'lesson-atlas-match-column' : 'space-y-1.5 sm:space-y-2'}>
+              <h3 className={isLessonOneAtlas ? 'lesson-atlas-match-heading' : 'text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2'}>配對選項：</h3>
               {shuffledRights.map((item) => {
                 const isMatched = matchedPairs.some((mp) => mp[1] === item.id);
                 return (
@@ -2067,7 +2074,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     key={item.id}
                     onClick={() => handleMatchRight(item)}
                     disabled={isMatched}
-                    className={`w-full p-1.5 sm:p-3 rounded-lg border-2 text-left transition-all text-xs sm:text-base lg:text-lg font-semibold ${
+                    className={`${isLessonOneAtlas ? 'lesson-atlas-match-option' : 'w-full p-1.5 sm:p-3 rounded-lg border-2 text-left text-xs sm:text-base lg:text-lg font-semibold'} transition-all ${
                       isMatched
                         ? 'border-green-500 bg-green-50 text-green-700 cursor-not-allowed opacity-60'
                         : selectedLeft
@@ -2082,14 +2089,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             </div>
           </div>
           {matchMessage && (
-            <p className={`mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg font-semibold ${matchMessage.startsWith('✓') ? 'text-green-700' : 'text-red-700'}`}>
+            <p className={`${isLessonOneAtlas ? 'lesson-atlas-match-message' : 'mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg font-semibold'} ${matchMessage.startsWith('✓') ? 'text-green-700' : 'text-red-700'}`}>
               {matchMessage}
             </p>
           )}
-          <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-            <p className="text-xs sm:text-sm text-gray-700">已完成 {matchedCount}/{currentStep.pairs.length}</p>
+          <div className={isLessonOneAtlas ? 'lesson-atlas-match-status' : 'mt-3 sm:mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2'}>
+            <p className={isLessonOneAtlas ? 'lesson-atlas-match-count' : 'text-xs sm:text-sm text-gray-700'}>已完成 {matchedCount}/{currentStep.pairs.length}</p>
             {selectedLeft && (
-              <p className="text-xs sm:text-sm text-blue-600 font-medium">已選擇: {selectedLeft.split('-')[0]} → 請選擇配對選項</p>
+              <p className={isLessonOneAtlas ? 'lesson-atlas-match-selected' : 'text-xs sm:text-sm text-blue-600 font-medium'}>已選擇: {selectedLeft.split('-')[0]} → 請選擇配對選項</p>
             )}
           </div>
         </div>
@@ -2097,21 +2104,21 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
       {/* Action Buttons */}
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && !answered && (
-        <div className="flex flex-wrap gap-3">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
           <QuizActionButton label="檢查" onClick={handleCheck} disabled={selectedAnswer === null} />
         </div>
       )}
 
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
-        <div className="flex flex-wrap gap-3">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
           <QuizActionButton label="繼續" onClick={handleNext} />
         </div>
       )}
 
       {currentStep?.type === 'match' && isMatchComplete && (
-        <div className="flex flex-wrap gap-3">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
           <QuizActionButton
             label="繼續"
@@ -2128,7 +2135,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       )}
 
       {currentStep?.type === 'content' && (
-        <div className="flex flex-wrap gap-3">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
           <QuizActionButton label="繼續" onClick={handleNext} />
           {canSkipToQuiz && (
@@ -2138,7 +2145,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       )}
 
       {currentStep?.type === 'cards' && (
-        <div className="flex flex-wrap gap-3">
+        <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" />
           <QuizActionButton label="繼續" onClick={handleNext} />
           {canSkipToQuiz && (

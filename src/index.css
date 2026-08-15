@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -90,8 +92,438 @@ body {
   animation: slideIn 0.4s ease-in-out;
 }
 
+/* Lesson 1: Contemporary East Asian archival design / 藏書樓圖譜 */
+.lesson-atlas-shell {
+  position: relative;
+  width: min(100% - 2rem, 68rem);
+  margin: clamp(1rem, 3vw, 2.75rem) auto;
+  padding: clamp(1rem, 3vw, 2.25rem);
+  border: 1px solid #d8c9af;
+  background:
+    linear-gradient(90deg, rgba(13, 42, 74, 0.045) 0, rgba(13, 42, 74, 0.045) 1px, transparent 1px, transparent 100%),
+    linear-gradient(180deg, #fffdf7 0%, #f7f1e5 100%);
+  background-size: 2.4rem 100%, 100% 100%;
+  box-shadow: 14px 14px 0 rgba(18, 48, 77, 0.12), 0 18px 42px rgba(25, 42, 58, 0.1);
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+}
+
+.lesson-atlas-shell::before {
+  content: '五 行 圖 譜';
+  position: absolute;
+  top: 6.75rem;
+  left: -2.1rem;
+  writing-mode: vertical-rl;
+  letter-spacing: 0.32em;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.63rem;
+  color: #9a7840;
+}
+
+.lesson-atlas-header {
+  margin: -0.35rem -0.35rem 1.8rem;
+  padding: 1.2rem 1.35rem 1.1rem;
+  border: 1px solid #193b5c;
+  background: #0d2a4a;
+  color: #fffdf7;
+}
+
+.lesson-atlas-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.lesson-atlas-kicker {
+  margin-bottom: 0.45rem;
+  color: #e1c178;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.lesson-atlas-kicker span {
+  margin-left: 0.55rem;
+  color: #b7c6d1;
+  font-size: 0.59rem;
+}
+
+.lesson-atlas-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.lesson-atlas-subtitle {
+  margin-top: 0.55rem;
+  color: #dce7ee;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.lesson-atlas-header-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-direction: column;
+  white-space: nowrap;
+}
+
+.lesson-atlas-header-actions > button {
+  border-color: #d7a956 !important;
+  background: #fffdf7 !important;
+  color: #153756 !important;
+  box-shadow: none !important;
+}
+
+.lesson-atlas-step {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: #dce7ee;
+  font-size: 0.75rem;
+}
+
+.lesson-atlas-step b {
+  color: #e3c273;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+}
+
+.lesson-atlas-progress {
+  height: 5px;
+  margin-top: 1.15rem;
+  overflow: hidden;
+  background: rgba(255, 253, 247, 0.18);
+}
+
+.lesson-atlas-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d9ab58, #f4dda1);
+  transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lesson-atlas-shell .lesson-copy > h2,
+.lesson-atlas-shell .lesson-copy .copy-heading h2 {
+  font-family: 'Noto Serif TC', serif;
+}
+
+.lesson-atlas-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dfd2bc;
+}
+
+.lesson-atlas-actions > button {
+  min-width: 8rem;
+  flex: 1 1 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.lesson-atlas-actions > button:last-child {
+  box-shadow: 4px 4px 0 #d8b36d;
+}
+
+.lesson-atlas-stage,
+.lesson-atlas-quiz,
+.lesson-atlas-match {
+  margin-bottom: 1.25rem;
+}
+
+.lesson-atlas-question-title {
+  margin-bottom: 1rem;
+  color: #102b48;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.45rem, 2.55vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.lesson-atlas-hint {
+  margin-bottom: 0.9rem;
+}
+
+.lesson-atlas-hint-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0;
+  border-width: 1px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  transition: border-color 180ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lesson-atlas-hint-panel {
+  border-left: 4px solid #ca9b35;
+  background: #fff7d9;
+  padding: 0.85rem 1rem;
+}
+
+.lesson-atlas-hint-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+  color: #866414;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.lesson-atlas-hint-copy {
+  color: #55472c;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.lesson-atlas-option-list {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-atlas-option {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  min-height: 4rem;
+  border-radius: 0;
+  border-width: 1px;
+  padding: 0.75rem 0.9rem;
+  color: #223d58;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: left;
+  transition: border-color 180ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms cubic-bezier(0.23, 1, 0.32, 1), transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lesson-atlas-option:hover:not(:disabled) {
+  transform: translateX(3px);
+}
+
+.lesson-atlas-option-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.85rem;
+}
+
+.lesson-atlas-feedback {
+  margin-top: 0.9rem;
+  padding: 0.95rem 1rem;
+}
+
+.lesson-atlas-feedback-title {
+  margin-bottom: 0.3rem;
+  color: #153e2c;
+  font-size: 1.0625rem;
+  font-weight: 800;
+}
+
+.lesson-atlas-feedback-copy {
+  color: #334b40;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.lesson-atlas-truefalse-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-atlas-truefalse-card {
+  min-height: 9.5rem;
+  border-width: 1px;
+  border-radius: 0;
+  padding: 1.25rem 1rem;
+}
+
+.lesson-atlas-truefalse-mark {
+  margin-bottom: 0.3rem;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.lesson-atlas-truefalse-label {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.lesson-atlas-truefalse-copy {
+  margin-top: 0.25rem;
+  color: #657080;
+  font-size: 0.9rem;
+}
+
+.lesson-atlas-match-instruction {
+  margin-bottom: 1rem;
+  color: #526374;
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.lesson-atlas-match-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.lesson-atlas-match-column {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+}
+
+.lesson-atlas-match-heading {
+  margin-bottom: 0.2rem;
+  color: #5d4a28;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.lesson-atlas-match-option {
+  width: 100%;
+  min-height: 3.5rem;
+  border-width: 1px;
+  border-radius: 0;
+  padding: 0.7rem 0.85rem;
+  color: #233d57;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.lesson-atlas-match-message {
+  margin-top: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.lesson-atlas-match-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #dfd2bc;
+}
+
+.lesson-atlas-match-count,
+.lesson-atlas-match-selected {
+  font-size: 0.9rem;
+}
+
+.lesson-atlas-match-count {
+  color: #5a6773;
+}
+
+.lesson-atlas-match-selected {
+  color: #1e5f89;
+  font-weight: 600;
+}
+
+.lesson-atlas-finish {
+  text-align: center;
+}
+
+.lesson-atlas-finish h2 {
+  color: #102b48;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.lesson-atlas-finish > p {
+  color: #526374;
+  font-size: 1.05rem;
+}
+
+.lesson-atlas-finish > div {
+  border: 1px solid #b8d7b5;
+  border-radius: 0;
+  background: #f2f8ef;
+  box-shadow: 5px 5px 0 #dce9d8;
+}
+
+.lesson-atlas-finish > button {
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  box-shadow: 4px 4px 0 #d8b36d;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .lesson-atlas-shell {
+    width: min(100% - 1rem, 68rem);
+    margin: 0.5rem auto 1rem;
+    padding: 0.75rem;
+    box-shadow: 6px 6px 0 rgba(18, 48, 77, 0.12);
+  }
+
+  .lesson-atlas-shell::before {
+    display: none;
+  }
+
+  .lesson-atlas-header {
+    margin: 0 0 1.15rem;
+    padding: 1rem;
+  }
+
+  .lesson-atlas-header-row {
+    flex-direction: column;
+  }
+
+  .lesson-atlas-header-actions {
+    width: 100%;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .lesson-atlas-actions > button {
+    min-width: calc(50% - 0.4rem);
+  }
+
+  .lesson-atlas-question-title {
+    font-size: 1.6rem;
+  }
+
+  .lesson-atlas-truefalse-card {
+    min-height: 8.3rem;
+  }
+
+  .lesson-atlas-match-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-atlas-match-status {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .prose {
     font-size: 0.95rem;
   }

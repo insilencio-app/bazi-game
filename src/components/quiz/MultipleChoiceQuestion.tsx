@@ -16,6 +16,7 @@ interface MultipleChoiceQuestionProps {
   canUseHint?: boolean;
   hintXpCost?: number;
   size?: 'compact' | 'large';
+  appearance?: 'default' | 'atlas';
 }
 
 export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
@@ -33,6 +34,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   canUseHint = false,
   hintXpCost = 50,
   size = 'compact',
+  appearance = 'default',
 }) => {
   const isLarge = size === 'large';
 
@@ -58,7 +60,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 
   return (
     <>
-      <h2 className={isLarge ? 'text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800' : 'text-xl sm:text-2xl font-bold mb-6 text-gray-800'}>
+      <h2 className={appearance === 'atlas' ? 'lesson-atlas-question-title' : isLarge ? 'text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800' : 'text-xl sm:text-2xl font-bold mb-6 text-gray-800'}>
         {question}
       </h2>
 
@@ -70,28 +72,29 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
           onUseHint={onUseHint}
           canUseHint={canUseHint}
           hintXpCost={hintXpCost}
+          appearance={appearance}
         />
       )}
 
-      <div className="space-y-3 mb-6">
+      <div className={appearance === 'atlas' ? 'lesson-atlas-option-list' : 'space-y-3 mb-6'}>
         {options.map((option, idx) => (
           <button
             key={idx}
             onClick={() => onSelectAnswer(idx)}
             disabled={answered}
-            className={`w-full ${isLarge ? 'p-3 sm:p-5 text-sm sm:text-base lg:text-lg' : 'p-3 sm:p-4 text-sm sm:text-base'} text-left rounded-lg border-2 transition-all ${getOptionClasses(idx)} ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`${appearance === 'atlas' ? 'lesson-atlas-option' : `w-full ${isLarge ? 'p-3 sm:p-5 text-sm sm:text-base lg:text-lg' : 'p-3 sm:p-4 text-sm sm:text-base'} text-left rounded-lg border-2`} transition-all ${getOptionClasses(idx)} ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           >
-            <span className="font-semibold">{String.fromCharCode(65 + idx)}.</span> {option}
+            {appearance === 'atlas' ? <><span className="lesson-atlas-option-letter">{String.fromCharCode(65 + idx)}</span><span>{option}</span></> : <><span className="font-semibold">{String.fromCharCode(65 + idx)}.</span> {option}</>}
           </button>
         ))}
       </div>
 
       {showFeedback && (
-        <div className={`${isLarge ? 'p-3 sm:p-5 text-sm sm:text-base lg:text-lg' : 'p-4'} rounded-lg ${selectedAnswer === correctIndex ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
-          <p className={`font-semibold mb-2 ${isLarge ? 'text-base sm:text-lg' : ''}`}>
+        <div className={`${appearance === 'atlas' ? 'lesson-atlas-feedback' : `${isLarge ? 'p-3 sm:p-5 text-sm sm:text-base lg:text-lg' : 'p-4'} rounded-lg`} ${selectedAnswer === correctIndex ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
+          <p className={appearance === 'atlas' ? 'lesson-atlas-feedback-title' : `font-semibold mb-2 ${isLarge ? 'text-base sm:text-lg' : ''}`}>
             {selectedAnswer === correctIndex ? '✓ 正確!' : '✗ 錯誤'}
           </p>
-          <p className={`text-gray-700 ${isLarge ? 'text-sm sm:text-base' : ''}`}>{explanation}</p>
+          <p className={appearance === 'atlas' ? 'lesson-atlas-feedback-copy' : `text-gray-700 ${isLarge ? 'text-sm sm:text-base' : ''}`}>{explanation}</p>
         </div>
       )}
     </>
