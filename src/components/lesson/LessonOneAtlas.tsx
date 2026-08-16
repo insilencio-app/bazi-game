@@ -1,6 +1,6 @@
 /**
- * Style: 「藏書樓圖譜」— a local lesson-one module using indigo folios, gold paths, and one concept per interaction.
- * This component deliberately owns only the pre-quiz teaching layer; scoring and final assessment remain in LessonPage.
+ * Style: 「五行研習桌」— Lesson 1 uses an open parchment desk, a focused element file,
+ * and a full-canvas relationship map. Teaching interactions remain local; quiz logic stays in LessonPage.
  */
 import { useMemo, useState, type ReactNode } from 'react';
 
@@ -42,14 +42,11 @@ const NODE_POSITIONS: Array<{ name: ElementName; x: number; y: number }> = [
   { name: '水', x: 16, y: 35 },
 ];
 
-function AtlasHeading({ number, eyebrow, title, children }: { number: string; eyebrow: string; title: ReactNode; children?: ReactNode }) {
+function AtlasHeading({ number, eyebrow, title, children, inverse = false }: { number: string; eyebrow: string; title: ReactNode; children?: ReactNode; inverse?: boolean }) {
   return (
-    <div className="mb-6">
-      <div className="mb-3 flex items-center gap-2 text-xs font-bold tracking-[0.18em] text-[#9B7330]">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#B48A43] font-serif text-[11px]">{number}</span>
-        {eyebrow}
-      </div>
-      <h2 className="text-balance font-serif text-[clamp(1.75rem,3vw,2rem)] font-bold leading-[1.28] tracking-[-0.025em] text-[#102B48]">{title}</h2>
+    <div className={`atlas-study-heading ${inverse ? 'atlas-study-heading--inverse' : ''}`}>
+      <div className="atlas-study-kicker"><span>{number}</span>{eyebrow}</div>
+      <h2>{title}</h2>
       {children}
     </div>
   );
@@ -57,16 +54,12 @@ function AtlasHeading({ number, eyebrow, title, children }: { number: string; ey
 
 function RelationDiagram({ mode, activeRelation, onSelect }: { mode: MapMode; activeRelation: string; onSelect: (id: string) => void }) {
   const relations = RELATIONS[mode];
-  const accent = mode === 'sheng' ? '#E7C477' : '#D56D59';
+  const accent = mode === 'sheng' ? '#E7C477' : '#EF9A86';
   const active = relations.find((relation) => relation.id === activeRelation) ?? relations[0];
 
   return (
-    <div className="overflow-hidden border border-[#1A4264] bg-[#0D2A4A] p-3 shadow-[9px_9px_0_#E8DCC6] sm:p-5">
-      <div className="flex items-center justify-between text-xs font-semibold tracking-[0.12em] text-[#E5C57E]">
-        <span>五行關係圖</span>
-        <span className="text-[#DCE4E7]">{mode === 'sheng' ? '相生：支持與延續' : '相剋：制約與平衡'}</span>
-      </div>
-      <svg viewBox="0 0 100 100" className="mx-auto block h-[280px] max-w-full overflow-visible sm:h-[330px]" role="img" aria-label="五行關係互動圖解">
+    <div className="atlas-relation-diagram">
+      <svg viewBox="0 0 100 100" role="img" aria-label="五行關係互動圖解">
         <defs>
           <marker id="lesson-one-atlas-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
             <path d="M0,0 L6,3 L0,6 z" fill="currentColor" />
@@ -74,12 +67,12 @@ function RelationDiagram({ mode, activeRelation, onSelect }: { mode: MapMode; ac
         </defs>
         {relations.map((relation) => {
           const isActive = relation.id === active.id;
-          return <path key={relation.id} d={relation.path} onClick={() => onSelect(relation.id)} markerEnd="url(#lesson-one-atlas-arrow)" className="cursor-pointer fill-none transition-all duration-300" stroke={isActive ? accent : 'rgba(231,196,119,.25)'} color={isActive ? accent : 'rgba(231,196,119,.25)'} strokeWidth={isActive ? 3.2 : 2} strokeDasharray={isActive ? '8 4' : undefined} />;
+          return <path key={relation.id} d={relation.path} onClick={() => onSelect(relation.id)} markerEnd="url(#lesson-one-atlas-arrow)" className="cursor-pointer fill-none transition-all duration-300" stroke={isActive ? accent : 'rgba(231,196,119,.24)'} color={isActive ? accent : 'rgba(231,196,119,.24)'} strokeWidth={isActive ? 3.2 : 2} strokeDasharray={isActive ? '8 4' : undefined} />;
         })}
         {NODE_POSITIONS.map((node) => <g key={node.name}><circle cx={node.x} cy={node.y} r="10" fill="#FFFDF7" stroke="#E2C781" strokeWidth="1.3" /><text x={node.x} y={node.y + 4} textAnchor="middle" fill="#102E4C" fontSize="8" fontWeight="800">{node.name}</text></g>)}
       </svg>
-      <div className="mb-1 text-center text-sm font-bold tracking-[0.16em]" style={{ color: accent }}>{active.from} {mode === 'sheng' ? '生' : '剋'} {active.to}</div>
-      <p className="text-center text-xs text-slate-300">選擇任何一條關係，觀察它的方向。</p>
+      <div className="atlas-relation-caption" style={{ color: accent }}>{active.from} {mode === 'sheng' ? '生' : '剋'} {active.to}</div>
+      <p>選擇任何一條關係，觀察它的方向。</p>
     </div>
   );
 }
@@ -104,22 +97,57 @@ export function LessonOneAtlas({ stage }: { stage: LessonOneAtlasStage }) {
   };
 
   if (stage === 'intro') {
-    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="01" eyebrow="由結構開始" title="先睇方向，再談解讀。"><p className="mt-4 max-w-none text-[0.98rem] leading-8 text-slate-600 sm:text-[1.05rem]">五行不是需要死背的名詞清單，而是一套用來觀察關係、變化與傾向的學習語言。今課會先建立一張可重複使用的關係地圖。</p></AtlasHeading><div className="grid gap-3 sm:grid-cols-3"><div className="border-l-4 border-[#B48A43] bg-[#F7F1E6] p-4 text-sm text-[#665E51]"><b className="block text-[#89692C]">觀察一</b>先辨認五行的方向感。</div><div className="border-l-4 border-[#B48A43] bg-[#F7F1E6] p-4 text-sm text-[#665E51]"><b className="block text-[#89692C]">觀察二</b>再看相生與相剋的箭頭。</div><div className="border-l-4 border-[#B48A43] bg-[#F7F1E6] p-4 text-sm text-[#665E51]"><b className="block text-[#89692C]">導師註記</b>本課聚焦文化與學習框架，不作個人吉凶判斷。</div></div></div>;
+    return <section className="atlas-study-scene atlas-study-intro">
+      <div className="atlas-intro-watermark" aria-hidden="true">五</div>
+      <div className="atlas-intro-copy">
+        <AtlasHeading number="01" eyebrow="課前定位" title="先睇方向，再談解讀。"><p>五行不是需要死背的名詞清單，而是一套用來觀察關係、變化與傾向的學習語言。今課會先建立一張可重複使用的關係地圖。</p></AtlasHeading>
+      </div>
+      <ol className="atlas-intro-observations">
+        <li><span>01</span><div><b>先看方向</b><p>木、火、土、金、水，先不是性格標籤。</p></div></li>
+        <li><span>02</span><div><b>再讀關係</b><p>相生與相剋，才是五行如何運作的線索。</p></div></li>
+        <li><span>03</span><div><b>保持框架</b><p>本課聚焦文化與學習框架，不作個人吉凶判斷。</p></div></li>
+      </ol>
+    </section>;
   }
 
   if (stage === 'elements') {
-    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="02" eyebrow="五種方向" title="五行先不是性格，而是動態感。"><p className="mt-4 max-w-none text-[0.98rem] leading-8 text-slate-600 sm:text-[1.05rem]">點擊任一張典籍卡，先以簡潔的方向感認識木、火、土、金、水；你原有的方向、季節與情感資料都保留在此。</p></AtlasHeading><div className="grid grid-cols-5 gap-2 sm:gap-3">{ELEMENTS.map((element) => <button key={element.name} type="button" onClick={() => setSelectedElement(element.name)} className={`min-h-[112px] border p-2.5 text-left transition-all sm:min-h-[116px] sm:p-3 ${element.tone} ${selected.name === element.name ? 'scale-[1.03] ring-2 ring-[#D9B76E] ring-offset-2 shadow-lg' : 'hover:-translate-y-1 hover:shadow-md'}`}><span className="block font-serif text-3xl font-black sm:text-4xl">{element.name}</span><span className="mt-1.5 block text-[11px] font-bold tracking-wide opacity-80 sm:text-xs">{element.cue}</span></button>)}</div><div className={`mt-3 grid gap-2.5 border p-3 sm:grid-cols-[112px_1fr] ${selected.tone}`}><div><span className="font-serif text-5xl font-black">{selected.name}</span><p className="mt-0.5 text-sm font-semibold opacity-70">{selected.english}</p></div><div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[['方向', selected.direction], ['季節', selected.season], ['情感', selected.emotion], ['記憶', selected.cue]].map(([label, value]) => <div key={label} className="bg-white/70 p-2"><span className="lesson-atlas-element-label">{label}</span><span className="lesson-atlas-element-value">{value}</span></div>)}</div></div></div>;
+    return <section className="atlas-study-scene atlas-elements-scene">
+      <AtlasHeading number="02" eyebrow="五種方向" title="五行先不是性格，而是動態感。"><p>選一個元素，先從它的方向、季節和行動感認識它；五個元素不再是一排資料格，而是一份可以逐張翻閱的元素檔案。</p></AtlasHeading>
+      <div className="atlas-elements-layout">
+        <article className={`atlas-element-file ${selected.tone}`}>
+          <div className="atlas-element-file-mark" aria-hidden="true">{selected.name}</div>
+          <div className="atlas-element-file-title"><span>ELEMENT FILE</span><h3>{selected.name}</h3><p>{selected.english}</p></div>
+          <dl>
+            {[['方向', selected.direction], ['季節', selected.season], ['情感', selected.emotion], ['記憶', selected.cue]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+          </dl>
+        </article>
+        <div className="atlas-element-index" role="tablist" aria-label="五行元素">
+          {ELEMENTS.map((element, index) => <button key={element.name} type="button" role="tab" aria-selected={selected.name === element.name} onClick={() => setSelectedElement(element.name)} className={`atlas-element-tab ${element.tone} ${selected.name === element.name ? 'is-active' : ''}`}><span>{String(index + 1).padStart(2, '0')}</span><b>{element.name}</b><em>{element.cue}</em></button>)}
+        </div>
+      </div>
+    </section>;
   }
 
   if (stage === 'relations') {
     const relations = RELATIONS[mapMode];
-    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="03" eyebrow="關係圖譜" title={mapMode === 'sheng' ? '相生，是支持與延續。' : '相剋，是制約與平衡。'}><p className="mt-4 max-w-none text-[0.98rem] leading-8 text-slate-600 sm:text-[1.05rem]">一次只看一條線。你可以切換相生與相剋，再點擊關係索引或圖中的箭頭，確認每一個方向。</p></AtlasHeading><div className="mb-5 flex flex-wrap gap-2"><button type="button" onClick={() => chooseMode('sheng')} className={`rounded-full border px-4 py-2 text-sm font-bold ${mapMode === 'sheng' ? 'border-[#0D2A4A] bg-[#0D2A4A] text-white' : 'border-[#D8C8AB] bg-white text-[#40516A]'}`}>相生：支持與延續</button><button type="button" onClick={() => chooseMode('ke')} className={`rounded-full border px-4 py-2 text-sm font-bold ${mapMode === 'ke' ? 'border-[#8B4037] bg-[#8B4037] text-white' : 'border-[#D8C8AB] bg-white text-[#40516A]'}`}>相剋：制約與平衡</button></div><div className="grid items-stretch gap-6 lg:grid-cols-[0.92fr_1.08fr]"><div className="flex flex-col gap-2 border-y border-[#E2D7C5] py-3 lg:min-h-[400px]">{relations.map((relation, index) => <button key={relation.id} type="button" onClick={() => setActiveRelation(relation.id)} aria-pressed={activeRelation === relation.id} className={`group flex min-h-[58px] w-full items-center justify-between border px-4 text-left text-base font-bold transition-all ${activeRelation === relation.id ? (mapMode === 'sheng' ? 'border-[#B48A43] bg-[#F3E8CF] text-[#775A29] shadow-[4px_4px_0_#E7D6B3]' : 'border-[#C76756] bg-[#F5E4DF] text-[#8B4037] shadow-[4px_4px_0_#E8C8C1]') : 'border-[#DED5C3] bg-[#FBF8F1] text-slate-600 hover:-translate-y-0.5 hover:border-[#B48A43] hover:shadow-sm'}`}><span className="flex items-center gap-3"><span className="font-serif text-xl">{relation.from}</span><span className="font-sans text-sm font-medium opacity-60">{mapMode === 'sheng' ? '生' : '剋'} →</span><span className="font-serif text-xl">{relation.to}</span></span><span className="text-[11px] font-semibold tracking-[0.08em] opacity-60">{activeRelation === relation.id ? '正在檢視' : `關係 ${String(index + 1).padStart(2, '0')}`}</span></button>)}</div><RelationDiagram mode={mapMode} activeRelation={activeRelation} onSelect={setActiveRelation} /></div></div>;
+    return <section className="atlas-study-scene atlas-relations-scene">
+      <div className="atlas-relations-intro">
+        <AtlasHeading number="03" eyebrow="關係圖譜" inverse title={mapMode === 'sheng' ? '相生，是支持與延續。' : '相剋，是制約與平衡。'}><p>不必一次背下整個循環。先選一條線，再看箭頭由哪裡出發、指向哪裡。</p></AtlasHeading>
+        <div className="atlas-relation-modes"><button type="button" onClick={() => chooseMode('sheng')} aria-pressed={mapMode === 'sheng'} className={mapMode === 'sheng' ? 'is-active' : ''}>相生：支持與延續</button><button type="button" onClick={() => chooseMode('ke')} aria-pressed={mapMode === 'ke'} className={mapMode === 'ke' ? 'is-active is-ke' : ''}>相剋：制約與平衡</button></div>
+      </div>
+      <div className="atlas-relation-workbench">
+        <div className="atlas-relation-index">
+          {relations.map((relation, index) => <button key={relation.id} type="button" onClick={() => setActiveRelation(relation.id)} aria-pressed={activeRelation === relation.id} className={activeRelation === relation.id ? 'is-active' : ''}><span>{String(index + 1).padStart(2, '0')}</span><b>{relation.from} <i>{mapMode === 'sheng' ? '生' : '剋'} →</i> {relation.to}</b><em>{activeRelation === relation.id ? '正在檢視' : '選擇關係'}</em></button>)}
+        </div>
+        <RelationDiagram mode={mapMode} activeRelation={activeRelation} onSelect={setActiveRelation} />
+      </div>
+    </section>;
   }
 
   if (stage === 'practice') {
     const card = (id: 'waterWood' | 'waterFire', target: ElementName) => <article className="border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[6px_6px_0_#EEE2CE]"><div className="flex items-center gap-3"><span className="font-serif text-4xl text-sky-800">水</span><span className="text-xl text-[#B48A43]">→</span><span className={`font-serif text-4xl ${target === '木' ? 'text-emerald-800' : 'text-rose-800'}`}>{target}</span></div><h3 className="mt-3 font-serif text-[22px] font-bold text-[#183452]">水對{target}</h3><p className="mt-2 text-[15px] leading-6 text-slate-600">先判斷方向，再看導師解釋。</p><div className="mt-5 grid grid-cols-2 gap-2"><button onClick={() => answer(id, '相生')} className={`min-h-11 border px-3 py-2 text-base font-bold transition-colors ${answers[id] === '相生' ? 'border-[#B48A43] bg-[#F2E6CC] text-[#765B2D]' : 'border-[#DDD2BF] bg-[#FBF8F1] text-slate-600 hover:border-[#B48A43]'}`}>相生</button><button onClick={() => answer(id, '相剋')} className={`min-h-11 border px-3 py-2 text-base font-bold transition-colors ${answers[id] === '相剋' ? 'border-[#C76756] bg-[#F5E4DF] text-[#8B4037]' : 'border-[#DDD2BF] bg-[#FBF8F1] text-slate-600 hover:border-[#C76756]'}`}>相剋</button></div></article>;
-    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="04" eyebrow="導師帶做" title="同一個「水」，對象不同，關係便不同。"><p className="mt-4 max-w-none text-[0.98rem] leading-8 text-slate-600 sm:text-[1.05rem]">這兩題不計入最後分數；它們用來讓你在進入正式測驗前，先把方向看清楚。</p></AtlasHeading><div className="grid gap-4 sm:grid-cols-2">{card('waterWood', '木')}{card('waterFire', '火')}</div>{feedback && <div className="mt-5 border-l-4 border-emerald-500 bg-emerald-50 px-4 py-3 text-[15px] font-semibold text-emerald-800">{feedback}</div>}</div>;
+    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="04" eyebrow="導師帶做" title="同一個「水」，對象不同，關係便不同。"><p>這兩題不計入最後分數；它們用來讓你在進入正式測驗前，先把方向看清楚。</p></AtlasHeading><div className="grid gap-4 sm:grid-cols-2">{card('waterWood', '木')}{card('waterFire', '火')}</div>{feedback && <div className="mt-5 border-l-4 border-emerald-500 bg-emerald-50 px-4 py-3 text-[15px] font-semibold text-emerald-800">{feedback}</div>}</div>;
   }
 
-  return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="05" eyebrow="重點回顧" title="把這三句帶走，然後進入正式測驗。"><p className="mt-4 max-w-none text-[0.98rem] leading-8 text-slate-600 sm:text-[1.05rem]">以下重點卡是進入原有測驗前的最後一次快速整理。下一步開始後，題庫、分數、提示與完成流程仍會完全沿用你現有的系統。</p></AtlasHeading><div className="grid gap-3 sm:grid-cols-3"><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">一</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">五行</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">木・火・土・金・水</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">二</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相生</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">支持與延續</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">三</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相剋</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">制約與平衡</span></div></div></div>;
+  return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="05" eyebrow="重點回顧" title="把這三句帶走，然後進入正式測驗。"><p>以下重點卡是進入原有測驗前的最後一次快速整理。下一步開始後，題庫、分數、提示與完成流程仍會完全沿用你現有的系統。</p></AtlasHeading><div className="grid gap-3 sm:grid-cols-3"><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">一</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">五行</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">木・火・土・金・水</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">二</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相生</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">支持與延續</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">三</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相剋</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">制約與平衡</span></div></div></div>;
 }

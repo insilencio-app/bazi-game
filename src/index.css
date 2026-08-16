@@ -92,12 +92,12 @@ body {
   animation: slideIn 0.4s ease-in-out;
 }
 
-/* Lesson 1: Contemporary East Asian archival design / 藏書樓圖譜 */
+/* Lesson 1: 五行研習桌 — open parchment study scenes, indigo map canvas, and restrained gold wayfinding. */
 .lesson-atlas-shell {
   position: relative;
   width: min(100% - 2rem, 68rem);
   margin: clamp(1rem, 3vw, 2.75rem) auto;
-  padding: clamp(1rem, 3vw, 2.25rem);
+  padding: clamp(0.9rem, 2.4vw, 1.75rem);
   border: 1px solid #d8c9af;
   background:
     linear-gradient(90deg, rgba(13, 42, 74, 0.045) 0, rgba(13, 42, 74, 0.045) 1px, transparent 1px, transparent 100%),
@@ -120,9 +120,9 @@ body {
 }
 
 .lesson-atlas-header {
-  margin: -0.35rem -0.35rem 1.8rem;
-  padding: 1.2rem 1.35rem 1.1rem;
-  border: 1px solid #193b5c;
+  margin: 0 0 1.15rem;
+  padding: 1rem 1.2rem 0.9rem;
+  border: 0;
   background: #0d2a4a;
   color: #fffdf7;
 }
@@ -150,7 +150,7 @@ body {
 
 .lesson-atlas-title {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+  font-size: clamp(1.55rem, 3.4vw, 2.25rem);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.15;
@@ -193,8 +193,8 @@ body {
 }
 
 .lesson-atlas-progress {
-  height: 5px;
-  margin-top: 1.15rem;
+  height: 3px;
+  margin-top: 0.85rem;
   overflow: hidden;
   background: rgba(255, 253, 247, 0.18);
 }
@@ -208,6 +208,399 @@ body {
 .lesson-atlas-shell .lesson-copy > h2,
 .lesson-atlas-shell .lesson-copy .copy-heading h2 {
   font-family: 'Noto Serif TC', serif;
+}
+
+.atlas-study-scene {
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid #0d2a4a;
+  background: #fffdf7;
+}
+
+.atlas-study-heading {
+  position: relative;
+  z-index: 1;
+}
+
+.atlas-study-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #9b7330;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.atlas-study-kicker span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid currentColor;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.72rem;
+}
+
+.atlas-study-heading h2 {
+  margin-top: 0.85rem;
+  color: #102b48;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.8rem, 3vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.22;
+}
+
+.atlas-study-heading p {
+  max-width: 42rem;
+  margin-top: 1rem;
+  color: #5c6470;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.atlas-study-heading--inverse .atlas-study-kicker,
+.atlas-study-heading--inverse h2 {
+  color: #fff8e9;
+}
+
+.atlas-study-heading--inverse p {
+  color: #c8d4dc;
+}
+
+.atlas-study-intro {
+  display: grid;
+  gap: 2rem;
+  min-height: 25rem;
+  padding: clamp(1.5rem, 4vw, 3.6rem);
+  isolation: isolate;
+}
+
+.atlas-intro-watermark {
+  position: absolute;
+  z-index: -1;
+  top: -0.75rem;
+  right: 3.5%;
+  color: rgba(13, 42, 74, 0.055);
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(12rem, 28vw, 22rem);
+  font-weight: 900;
+  line-height: 0.9;
+}
+
+.atlas-intro-copy {
+  max-width: 43rem;
+}
+
+.atlas-intro-observations {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  max-width: 58rem;
+  border-top: 1px solid #d9ccb6;
+}
+
+.atlas-intro-observations li {
+  display: grid;
+  grid-template-columns: 2.9rem 1fr;
+  gap: 0.8rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid #d9ccb6;
+}
+
+.atlas-intro-observations li > span {
+  color: #aa8138;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.atlas-intro-observations b {
+  display: inline-block;
+  color: #153756;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.1rem;
+}
+
+.atlas-intro-observations p {
+  margin-top: 0.25rem;
+  color: #626a71;
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.atlas-elements-scene {
+  padding: clamp(1.5rem, 3.7vw, 3.2rem);
+}
+
+.atlas-elements-layout {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.atlas-element-file {
+  position: relative;
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  align-content: start;
+  gap: 1.15rem 1.5rem;
+  min-height: 22rem;
+  padding: clamp(1.5rem, 3vw, 2.35rem);
+  border: 1px solid;
+  overflow: hidden;
+}
+
+.atlas-element-file-mark {
+  position: absolute;
+  right: -0.1rem;
+  bottom: -4.6rem;
+  opacity: 0.1;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.atlas-element-file-title {
+  position: relative;
+  z-index: 1;
+}
+
+.atlas-element-file-title > span {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  opacity: 0.72;
+}
+
+.atlas-element-file-title h3 {
+  margin-top: 0.3rem;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 6.2rem;
+  font-weight: 900;
+  line-height: 0.95;
+}
+
+.atlas-element-file-title p {
+  margin-top: 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+}
+
+.atlas-element-file dl {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid currentColor;
+}
+
+.atlas-element-file dl > div {
+  min-height: 5rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid currentColor;
+}
+
+.atlas-element-file dl > div:nth-child(odd) {
+  border-right: 1px solid currentColor;
+  padding-right: 1rem;
+}
+
+.atlas-element-file dl > div:nth-child(even) {
+  padding-left: 1rem;
+}
+
+.atlas-element-file dt {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  opacity: 0.65;
+}
+
+.atlas-element-file dd {
+  margin-top: 0.38rem;
+  overflow-wrap: anywhere;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.atlas-element-index {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.atlas-element-tab {
+  display: grid;
+  grid-template-columns: 2.3rem 2.4rem 1fr;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 4.15rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid;
+  text-align: left;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.atlas-element-tab:hover,
+.atlas-element-tab.is-active {
+  transform: translateX(-0.35rem);
+  box-shadow: 5px 5px 0 rgba(13, 42, 74, 0.15);
+}
+
+.atlas-element-tab > span {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  opacity: 0.62;
+}
+
+.atlas-element-tab b {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.6rem;
+}
+
+.atlas-element-tab em {
+  font-size: 0.86rem;
+  font-style: normal;
+  font-weight: 700;
+  opacity: 0.78;
+}
+
+.atlas-relations-scene {
+  padding: clamp(1.5rem, 3.7vw, 3.2rem);
+  border-color: #e1c178;
+  background: #0d2a4a;
+}
+
+.atlas-relations-intro {
+  display: grid;
+  gap: 1.2rem;
+  align-items: end;
+}
+
+.atlas-relation-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.atlas-relation-modes button {
+  min-height: 2.65rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(255, 248, 233, 0.36);
+  background: transparent;
+  color: #e9edf0;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.atlas-relation-modes button.is-active {
+  border-color: #e7c477;
+  background: #e7c477;
+  color: #183452;
+}
+
+.atlas-relation-modes button.is-active.is-ke {
+  border-color: #ef9a86;
+  background: #ef9a86;
+  color: #5a2019;
+}
+
+.atlas-relation-workbench {
+  display: grid;
+  gap: 1.25rem;
+  align-items: stretch;
+  margin-top: 2rem;
+}
+
+.atlas-relation-index {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.atlas-relation-index button {
+  display: grid;
+  grid-template-columns: 2.35rem 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3.9rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(255, 248, 233, 0.18);
+  background: rgba(255, 253, 247, 0.045);
+  color: #e9edf0;
+  text-align: left;
+  transition: background-color 160ms cubic-bezier(0.23, 1, 0.32, 1), transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.atlas-relation-index button:hover,
+.atlas-relation-index button.is-active {
+  border-color: #e7c477;
+  background: rgba(231, 196, 119, 0.17);
+  transform: translateX(0.25rem);
+}
+
+.atlas-relation-index span,
+.atlas-relation-index em {
+  color: #e7c477;
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.atlas-relation-index b {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.15rem;
+}
+
+.atlas-relation-index i {
+  color: #bfcbd1;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.atlas-relation-diagram {
+  display: flex;
+  min-height: 25rem;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 248, 233, 0.24);
+  background: rgba(0, 0, 0, 0.11);
+}
+
+.atlas-relation-diagram svg {
+  display: block;
+  width: min(100%, 28rem);
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.atlas-relation-caption {
+  margin-top: 0.25rem;
+  text-align: center;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.atlas-relation-diagram > p {
+  margin-top: 0.55rem;
+  color: #c8d4dc;
+  font-size: 0.82rem;
+  text-align: center;
 }
 
 .lesson-atlas-actions {
