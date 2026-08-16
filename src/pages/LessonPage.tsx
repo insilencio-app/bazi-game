@@ -955,45 +955,47 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             }));
             return (
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
+                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
                   {grouped.map(({ element, stems, style }) => (
                     <div key={element} className="flex flex-col gap-2">
                       <div className={`rounded-xl border ${style.border} ${style.bg} px-2 py-1.5 text-center shadow-sm`}>
                         <span className={`text-xs sm:text-base font-black tracking-[0.18em] ${style.text}`}>{element}</span>
                       </div>
 
-                      {stems.map((stem) => (
-                        <div
-                          key={stem.id}
-                          className={`group relative overflow-hidden rounded-xl border ${style.border} ${style.bg} p-1.5 shadow-[0_8px_18px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(15,23,42,0.08)]`}
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-transparent to-white/10" />
-                          <div className="relative flex flex-col items-center gap-1">
-                            <div className="flex w-full items-center justify-between gap-1">
-                              <span className={`inline-flex items-center rounded-full border ${style.border} bg-white/70 px-1 py-0.5 text-[8px] font-bold ${style.text}`}>
-                                {stem.yin_yang === 'yang' ? '陽' : '陰'}
-                              </span>
-                              <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-gray-500">
-                                {stem.name_en}
-                              </span>
-                            </div>
-
-                            <span className={`text-2xl font-black leading-none ${style.text}`}>{stem.name_cn}</span>
-
-                            <div className={`rounded-full border ${style.border} bg-white/75 px-1.5 py-0.5`}>
-                              <span className={`text-[9px] font-semibold ${style.text}`}>{stem.element}</span>
-                            </div>
-
-                            <div className="flex flex-wrap justify-center gap-1">
-                              {stem.personality_traits.slice(0, 1).map((trait) => (
-                                <span key={trait} className="rounded-full bg-white/80 px-1.5 py-0.5 text-[8px] font-medium text-gray-700">
-                                  {trait}
+                      <div className="grid grid-cols-2 gap-2">
+                        {stems.map((stem) => (
+                          <div
+                            key={stem.id}
+                            className={`group relative overflow-hidden rounded-xl border ${style.border} ${style.bg} p-1.5 shadow-[0_8px_18px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(15,23,42,0.08)]`}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-transparent to-white/10" />
+                            <div className="relative flex flex-col items-center gap-1">
+                              <div className="flex w-full items-center justify-between gap-1">
+                                <span className={`inline-flex items-center rounded-full border ${style.border} bg-white/70 px-1 py-0.5 text-[8px] font-bold ${style.text}`}>
+                                  {stem.yin_yang === 'yang' ? '陽' : '陰'}
                                 </span>
-                              ))}
+                                <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                                  {stem.name_en}
+                                </span>
+                              </div>
+
+                              <span className={`text-2xl font-black leading-none ${style.text}`}>{stem.name_cn}</span>
+
+                              <div className={`rounded-full border ${style.border} bg-white/75 px-1.5 py-0.5`}>
+                                <span className={`text-[9px] font-semibold ${style.text}`}>{stem.element}</span>
+                              </div>
+
+                              <div className="flex flex-wrap justify-center gap-1">
+                                {stem.personality_traits.slice(0, 1).map((trait) => (
+                                  <span key={trait} className="rounded-full bg-white/80 px-1.5 py-0.5 text-[8px] font-medium text-gray-700">
+                                    {trait}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
