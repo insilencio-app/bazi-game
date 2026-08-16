@@ -12,25 +12,27 @@ interface ElementsViewProps {
 
 export const ElementsView: React.FC<ElementsViewProps> = ({ selectedElement, onElementClick, onBack }) => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-3 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">五行基礎</h1>
-            <p className="text-xs sm:text-sm lg:text-base opacity-90 mt-1 sm:mt-2">Five Elements: Wood, Fire, Earth, Metal, Water</p>
+    <div className="bazi-home-shell min-h-screen">
+      <header className="bazi-home-header">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div>
+              <h1 className="bazi-home-title text-3xl sm:text-4xl lg:text-5xl">五行基礎</h1>
+              <p className="bazi-home-subtitle mt-1">Five Elements: Wood, Fire, Earth, Metal, Water</p>
+            </div>
+            <button
+              onClick={onBack}
+              className="bazi-home-cta bazi-home-cta-secondary max-w-max px-5 sm:px-6"
+            >
+              🏠 返回菜單
+            </button>
           </div>
-          <button
-            onClick={onBack}
-            className="bg-red-500 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-red-600 font-bold text-sm sm:text-base lg:text-lg transition-all hover:scale-105 whitespace-nowrap"
-          >
-            🏠 返回菜單
-          </button>
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4">五行循環圖</h2>
+      <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        <div className="bazi-home-panel p-5 sm:p-6 mb-8">
+          <h2 className="bazi-home-section-title mb-4">五行循環圖</h2>
           <ElementWheel onElementClick={onElementClick} />
         </div>
 
@@ -47,29 +49,29 @@ export const ElementsView: React.FC<ElementsViewProps> = ({ selectedElement, onE
         </div>
 
         {selectedElement && (
-          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4">
+          <div className="bazi-home-panel p-4 sm:p-6">
+            <h2 className="bazi-home-section-title mb-4">
               {selectedElement.symbol} {selectedElement.name_cn} ({selectedElement.name_en})
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
-              <div>
-                <p className="text-xs sm:text-sm text-gray-600">方向</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{selectedElement.direction}</p>
+              <div className="bazi-lite-stat-box">
+                <p className="bazi-lite-stat-label">方向</p>
+                <p className="bazi-lite-stat-value">{selectedElement.direction}</p>
               </div>
-              <div>
-                <p className="text-xs sm:text-sm text-gray-600">季節</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{selectedElement.season}</p>
+              <div className="bazi-lite-stat-box">
+                <p className="bazi-lite-stat-label">季節</p>
+                <p className="bazi-lite-stat-value">{selectedElement.season}</p>
               </div>
-              <div>
-                <p className="text-xs sm:text-sm text-gray-600">情感</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{selectedElement.emotion}</p>
+              <div className="bazi-lite-stat-box">
+                <p className="bazi-lite-stat-label">情感</p>
+                <p className="bazi-lite-stat-value">{selectedElement.emotion}</p>
               </div>
-              <div>
-                <p className="text-xs sm:text-sm text-gray-600">顏色</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{selectedElement.color}</p>
+              <div className="bazi-lite-stat-box">
+                <p className="bazi-lite-stat-label">顏色</p>
+                <p className="bazi-lite-stat-value">{selectedElement.color}</p>
               </div>
             </div>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-700">{selectedElement.description}</p>
+            <p className="bazi-home-section-copy">{selectedElement.description}</p>
           </div>
         )}
       </div>

@@ -14,21 +14,18 @@ export const ElementWheel: React.FC<ElementWheelProps> = ({ onElementClick }) =>
   ];
 
   const colorMap: { [key: string]: string } = {
-    green: 'from-green-400 to-green-600',
-    red: 'from-red-400 to-red-600',
-    yellow: 'from-yellow-400 to-yellow-600',
-    gray: 'from-gray-400 to-gray-600',
-    blue: 'from-blue-400 to-blue-600',
+    green: '#8bbd8f',
+    red: '#d98b7c',
+    yellow: '#d2b564',
+    gray: '#b7bcc3',
+    blue: '#7da8cf',
   };
 
   return (
-    <div className="flex justify-center items-center py-8">
-      <div className="relative w-96 h-96">
+    <div className="flex justify-center items-center py-6">
+      <div className="relative w-80 h-80 sm:w-96 sm:h-96">
         <svg className="w-full h-full" viewBox="0 0 400 400">
-          {/* Center circle */}
-          <circle cx="200" cy="200" r="30" fill="#888" opacity="0.3" />
-          
-          {/* Element positions in circle */}
+          <circle cx="200" cy="200" r="30" fill="#102E4C" opacity="0.16" />
           {elements.map((el, idx) => {
             const angle = (idx * 72 - 90) * (Math.PI / 180);
             const radius = 140;
@@ -37,26 +34,21 @@ export const ElementWheel: React.FC<ElementWheelProps> = ({ onElementClick }) =>
 
             return (
               <g key={idx}>
-                {/* Connection line to center */}
-                <line x1="200" y1="200" x2={x} y2={y} stroke="#ccc" strokeWidth="2" />
-                
-                {/* Element circle */}
+                <line x1="200" y1="200" x2={x} y2={y} stroke="#d9c4a1" strokeWidth="2" />
                 <circle
                   cx={x}
                   cy={y}
-                  r="45"
+                  r="44"
                   fill={colorMap[el.color]}
-                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  className="cursor-pointer transition-opacity duration-200 hover:opacity-80"
                   onClick={() => onElementClick?.(el.name)}
                 />
-
-                {/* Element text */}
                 <text
                   x={x}
                   y={y}
                   textAnchor="middle"
                   dy="0.3em"
-                  className="text-2xl font-bold fill-white pointer-events-none"
+                  className="pointer-events-none text-2xl font-bold fill-white"
                 >
                   {el.emoji}
                 </text>
@@ -65,13 +57,12 @@ export const ElementWheel: React.FC<ElementWheelProps> = ({ onElementClick }) =>
           })}
         </svg>
 
-        {/* Legend */}
-        <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4 text-sm mt-4">
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center flex-wrap gap-2 sm:gap-4 text-sm mt-4">
           {elements.map((el) => (
-            <div key={el.name} className="text-center">
-              <span className="text-3xl">{el.emoji}</span>
-              <p className="font-bold text-lg">{el.name}</p>
-              <p className="text-gray-600 text-base">{el.en}</p>
+            <div key={el.name} className="text-center px-1 py-1">
+              <span className="text-2xl sm:text-3xl">{el.emoji}</span>
+              <p className="font-bold text-sm sm:text-lg text-[#102E4C]">{el.name}</p>
+              <p className="text-[#5d6975] text-xs sm:text-sm">{el.en}</p>
             </div>
           ))}
         </div>

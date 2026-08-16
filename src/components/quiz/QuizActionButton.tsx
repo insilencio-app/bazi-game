@@ -27,21 +27,24 @@ export const QuizActionButton: React.FC<QuizActionButtonProps> = ({
     size === 'compact'
       ? 'py-2 px-4 text-sm sm:text-base'
       : 'py-3 sm:py-4 text-sm sm:text-lg lg:text-xl';
-  const baseClassName = `font-bold rounded-lg transition-colors ${sizeClassName} ${widthClassName}`;
 
   const variantClassName =
     variant === 'secondary'
-      ? 'bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed'
+      ? 'bazi-lesson-nav-button bazi-lesson-nav-button--secondary'
       : variant === 'danger'
-      ? 'bg-red-500 text-white hover:bg-red-600'
+      ? 'bazi-lesson-nav-button bazi-lesson-nav-button--danger'
       : variant === 'muted'
-      ? 'bg-gray-600 text-white hover:bg-gray-700'
+      ? 'bazi-lesson-nav-button bazi-lesson-nav-button--muted'
       : variant === 'accent'
-      ? 'bg-amber-500 text-white hover:bg-amber-600'
-      : 'bg-blue-600 text-white hover:bg-blue-700';
+      ? 'bazi-lesson-nav-button bazi-lesson-nav-button--accent'
+      : 'bazi-lesson-nav-button bazi-lesson-nav-button--primary';
 
   return (
-    <button onClick={onClick} disabled={disabled} className={`${baseClassName} ${variantClassName} ${className ?? ''}`.trim()}>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${sizeClassName} ${widthClassName} ${variantClassName} ${className ?? ''}`.trim()}
+    >
       {label}
     </button>
   );

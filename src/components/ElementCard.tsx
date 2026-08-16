@@ -8,11 +8,11 @@ interface ElementProps {
 }
 
 const COLOR_CLASS_MAP: Record<'green' | 'red' | 'yellow' | 'gray' | 'blue', string> = {
-  green: 'bg-green-50 border-green-300',
-  red: 'bg-red-50 border-red-300',
-  yellow: 'bg-yellow-50 border-yellow-300',
-  gray: 'bg-gray-50 border-gray-300',
-  blue: 'bg-blue-50 border-blue-300',
+  green: 'bazi-element-card green',
+  red: 'bazi-element-card red',
+  yellow: 'bazi-element-card yellow',
+  gray: 'bazi-element-card gray',
+  blue: 'bazi-element-card blue',
 };
 
 const getColorClassName = (color: string): string => {
@@ -25,10 +25,10 @@ const getColorClassName = (color: string): string => {
 
 export const ElementCard: React.FC<ElementProps> = ({ name, element, color, emoji }) => {
   return (
-    <div className={`p-6 rounded-lg shadow-lg border-2 text-center cursor-pointer hover:shadow-xl transition-shadow ${getColorClassName(color)}`}>
-      <div className="text-6xl mb-2">{emoji}</div>
-      <h3 className="text-4xl font-bold mb-2">{element}</h3>
-      <p className="text-lg text-gray-700">{name}</p>
+    <div className={getColorClassName(color)}>
+      <div className="bazi-element-emoji">{emoji}</div>
+      <h3 className="bazi-element-name">{element}</h3>
+      <p className="bazi-element-caption">{name}</p>
     </div>
   );
 };

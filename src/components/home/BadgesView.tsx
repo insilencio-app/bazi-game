@@ -21,19 +21,21 @@ export const BadgesView: React.FC<BadgesViewProps> = ({
   onBack,
 }) => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white p-3 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">徽章圖鑑</h1>
-            <p className="text-sm sm:text-base opacity-95 mt-1">已解鎖 {unlockedBadgeIds.length}</p>
+    <div className="bazi-home-shell min-h-screen">
+      <header className="bazi-home-header">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div>
+              <h1 className="bazi-home-title text-3xl sm:text-4xl lg:text-5xl">徽章圖鑑</h1>
+              <p className="bazi-home-subtitle mt-1">已解鎖 {unlockedBadgeIds.length}</p>
+            </div>
+            <button
+              onClick={onBack}
+              className="bazi-home-cta bazi-home-cta-secondary max-w-max px-5 sm:px-6"
+            >
+              🏠 返回主頁
+            </button>
           </div>
-          <button
-            onClick={onBack}
-            className="bg-red-500 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-red-600 font-bold text-sm sm:text-base lg:text-lg transition-all hover:scale-105 whitespace-nowrap"
-          >
-            🏠 返回主頁
-          </button>
         </div>
       </header>
 
@@ -46,22 +48,18 @@ export const BadgesView: React.FC<BadgesViewProps> = ({
             return (
               <div
                 key={badgeId}
-                className={`rounded-xl border p-3 sm:p-4 transition-all ${
-                  unlocked
-                    ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 shadow'
-                    : 'bg-gray-100 border-gray-200'
-                }`}
+                className={`bazi-badge-card ${unlocked ? 'is-unlocked' : 'is-locked'}`}
               >
                 <div className="flex items-start gap-2.5 sm:gap-3">
-                  <p className={`text-3xl sm:text-4xl shrink-0 ${unlocked ? '' : 'grayscale opacity-40'}`}>{badge.emoji}</p>
+                  <p className={`bazi-badge-emoji ${unlocked ? '' : 'is-locked-emoji'}`}>{badge.emoji}</p>
                   <div className="min-w-0">
-                    <p className={`text-sm sm:text-base font-semibold ${unlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+                    <p className={`bazi-badge-name ${unlocked ? 'is-unlocked-text' : 'is-locked-text'}`}>
                       {badge.name}
                     </p>
-                    <p className={`text-xs sm:text-sm mt-1 leading-relaxed ${unlocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                    <p className={`bazi-badge-hint ${unlocked ? 'is-unlocked-text' : 'is-locked-text'}`}>
                       {badge.hintLong}
                     </p>
-                    <p className={`text-xs mt-2 ${unlocked ? 'text-amber-700 font-medium' : 'text-gray-400'}`}>
+                    <p className={`bazi-badge-status ${unlocked ? 'is-unlocked-status' : 'is-locked-status'}`}>
                       {unlocked ? '已解鎖' : `條件：${badge.hintShort}`}
                     </p>
                   </div>

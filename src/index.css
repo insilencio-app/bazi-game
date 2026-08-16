@@ -23,6 +23,616 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #f5efe5;
+  color: #183452;
+}
+
+.bazi-home-shell {
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.7), transparent 28%),
+    linear-gradient(180deg, #f7f1e8 0%, #f1e7d8 100%);
+  color: #183452;
+  font-family: 'Noto Sans TC', 'Segoe UI', sans-serif;
+}
+
+.bazi-home-header {
+  background: linear-gradient(135deg, #102e4c 0%, #183f5f 32%, #1e4c6d 100%);
+  border-bottom: 1px solid rgba(232, 215, 172, 0.55);
+  box-shadow: 0 18px 35px rgba(16, 46, 76, 0.16);
+}
+
+.bazi-home-title {
+  font-family: 'Noto Serif TC', 'Microsoft JhengHei', serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  color: #fffdf7;
+}
+
+.bazi-home-subtitle {
+  margin-top: 0.25rem;
+  color: rgba(255, 253, 247, 0.82);
+  font-size: clamp(0.8rem, 1.4vw, 1.2rem);
+  letter-spacing: 0.02em;
+}
+
+.bazi-home-panel {
+  background: rgba(255, 253, 247, 0.88);
+  border: 1px solid rgba(184, 157, 103, 0.32);
+  border-radius: 1.5rem;
+  box-shadow: 0 14px 26px rgba(24, 52, 82, 0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+  backdrop-filter: blur(2px);
+}
+
+.bazi-home-stat-panel {
+  padding: 1.2rem 1.1rem 1rem;
+}
+
+.bazi-home-level {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(2.1rem, 3vw, 3.2rem);
+  font-weight: 800;
+  color: #102E4C;
+}
+
+.bazi-home-level-name {
+  font-size: clamp(1rem, 1.4vw, 1.4rem);
+  font-weight: 700;
+  color: #42556b;
+}
+
+.bazi-home-muted-label,
+.bazi-home-score-caption,
+.bazi-home-section-copy,
+.bazi-home-progress-meta,
+.bazi-home-mini-label,
+.bazi-home-metric-label,
+.bazi-home-path-subtitle,
+.bazi-home-timeline-tag,
+.bazi-home-section-copy {
+  color: #5e6b78;
+}
+
+.bazi-home-score-caption {
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+.bazi-home-progress-track {
+  position: relative;
+  width: 100%;
+  height: 0.7rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #ecdfc2;
+}
+
+.bazi-home-progress-track.small {
+  height: 0.52rem;
+}
+
+.bazi-home-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #173d60 0%, #2b79a5 100%);
+  transition: width 0.25s ease;
+}
+
+.bazi-home-progress-bar.good {
+  background: linear-gradient(90deg, #1d7a55 0%, #63b37a 100%);
+}
+
+.bazi-home-progress-bar.mid {
+  background: linear-gradient(90deg, #a97039 0%, #d9b867 100%);
+}
+
+.bazi-home-progress-bar.neutral {
+  background: linear-gradient(90deg, #4e6d8d 0%, #89a6c9 100%);
+}
+
+.bazi-home-badge-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,247,230,0.94));
+  border-color: rgba(196, 166, 100, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bazi-home-badge-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 28px rgba(24, 52, 82, 0.10);
+}
+
+.bazi-home-badge-count {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(2.1rem, 3.5vw, 3.3rem);
+  font-weight: 800;
+  color: #a36b1b;
+}
+
+.bazi-home-badge-link {
+  margin-top: 0.35rem;
+  color: #a36b1b;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.bazi-home-section-title,
+.bazi-home-section-title-sm,
+.bazi-home-section-heading {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 800;
+  color: #102E4C;
+}
+
+.bazi-home-section-title {
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+}
+
+.bazi-home-section-title-sm {
+  font-size: clamp(1.05rem, 1.8vw, 1.5rem);
+}
+
+.bazi-home-section-heading {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  letter-spacing: -0.04em;
+}
+
+.bazi-home-section-copy {
+  font-size: 0.89rem;
+  line-height: 1.6;
+}
+
+.bazi-home-toggle-link {
+  color: #1d5a83;
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.bazi-home-cta {
+  width: 100%;
+  min-height: 3.2rem;
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-weight: 800;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bazi-home-cta:hover {
+  transform: translateY(-1px);
+}
+
+.bazi-home-cta-primary {
+  background: linear-gradient(135deg, #102E4C 0%, #1b4d77 100%);
+  color: #fffdf7;
+  box-shadow: 0 12px 20px rgba(16, 46, 76, 0.18);
+}
+
+.bazi-home-cta-secondary {
+  background: linear-gradient(135deg, #f4e3b7 0%, #f0d48c 100%);
+  color: #5a4323;
+  border: 1px solid rgba(163, 108, 19, 0.25);
+}
+
+.bazi-home-progress-card {
+  border: 1px solid rgba(184, 157, 103, 0.28);
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(249,244,235,0.95));
+  border-radius: 1rem;
+  padding: 0.9rem 0.95rem;
+}
+
+.bazi-home-progress-title {
+  color: #1d3854;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.bazi-home-progress-meta {
+  margin-top: 0.2rem;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.bazi-home-progress-meta-highlight {
+  color: #1d5a83;
+  font-weight: 700;
+}
+
+.bazi-home-mini-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7c8479;
+}
+
+.bazi-home-progress-value {
+  margin-top: 0.2rem;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.2rem, 2vw, 1.9rem);
+  font-weight: 800;
+}
+
+.bazi-home-progress-value-good {
+  color: #1f7b55;
+}
+
+.bazi-home-progress-value-mid {
+  color: #a1712f;
+}
+
+.bazi-home-progress-value-neutral {
+  color: #59728b;
+}
+
+.bazi-home-metric-tile {
+  border-radius: 1rem;
+  padding: 0.8rem 0.7rem 0.65rem;
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+.bazi-home-metric-tile.blue { background: rgba(214, 232, 247, 0.9); border-color: rgba(111, 163, 210, 0.3); }
+.bazi-home-metric-tile.purple { background: rgba(234, 225, 245, 0.9); border-color: rgba(147, 110, 191, 0.3); }
+.bazi-home-metric-tile.amber { background: rgba(248, 231, 198, 0.9); border-color: rgba(201, 150, 76, 0.28); }
+.bazi-home-metric-tile.green { background: rgba(214, 238, 221, 0.9); border-color: rgba(99, 175, 118, 0.28); }
+.bazi-home-metric-tile.rose { background: rgba(248, 222, 228, 0.9); border-color: rgba(193, 118, 136, 0.28); }
+.bazi-home-metric-tile.cyan { background: rgba(213, 237, 244, 0.9); border-color: rgba(101, 170, 194, 0.28); }
+
+.bazi-home-metric-value {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  font-weight: 800;
+  color: #102E4C;
+}
+
+.bazi-home-metric-label {
+  margin-top: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.bazi-home-lesson-panel {
+  padding: 1.4rem 1.15rem 1.2rem;
+}
+
+.bazi-home-timeline-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(113, 163, 126, 0.12);
+  border: 1px solid rgba(113, 163, 126, 0.25);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #456a4f;
+}
+
+.bazi-home-path-card {
+  width: min(100%, 34rem);
+  position: relative;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 1.3rem;
+  padding: 1rem 1rem 1.1rem;
+  color: white;
+  background: linear-gradient(135deg, rgba(16,46,76,0.96) 0%, rgba(43,121,165,0.95) 100%);
+  box-shadow: 0 18px 30px rgba(16, 46, 76, 0.16);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bazi-home-path-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 30px rgba(16, 46, 76, 0.22);
+}
+
+.bazi-home-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.22);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.bazi-home-path-title {
+  margin-top: 0.85rem;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.15rem, 2vw, 2rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.bazi-home-path-subtitle {
+  margin-top: 0.35rem;
+  color: rgba(255,255,255,0.88);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.bazi-element-card {
+  border: 1px solid rgba(184, 157, 103, 0.28);
+  border-radius: 1.1rem;
+  padding: 1rem 0.8rem 0.9rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(248,243,234,0.96));
+  text-align: center;
+  box-shadow: 0 10px 18px rgba(28, 46, 62, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bazi-element-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 22px rgba(28, 46, 62, 0.08);
+}
+
+.bazi-element-card.green { border-color: rgba(101, 149, 108, 0.3); background: linear-gradient(180deg, rgba(240,248,239,0.96), rgba(229,240,229,0.96)); }
+.bazi-element-card.red { border-color: rgba(184, 105, 92, 0.3); background: linear-gradient(180deg, rgba(251,237,234,0.96), rgba(245,225,220,0.96)); }
+.bazi-element-card.yellow { border-color: rgba(177, 143, 77, 0.3); background: linear-gradient(180deg, rgba(251,245,226,0.96), rgba(242,231,197,0.96)); }
+.bazi-element-card.gray { border-color: rgba(121, 130, 140, 0.3); background: linear-gradient(180deg, rgba(244,245,246,0.96), rgba(233,235,237,0.96)); }
+.bazi-element-card.blue { border-color: rgba(93, 129, 171, 0.3); background: linear-gradient(180deg, rgba(232,242,249,0.96), rgba(220,233,244,0.96)); }
+
+.bazi-element-emoji {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.bazi-element-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.6rem, 2vw, 2.4rem);
+  color: #102E4C;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.bazi-element-caption {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #5d6975;
+}
+
+.bazi-lite-stat-box {
+  border: 1px solid rgba(184, 157, 103, 0.26);
+  border-radius: 1rem;
+  padding: 0.9rem 0.7rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(248,243,234,0.96));
+}
+
+.bazi-lite-stat-label {
+  color: #697785;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bazi-lite-stat-value {
+  margin-top: 0.35rem;
+  color: #102E4C;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  font-weight: 800;
+}
+
+.bazi-lesson-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,243,234,0.96));
+  border: 1px solid rgba(184, 157, 103, 0.28);
+  border-radius: 1.2rem;
+  padding: 1rem 1rem 1.1rem;
+  box-shadow: 0 12px 18px rgba(28, 46, 62, 0.06);
+}
+
+.bazi-lesson-card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  font-weight: 800;
+  color: #102E4C;
+  line-height: 1.35;
+}
+
+.bazi-lesson-card-subtitle {
+  margin-top: 0.5rem;
+  color: #63707d;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.bazi-reference-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(184, 157, 103, 0.26);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,243,234,0.96));
+  padding: 0.8rem 0.7rem 0.7rem;
+  text-align: center;
+}
+
+.bazi-reference-card.blue { background: linear-gradient(180deg, rgba(232,242,249,0.96), rgba(220,233,244,0.96)); }
+.bazi-reference-card.green { background: linear-gradient(180deg, rgba(235,246,236,0.96), rgba(220,236,226,0.96)); }
+
+.bazi-reference-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.5rem, 2vw, 2.3rem);
+  font-weight: 800;
+  color: #102E4C;
+}
+
+.bazi-reference-label {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  color: #5d6975;
+}
+
+.bazi-reference-tag {
+  display: inline-block;
+  margin-top: 0.45rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #214f72;
+  background: rgba(255,255,255,0.42);
+  border: 1px solid rgba(33, 79, 114, 0.18);
+}
+
+.bazi-reference-copy {
+  margin-top: 0.4rem;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: #5d6975;
+}
+
+.bazi-god-card {
+  border: 1px solid rgba(184, 157, 103, 0.28);
+  border-left: 4px solid #b98d44;
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,243,234,0.96));
+  padding: 1.1rem 1rem 1rem;
+  box-shadow: 0 12px 18px rgba(28, 46, 62, 0.06);
+}
+
+.bazi-god-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+  color: #102E4C;
+  font-weight: 800;
+}
+
+.bazi-god-english {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #687788;
+  font-weight: 700;
+}
+
+.bazi-god-description {
+  margin-top: 0.8rem;
+  color: #52606c;
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
+.bazi-god-list {
+  border-radius: 1rem;
+  padding: 0.9rem 0.8rem;
+  border: 1px solid rgba(184, 157, 103, 0.18);
+}
+
+.bazi-god-list.good {
+  background: rgba(225, 241, 228, 0.8);
+  border-color: rgba(95, 150, 100, 0.25);
+}
+
+.bazi-god-list.bad {
+  background: rgba(248, 231, 228, 0.8);
+  border-color: rgba(176, 101, 90, 0.25);
+}
+
+.bazi-god-list-title {
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.bazi-god-list.good .bazi-god-list-title { color: #2b6d47; }
+.bazi-god-list.bad .bazi-god-list-title { color: #9a473c; }
+
+.bazi-god-list-items {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  color: #475a69;
+  font-size: 0.8rem;
+}
+
+.bazi-god-list-items li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  line-height: 1.5;
+}
+
+.bazi-god-list-items span:first-child {
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.bazi-badge-card {
+  border-radius: 1.2rem;
+  border: 1px solid rgba(184, 157, 103, 0.28);
+  padding: 0.95rem 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(249,244,235,0.96));
+  box-shadow: 0 12px 18px rgba(28, 46, 62, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bazi-badge-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 24px rgba(28, 46, 62, 0.08);
+}
+
+.bazi-badge-card.is-unlocked {
+  background: linear-gradient(135deg, rgba(255,250,239,0.96), rgba(246,236,206,0.96));
+  border-color: rgba(194, 151, 71, 0.4);
+}
+
+.bazi-badge-card.is-locked {
+  background: linear-gradient(180deg, rgba(244,244,244,0.9), rgba(232,232,232,0.9));
+  border-color: rgba(153, 163, 172, 0.25);
+}
+
+.bazi-badge-emoji {
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.bazi-badge-emoji.is-locked-emoji {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.bazi-badge-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.bazi-badge-hint {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.bazi-badge-status {
+  margin-top: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.bazi-badge-name.is-unlocked-text,
+.bazi-badge-hint.is-unlocked-text {
+  color: #1d3854;
+}
+
+.bazi-badge-name.is-locked-text,
+.bazi-badge-hint.is-locked-text {
+  color: #8190a0;
+}
+
+.bazi-badge-status.is-unlocked-status {
+  color: #9b6e20;
+}
+
+.bazi-badge-status.is-locked-status {
+  color: #7a8591;
 }
 
 /* Custom prose styling for Traditional Chinese */
@@ -93,6 +703,7 @@ body {
 }
 
 /* Lesson 1: 五行研習桌 — open parchment study scenes, indigo map canvas, and restrained gold wayfinding. */
+.lesson-unified-shell,
 .lesson-atlas-shell {
   position: relative;
   width: min(100% - 2rem, 68rem);
@@ -208,6 +819,136 @@ body {
 .lesson-atlas-shell .lesson-copy > h2,
 .lesson-atlas-shell .lesson-copy .copy-heading h2 {
   font-family: 'Noto Serif TC', serif;
+}
+
+.bazi-lesson-nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border: 1px solid #bca77f;
+  border-radius: 0.9rem;
+  padding: 0.7rem 1rem;
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  box-shadow: 3px 3px 0 rgba(180, 138, 67, 0.35);
+}
+
+.bazi-lesson-nav-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.bazi-lesson-nav-button:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 rgba(180, 138, 67, 0.35);
+}
+
+.bazi-lesson-nav-button:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.bazi-lesson-nav-button--primary {
+  border-color: #102E4C;
+  background: #102E4C;
+  color: #fffdf7;
+}
+
+.bazi-lesson-nav-button--primary:hover:not(:disabled) {
+  background: #183d62;
+}
+
+.bazi-lesson-nav-button--secondary {
+  border-color: #d0b07c;
+  background: #fffdf7;
+  color: #173650;
+}
+
+.bazi-lesson-nav-button--secondary:hover:not(:disabled) {
+  background: #f4ebd5;
+}
+
+.bazi-lesson-nav-button--accent {
+  border-color: #c79b46;
+  background: #f2df9c;
+  color: #523c1f;
+}
+
+.bazi-lesson-nav-button--accent:hover:not(:disabled) {
+  background: #e7c86f;
+}
+
+.bazi-lesson-nav-button--danger {
+  border-color: #b85b50;
+  background: #f2d4cb;
+  color: #6f2f2a;
+}
+
+.bazi-lesson-nav-button--danger:hover:not(:disabled) {
+  background: #e7b7b1;
+}
+
+.bazi-lesson-nav-button--muted {
+  border-color: #9aa6b2;
+  background: #edf0f4;
+  color: #384a5d;
+}
+
+.bazi-lesson-nav-button--muted:hover:not(:disabled) {
+  background: #dde5ec;
+}
+
+.lesson-template-shell {
+  margin-top: 1.1rem;
+}
+
+.lesson-template-panel {
+  border: 1px solid rgba(184, 157, 103, 0.26);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,243,234,0.96));
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 12px 18px rgba(28, 46, 62, 0.04);
+}
+
+.lesson-template-title {
+  margin-bottom: 0.55rem;
+  color: #102E4C;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.lesson-template-copy {
+  color: #4d5b67;
+  line-height: 1.7;
+  font-size: 0.96rem;
+}
+
+.lesson-atlas-content-panel {
+  border: 1px solid rgba(184, 157, 103, 0.24);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,243,234,0.96));
+  border-radius: 1rem;
+  padding: 1.2rem 1.1rem;
+  box-shadow: 0 12px 18px rgba(28, 46, 62, 0.04);
+}
+
+.lesson-atlas-section-title {
+  color: #102E4C;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.lesson-atlas-body-copy {
+  margin-bottom: 0.95rem;
+  color: #4d5b67;
+  font-size: 1rem;
+  line-height: 1.8;
 }
 
 .atlas-study-scene {

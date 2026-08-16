@@ -760,7 +760,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
   if (finished) {
     return (
-      <div className={isLessonOneAtlas ? 'lesson-atlas-shell lesson-atlas-finish' : 'max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center'}>
+      <div className={isLessonOneAtlas ? 'lesson-atlas-shell lesson-atlas-finish' : 'lesson-unified-shell lesson-atlas-finish'}>
         <h2 className="text-5xl font-bold mb-4">課程完成！</h2>
         <p className="text-xl text-gray-600 mb-6">做得很好！你已完成此課程的所有步驟。</p>
         {totalQuestions > 0 && (
@@ -779,18 +779,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   }
 
   return (
-    <div className={isLessonOneAtlas ? 'lesson-atlas-shell' : 'max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg'}>
+    <div className={isLessonOneAtlas ? 'lesson-atlas-shell' : 'lesson-unified-shell'}>
       {/* Header */}
-      <div className={isLessonOneAtlas ? 'lesson-atlas-header' : 'mb-6'}>
-        <div className={isLessonOneAtlas ? 'lesson-atlas-header-row' : 'flex flex-wrap items-center gap-3 sm:gap-4 mb-3'}>
+      <div className="lesson-atlas-header">
+        <div className="lesson-atlas-header-row">
           <div className="min-w-0 flex-1">
             {isLessonOneAtlas && <p className="lesson-atlas-kicker">第 1 課／五行基礎　<span>BAZI LEARNING ATLAS</span></p>}
-            <h1 className={isLessonOneAtlas ? 'lesson-atlas-title' : 'text-2xl sm:text-3xl font-bold text-gray-800'}>
+            <h1 className="lesson-atlas-title">
               {getDisplayLessonTitle(lesson.id, lesson.title_cn)}
             </h1>
-            <p className={isLessonOneAtlas ? 'lesson-atlas-subtitle' : 'text-sm sm:text-lg text-gray-700'}>{isLessonOneAtlas ? '用一張關係圖，讀懂五行的方向。' : lesson.title_en}</p>
+            <p className="lesson-atlas-subtitle">{isLessonOneAtlas ? '用一張關係圖，讀懂五行的方向。' : lesson.title_en}</p>
           </div>
-          <div className={isLessonOneAtlas ? 'lesson-atlas-header-actions' : 'flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3 sm:ml-auto'}>
+          <div className="lesson-atlas-header-actions">
             <QuizActionButton
               label="返回主頁"
               onClick={onExit}
@@ -798,14 +798,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               size="compact"
               stretch={false}
             />
-            <div className={isLessonOneAtlas ? 'lesson-atlas-step' : 'text-sm sm:text-base text-gray-600 whitespace-nowrap'}>
-              {isLessonOneAtlas ? <><span>{lessonOneSectionLabel}</span><b>{currentStepIndex + 1}/{steps.length}</b></> : <span className="font-semibold">步驟 {currentStepIndex + 1}/{steps.length}</span>}
+            <div className="lesson-atlas-step">
+              <span>{isLessonOneAtlas ? lessonOneSectionLabel : `步驟`}</span>
+              <b>{currentStepIndex + 1}/{steps.length}</b>
             </div>
           </div>
         </div>
-        <div className={isLessonOneAtlas ? 'lesson-atlas-progress' : 'w-full bg-gray-200 rounded-full h-2 mt-4'}>
+        <div className="lesson-atlas-progress">
           <div
-            className={isLessonOneAtlas ? 'lesson-atlas-progress-fill' : 'bg-blue-600 h-2 rounded-full transition-all duration-300'}
+            className="lesson-atlas-progress-fill"
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           ></div>
         </div>
@@ -814,8 +815,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             {quizLoadError}
           </div>
         )}
-      
-        {/* Standardized lesson template: objective, example, guided practice, independent checks */}
+
         {lesson && currentStepIndex === 0 && lessonId !== 1 && (
           <LessonTemplate lesson={lesson as LessonWithBanks} />
         )}
@@ -827,9 +827,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <LessonOneAtlas stage={lessonOneStage} />
         </div>
       ) : currentStep?.type === 'content' && (
-        <div className="mb-8">
+        <div className="lesson-atlas-content-panel mb-8">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-3xl font-bold text-gray-800">{currentStep.title}</h2>
+            <h2 className="lesson-atlas-section-title">{currentStep.title}</h2>
             {lessonId === NARRATED_LESSON_ID && (
               <button
                 type="button"
@@ -850,7 +850,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             )}
           </div>
           {!(lessonId === 6 && currentStep.id === 1) && currentStep.paragraphs?.map((text, idx) => (
-            <p key={idx} className="text-xl text-gray-700 mb-3">
+            <p key={idx} className="lesson-atlas-body-copy">
               {text}
             </p>
           ))}
