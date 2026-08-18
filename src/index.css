@@ -1157,74 +1157,234 @@ body {
   box-shadow: 10px 10px 0 rgba(173, 145, 91, 0.19) !important;
 }
 
-.desktop-atlas-home > div > div:nth-child(3)::before {
-  content: '研習路線圖';
-  display: block;
-  margin-bottom: 1.5rem;
+.desktop-atlas-catalog {
+  position: relative;
+}
+
+.desktop-atlas-catalog__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.6rem;
+}
+
+.desktop-atlas-catalog__header > div > p {
   color: #9b7330;
-  font-family: 'Noto Serif TC', serif;
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.18em;
 }
 
-.desktop-atlas-home .relative.pl-8 > .absolute {
-  width: 1px !important;
-  border-radius: 0 !important;
-  background: #d9ccb6 !important;
+.desktop-atlas-catalog__header h2 {
+  margin-top: 0.35rem;
+  color: #102b48;
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  font-weight: 800;
+  line-height: 1.15;
 }
 
-.desktop-atlas-home .relative.pl-8 > .space-y-10 > div > .absolute {
-  width: 1.45rem !important;
-  height: 1.45rem !important;
-  border: 3px solid #d9ab58 !important;
-  border-radius: 999px !important;
-  background: #fffdf7 !important;
-  box-shadow: 0 0 0 3px #f7f1e5;
+.desktop-atlas-catalog__header span,
+.desktop-atlas-catalog__header > p {
+  color: #626a71;
+  font-size: 0.9rem;
 }
 
-.desktop-atlas-home .relative.pl-8 button {
-  border: 1px solid rgba(255, 248, 233, 0.42) !important;
-  border-radius: 1px !important;
-  background: #153b61 !important;
-  box-shadow: 5px 5px 0 rgba(13, 42, 74, 0.18) !important;
+.desktop-atlas-catalog__header span {
+  display: block;
+  margin-top: 0.48rem;
 }
 
-.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 1) button {
-  background: #275d46 !important;
+.desktop-atlas-catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid #d8c9af;
+  background: #d8c9af;
 }
 
-.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 2) button {
-  background: #8e4137 !important;
+.desktop-atlas-catalog__segment {
+  min-width: 0;
+  padding: 1.4rem;
+  background: #fffdf7;
+  border-top: 4px solid var(--atlas-segment, #0d2a4a);
 }
 
-.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 3) button {
-  background: #795f31 !important;
+.desktop-atlas-catalog__segment--foundation {
+  --atlas-segment: #315e43;
 }
 
-.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 4) button {
-  background: #49636d !important;
+.desktop-atlas-catalog__segment--core {
+  --atlas-segment: #8e4137;
 }
 
-.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 5) button {
-  background: #153b61 !important;
+.desktop-atlas-catalog__segment--advanced {
+  --atlas-segment: #49636d;
 }
 
-.desktop-atlas-home .relative.pl-8 button .rounded-full {
-  border-radius: 1px !important;
+.desktop-atlas-catalog__segment > header {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  gap: 0.8rem;
+  align-items: start;
 }
 
-.desktop-atlas-home .relative.pl-8 button .bg-white\/20 {
-  border-color: rgba(255, 248, 233, 0.42);
-  background: rgba(255, 248, 233, 0.12) !important;
+.desktop-atlas-catalog__segment > header > span {
+  color: var(--atlas-segment, #0d2a4a);
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
-.desktop-atlas-home .relative.pl-8 button:hover {
-  transform: translate(-0.15rem, -0.3rem) !important;
+.desktop-atlas-catalog__segment h3 {
+  color: #102b48;
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.2;
 }
 
-.desktop-atlas-home .relative.pl-8 button:active {
-  transform: translate(2px, 2px) scale(0.985) !important;
+.desktop-atlas-catalog__segment header p {
+  margin-top: 0.42rem;
+  color: #626a71;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.desktop-atlas-catalog__segment-progress {
+  margin: 1.25rem 0 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid #e2d7c5;
+  color: #765b2d;
+  font-size: 0.82rem;
+}
+
+.desktop-atlas-catalog__segment-progress b {
+  color: var(--atlas-segment, #0d2a4a);
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.2rem;
+}
+
+.desktop-atlas-catalog__lesson-list {
+  border-top: 1px solid #e9dfcf;
+}
+
+.desktop-atlas-catalog__lesson {
+  display: grid;
+  grid-template-columns: 0.75rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.7rem 0.1rem;
+  border-bottom: 1px solid #e9dfcf;
+  color: #153756;
+  text-align: left;
+  transition: background-color 160ms cubic-bezier(0.23, 1, 0.32, 1), transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.desktop-atlas-catalog__lesson:hover {
+  background: #f7f1e5;
+  transform: translateX(0.18rem);
+}
+
+.desktop-atlas-catalog__lesson:active {
+  transform: translate(1px, 1px) scale(0.99);
+}
+
+.desktop-atlas-catalog__lesson-marker {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+  background: #d7cec0;
+}
+
+.desktop-atlas-catalog__lesson-marker.is-complete {
+  background: #3a7855;
+}
+
+.desktop-atlas-catalog__lesson-marker.is-next {
+  background: #d9ab58;
+  box-shadow: 0 0 0 3px rgba(217, 171, 88, 0.18);
+}
+
+.desktop-atlas-catalog__lesson-copy {
+  min-width: 0;
+}
+
+.desktop-atlas-catalog__lesson-copy b,
+.desktop-atlas-catalog__lesson-copy small {
+  display: block;
+}
+
+.desktop-atlas-catalog__lesson-copy b {
+  color: #153756;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.desktop-atlas-catalog__lesson-copy small {
+  margin-top: 0.18rem;
+  color: #6d7478;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.desktop-atlas-catalog__lesson-status {
+  color: #929799;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.desktop-atlas-catalog__lesson-status.is-complete {
+  color: #3a7855;
+}
+
+.desktop-atlas-catalog__lesson-status.is-next {
+  color: #9b7330;
+}
+
+.desktop-atlas-catalog__quiz {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #b48a43;
+  background: #f3e8cf;
+  color: #765b2d;
+  box-shadow: 4px 4px 0 rgba(180, 138, 67, 0.22);
+  text-align: left;
+}
+
+.desktop-atlas-catalog__quiz small,
+.desktop-atlas-catalog__quiz b {
+  display: block;
+}
+
+.desktop-atlas-catalog__quiz small {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.desktop-atlas-catalog__quiz b {
+  margin-top: 0.2rem;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.3rem;
+}
+
+@media (max-width: 1080px) {
+  .desktop-atlas-catalog__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .desktop-atlas-catalog__segment--advanced {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 767px) {
