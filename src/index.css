@@ -212,6 +212,94 @@ body {
   font-family: 'Noto Serif TC', serif;
 }
 
+/* Shared lesson chrome: non-Lesson-1 courses use this composed study-file layer while Lesson 1 keeps its additional interactive scenes. */
+.lesson-atlas-shell--course {
+  padding-bottom: clamp(1.2rem, 3vw, 2.4rem);
+}
+
+.lesson-atlas-shell--course .lesson-atlas-header {
+  margin-bottom: 1.5rem;
+}
+
+.lesson-atlas-alert {
+  margin-top: 1rem;
+  border-left: 4px solid #ca9b35;
+  background: #fff7d9;
+  padding: 0.8rem 1rem;
+  color: #765b2d;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.lesson-atlas-content {
+  margin-bottom: 1.25rem;
+  padding: clamp(1.2rem, 2.8vw, 2rem);
+  border-top: 3px solid #0d2a4a;
+  background: #fffdf7;
+}
+
+.lesson-atlas-content-title {
+  margin-bottom: 0.8rem;
+  color: #102b48;
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.28;
+}
+
+.lesson-atlas-copy {
+  margin: 0 0 0.85rem;
+  color: #526374;
+  font-size: clamp(0.98rem, 1.45vw, 1.1rem);
+  line-height: 1.82;
+}
+
+.lesson-atlas-list {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.lesson-atlas-objective {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #d8c9af;
+  border-left: 4px solid #d9ab58;
+  background: #fbf7ee;
+}
+
+.lesson-atlas-objective-kicker {
+  color: #9b7330;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.lesson-atlas-objective h2 {
+  margin-top: 0.28rem;
+  color: #102b48;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.32rem;
+  font-weight: 800;
+}
+
+.lesson-atlas-objective > p:last-child {
+  margin-top: 0.38rem;
+  color: #526374;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.lesson-atlas-score {
+  border: 1px solid #b8d7b5;
+  background: #f2f8ef;
+  box-shadow: 5px 5px 0 #dce9d8;
+}
+
+.lesson-atlas-finish-copy {
+  color: #526374;
+}
+
 .atlas-study-scene {
   position: relative;
   overflow: hidden;
