@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Shared visual contract: homepage and Lesson 1 use the 「五行研習桌」 parchment, indigo, and gold material system. */
+
 * {
   margin: 0;
   padding: 0;
@@ -1028,5 +1030,205 @@ body {
 
   .prose h3 {
     font-size: 1.25rem;
+  }
+}
+
+/* Desktop homepage: retain the proven snake learning route, translated into the same scholarly 五行研習桌 language as the mobile homepage and Lesson 1. */
+.desktop-atlas-home {
+  min-height: 100vh;
+  background-color: #f7f1e5;
+  background-image:
+    linear-gradient(90deg, rgba(13, 42, 74, 0.04) 0, rgba(13, 42, 74, 0.04) 1px, transparent 1px, transparent 100%),
+    linear-gradient(180deg, #fffdf7 0%, #f7f1e5 46rem, #f1e7d6 100%);
+  background-size: 2.5rem 100%, 100% 100%;
+  color: #153756;
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+}
+
+.desktop-atlas-home > header {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 3px solid #d9ab58;
+  background: #0d2a4a !important;
+  box-shadow: 0 8px 22px rgba(13, 42, 74, 0.18);
+}
+
+.desktop-atlas-home > header::after {
+  content: '八 字 圖 譜';
+  position: absolute;
+  right: 3.2rem;
+  bottom: -1.65rem;
+  color: rgba(255, 253, 247, 0.08);
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(4rem, 8vw, 8rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.desktop-atlas-home > header > div {
+  position: relative;
+  z-index: 1;
+}
+
+.desktop-atlas-home > header h1,
+.desktop-atlas-home h2,
+.desktop-atlas-home h3 {
+  font-family: 'Noto Serif TC', serif;
+  letter-spacing: -0.03em;
+}
+
+.desktop-atlas-home > header > div > p {
+  color: #dce7ee;
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.desktop-atlas-home .bg-white {
+  border: 1px solid #d8c9af;
+  border-radius: 1px;
+  background-color: #fffdf7 !important;
+  box-shadow: 5px 5px 0 rgba(173, 145, 91, 0.2) !important;
+}
+
+.desktop-atlas-home > header .mt-6.grid > * {
+  border-top: 2px solid #d9ab58;
+}
+
+.desktop-atlas-home .text-blue-600,
+.desktop-atlas-home .text-indigo-600 {
+  color: #0d2a4a !important;
+}
+
+.desktop-atlas-home .text-amber-600,
+.desktop-atlas-home .text-amber-800,
+.desktop-atlas-home .text-yellow-600 {
+  color: #9b7330 !important;
+}
+
+.desktop-atlas-home .text-gray-900,
+.desktop-atlas-home .text-gray-800,
+.desktop-atlas-home .text-gray-700 {
+  color: #153756 !important;
+}
+
+.desktop-atlas-home .text-gray-600,
+.desktop-atlas-home .text-gray-500,
+.desktop-atlas-home .text-gray-400 {
+  color: #626a71 !important;
+}
+
+.desktop-atlas-home button.bg-blue-600 {
+  border: 1px solid #0d2a4a;
+  border-radius: 1px;
+  background: #0d2a4a !important;
+  box-shadow: 3px 3px 0 #b48a43;
+}
+
+.desktop-atlas-home button.bg-blue-600:hover {
+  background: #153b61 !important;
+}
+
+.desktop-atlas-home button.bg-amber-50 {
+  border-color: #b48a43 !important;
+  border-radius: 1px;
+  background: #f3e8cf !important;
+  box-shadow: 3px 3px 0 rgba(180, 138, 67, 0.24);
+}
+
+.desktop-atlas-home > div {
+  width: min(100% - 3rem, 72rem);
+  max-width: none;
+  padding-top: 2.25rem;
+  padding-bottom: 3.5rem;
+}
+
+.desktop-atlas-home > div > div:first-child,
+.desktop-atlas-home > div > div:nth-child(2) > div {
+  border-top: 3px solid #0d2a4a;
+}
+
+.desktop-atlas-home > div > div:nth-child(3) {
+  border: 1px solid #d8c9af;
+  border-top: 3px solid #0d2a4a;
+  border-radius: 1px;
+  background: #fffdf7 !important;
+  box-shadow: 10px 10px 0 rgba(173, 145, 91, 0.19) !important;
+}
+
+.desktop-atlas-home > div > div:nth-child(3)::before {
+  content: '研習路線圖';
+  display: block;
+  margin-bottom: 1.5rem;
+  color: #9b7330;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.desktop-atlas-home .relative.pl-8 > .absolute {
+  width: 1px !important;
+  border-radius: 0 !important;
+  background: #d9ccb6 !important;
+}
+
+.desktop-atlas-home .relative.pl-8 > .space-y-10 > div > .absolute {
+  width: 1.45rem !important;
+  height: 1.45rem !important;
+  border: 3px solid #d9ab58 !important;
+  border-radius: 999px !important;
+  background: #fffdf7 !important;
+  box-shadow: 0 0 0 3px #f7f1e5;
+}
+
+.desktop-atlas-home .relative.pl-8 button {
+  border: 1px solid rgba(255, 248, 233, 0.42) !important;
+  border-radius: 1px !important;
+  background: #153b61 !important;
+  box-shadow: 5px 5px 0 rgba(13, 42, 74, 0.18) !important;
+}
+
+.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 1) button {
+  background: #275d46 !important;
+}
+
+.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 2) button {
+  background: #8e4137 !important;
+}
+
+.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 3) button {
+  background: #795f31 !important;
+}
+
+.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 4) button {
+  background: #49636d !important;
+}
+
+.desktop-atlas-home .relative.pl-8 > .space-y-10 > div:nth-child(5n + 5) button {
+  background: #153b61 !important;
+}
+
+.desktop-atlas-home .relative.pl-8 button .rounded-full {
+  border-radius: 1px !important;
+}
+
+.desktop-atlas-home .relative.pl-8 button .bg-white\/20 {
+  border-color: rgba(255, 248, 233, 0.42);
+  background: rgba(255, 248, 233, 0.12) !important;
+}
+
+.desktop-atlas-home .relative.pl-8 button:hover {
+  transform: translate(-0.15rem, -0.3rem) !important;
+}
+
+.desktop-atlas-home .relative.pl-8 button:active {
+  transform: translate(2px, 2px) scale(0.985) !important;
+}
+
+@media (max-width: 767px) {
+  .desktop-atlas-home {
+    display: none;
   }
 }

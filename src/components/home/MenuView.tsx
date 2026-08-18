@@ -1,6 +1,6 @@
 /**
- * Style: 「五行研習桌」mobile-first home — a compact indigo study bar, parchment next-step card,
- * and progressively disclosed course catalog. Desktop keeps the established learning-path dashboard.
+ * Style: 「五行研習桌」home — compact indigo study bar, parchment cards, gold wayfinding,
+ * and progressive disclosure. Desktop retains its snake learning route, but uses the same atlas material system.
  */
 import React, { useState } from 'react';
 import { mockLessons } from '../../data/mockData';
@@ -211,7 +211,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const desktopPathSteps = [...allRequiredLessonSteps, ...(isAllLessonsCompleted && totalQuizStep ? [totalQuizStep] : [])];
 
   const desktopHome = (
-    <div className="hidden min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 md:block">
+    <div className="desktop-atlas-home hidden min-h-screen md:block">
       <header className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white shadow-lg">
         <div className="mx-auto max-w-6xl"><div className="mb-2 flex items-center gap-4"><img src="/bazi_logo.jpg" alt="BaZi Game Logo" className="h-16 w-16 rounded-xl border border-white/30 object-cover shadow" /><h1 className="text-5xl font-bold lg:text-6xl">輕鬆學八字</h1></div><p className="text-lg opacity-90 lg:text-2xl">Learn BaZi in an Interactive Way</p>
           <div className="mt-6 grid grid-cols-3 gap-4"><div className="rounded-lg bg-white p-6 text-center shadow"><div className="flex items-baseline justify-center gap-3"><span className="text-4xl font-bold text-blue-600 lg:text-5xl">Lv.{levelProgress.level}</span><span className="text-xl font-semibold text-gray-800 lg:text-2xl">{getLevelTitle(levelProgress.level)}</span></div><p className="mt-2 text-base text-gray-600 lg:text-lg">等級</p></div><div className="rounded-lg bg-white p-6 shadow"><div className="flex items-baseline justify-between gap-2"><p className="text-base text-gray-700">經驗值</p><p className="text-sm text-gray-600">{levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}</p></div><div className="mt-3 h-3 w-full rounded-full bg-gray-200"><div className="h-3 rounded-full bg-blue-600 transition-all duration-300" style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }} /></div></div><button onClick={onOpenBadgeGallery} className="rounded-lg bg-white p-6 text-center shadow transition-shadow hover:shadow-md"><p className="text-4xl font-bold text-amber-600 lg:text-5xl">{unlockedBadgeIds.length}</p><p className="mt-2 text-base text-gray-600 lg:text-lg">已解鎖徽章</p><p className="mt-1 text-sm font-medium text-amber-600">徽章圖鑑 →</p></button></div>
