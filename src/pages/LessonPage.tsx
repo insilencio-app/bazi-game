@@ -1,4 +1,4 @@
-// Lesson 1 style: the atlas flow uses archival indigo, parchment, and gold hierarchy without changing quiz logic.
+// Style: every lesson shares the 「五行研習桌」 parchment, indigo, and gold chrome; Lesson 1 alone keeps bespoke interactive atlas scenes.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods, ELEMENT_STYLES } from '../data/mockData';
 import { loadQuizSessionQuestions, type QuizApiQuestion } from '../api/quizApi';
@@ -481,15 +481,27 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const lessonOneStage: LessonOneAtlasStage | null = lessonId === 1 && currentStep
     ? ({ 1: 'intro', 2: 'elements', 3: 'relations', 4: 'practice', 5: 'recap' } as Record<number, LessonOneAtlasStage>)[currentStep.id] ?? null
     : null;
-  const isLessonOneAtlas = lessonId === 1;
+  // The archival atlas chrome is now shared by every course; `lessonOneStage` below still gates Lesson 1's bespoke interactive scenes.
+  const isLessonOneAtlas = true;
   const lessonOneSectionLabel = lessonOneStage
     ? ({ intro: '課前定位', elements: '五行速覽', relations: '關係圖譜', practice: '導師帶做', recap: '重點回顧' } as Record<LessonOneAtlasStage, string>)[lessonOneStage]
     : '正式測驗';
+  const lessonSectionLabel = lessonOneStage
+    ? lessonOneSectionLabel
+    : currentStep?.type === 'content'
+    ? '研習內容'
+    : currentStep?.type === 'cards'
+    ? '概念索引'
+    : currentStep?.type === 'mcq'
+    ? '正式測驗'
+    : currentStep?.type === 'truefalse'
+    ? '判別練習'
+    : '關係配對';
   const progress = steps.length ? ((currentStepIndex + 1) / steps.length) * 100 : 0;
   const canSkipToQuiz = firstQuizStepIndex > -1 && currentStepIndex < firstQuizStepIndex;
   const canNarrateCurrentStep = lessonId === NARRATED_LESSON_ID && currentStep?.type === 'content' && isNarrationSupported;
   const lessonAtlasActionClass = (tone: 'previous' | 'primary' | 'skip') =>
-    isLessonOneAtlas ? `lesson-atlas-action lesson-atlas-action--${tone}` : undefined;
+    `lesson-atlas-action lesson-atlas-action--${tone}`;
 
   const stopNarration = () => {
     if (narrationTimeoutRef.current !== null) {
@@ -760,11 +772,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
   if (finished) {
     return (
-      <div className={isLessonOneAtlas ? 'lesson-atlas-shell lesson-atlas-finish' : 'lesson-unified-shell lesson-atlas-finish'}>
+      <div className="lesson-atlas-shell lesson-atlas-finish">
         <h2 className="text-5xl font-bold mb-4">課程完成！</h2>
-        <p className="text-xl text-gray-600 mb-6">做得很好！你已完成此課程的所有步驟。</p>
+        <p className="lesson-atlas-finish-copy text-xl mb-6">做得很好！你已完成此課程的所有步驟。</p>
         {totalQuestions > 0 && (
-          <div className="bg-green-50 rounded-lg p-8 mb-6">
+          <div className="lesson-atlas-score p-8 mb-6">
             <p className="text-5xl font-bold text-green-700 mb-2">{score} / {totalQuestions}</p>
             <p className="text-xl text-gray-700">答對題數</p>
           </div>
@@ -773,34 +785,35 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           label="返回主頁"
           onClick={() => onComplete(lessonId, score, totalQuestions)}
           fullWidth
+          className={lessonAtlasActionClass('primary')}
         />
       </div>
     );
   }
 
   return (
-    <div className={isLessonOneAtlas ? 'lesson-atlas-shell' : 'lesson-unified-shell'}>
+    <div className="lesson-atlas-shell lesson-atlas-shell--course">
       {/* Header */}
       <div className="lesson-atlas-header">
         <div className="lesson-atlas-header-row">
           <div className="min-w-0 flex-1">
-            {isLessonOneAtlas && <p className="lesson-atlas-kicker">第 1 課／五行基礎　<span>BAZI LEARNING ATLAS</span></p>}
+            <p className="lesson-atlas-kicker">第 {lessonId === 11 ? 10 : lessonId} 課／{lessonSectionLabel}　<span>BAZI LEARNING ATLAS</span></p>
             <h1 className="lesson-atlas-title">
               {getDisplayLessonTitle(lesson.id, lesson.title_cn)}
             </h1>
-            <p className="lesson-atlas-subtitle">{isLessonOneAtlas ? '用一張關係圖，讀懂五行的方向。' : lesson.title_en}</p>
+            <p className="lesson-atlas-subtitle">{lessonId === 1 ? '用一張關係圖，讀懂五行的方向。' : lesson.title_en}</p>
           </div>
           <div className="lesson-atlas-header-actions">
             <QuizActionButton
               label="返回主頁"
               onClick={onExit}
-              variant="danger"
+              variant="secondary"
               size="compact"
               stretch={false}
+              className={lessonAtlasActionClass('previous')}
             />
             <div className="lesson-atlas-step">
-              <span>{isLessonOneAtlas ? lessonOneSectionLabel : `步驟`}</span>
-              <b>{currentStepIndex + 1}/{steps.length}</b>
+              <><span>{lessonSectionLabel}</span><b>{currentStepIndex + 1}/{steps.length}</b></>
             </div>
           </div>
         </div>
@@ -811,7 +824,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           ></div>
         </div>
         {quizLoadError && (
-          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+          <div className="lesson-atlas-alert">
             {quizLoadError}
           </div>
         )}
@@ -827,9 +840,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <LessonOneAtlas stage={lessonOneStage} />
         </div>
       ) : currentStep?.type === 'content' && (
-        <div className="lesson-atlas-content-panel mb-8">
+        <div className="lesson-atlas-content-panel lesson-atlas-content mb-8">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="lesson-atlas-section-title">{currentStep.title}</h2>
+            <h2 className="lesson-atlas-section-title lesson-atlas-content-title">{currentStep.title}</h2>
             {lessonId === NARRATED_LESSON_ID && (
               <button
                 type="button"
@@ -850,7 +863,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             )}
           </div>
           {!(lessonId === 6 && currentStep.id === 1) && currentStep.paragraphs?.map((text, idx) => (
-            <p key={idx} className="lesson-atlas-body-copy">
+            <p key={idx} className="lesson-atlas-body-copy lesson-atlas-copy">
               {text}
             </p>
           ))}
@@ -1830,7 +1843,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               </div>
             );
           })() : currentStep.bullets ? (
-            <ul className="list-disc list-inside text-xl text-gray-700 space-y-2">
+            <ul className="lesson-atlas-copy lesson-atlas-list">
               {currentStep.bullets.map((item, idx) => (
                 <li key={idx}>{item}</li>
               ))}
@@ -1840,10 +1853,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       )}
 
       {!lessonOneStage && currentStep?.type === 'cards' && (
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2 text-gray-800">{currentStep.title}</h2>
+        <div className="lesson-atlas-content">
+          <h2 className="lesson-atlas-content-title">{currentStep.title}</h2>
           {currentStep.description && (
-            <p className="text-lg text-gray-600 mb-4">{currentStep.description}</p>
+            <p className="lesson-atlas-copy">{currentStep.description}</p>
           )}
           {lessonId === 1 && currentStep.source === 'elements' && (
             <div className="space-y-4">
@@ -1978,7 +1991,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       )}
 
       {currentStep?.type === 'mcq' && (
-        <div className={isLessonOneAtlas ? 'lesson-atlas-quiz' : 'mb-8'}>
+        <div className="lesson-atlas-quiz">
           <MultipleChoiceQuestion
             question={currentStep.question}
             options={currentStep.options}
@@ -1994,14 +2007,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             canUseHint={userXp >= 50}
             hintXpCost={50}
             size="large"
-            appearance={isLessonOneAtlas ? 'atlas' : 'default'}
+            appearance="atlas"
           />
         </div>
       )}
 
       {currentStep?.type === 'truefalse' && (
-        <div className={isLessonOneAtlas ? 'lesson-atlas-quiz' : 'mb-8'}>
-          <h2 className={isLessonOneAtlas ? 'lesson-atlas-question-title' : 'text-xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-gray-800'}>{currentStep.question}</h2>
+        <div className="lesson-atlas-quiz">
+          <h2 className="lesson-atlas-question-title">{currentStep.question}</h2>
 
           {currentStep.hint && !answered && (
             <QuizHintPanel
@@ -2011,15 +2024,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               onUseHint={handleUseHint}
               canUseHint={userXp >= 50}
               hintXpCost={50}
-              appearance={isLessonOneAtlas ? 'atlas' : 'default'}
+              appearance="atlas"
             />
           )}
 
-          <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-grid' : 'grid grid-cols-2 gap-3 sm:gap-4 mb-6'}>
+          <div className="lesson-atlas-truefalse-grid">
             <button
               onClick={() => setSelectedAnswer(1)}
               disabled={answered}
-              className={`${isLessonOneAtlas ? 'lesson-atlas-truefalse-card' : 'p-3 sm:p-6 rounded-lg border-2'} transition-all ${
+              className={`lesson-atlas-truefalse-card transition-all ${
                 selectedAnswer === 1
                   ? answered && currentStep.correct === true
                     ? 'border-green-500 bg-green-50'
@@ -2030,15 +2043,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="text-center">
-                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-mark' : 'text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2'}>✓</div>
-                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-label' : 'text-lg sm:text-2xl lg:text-3xl font-bold'}>正確</div>
-                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-copy' : 'text-xs sm:text-sm lg:text-base text-gray-600'}>True</div>
+                <div className="lesson-atlas-truefalse-mark">✓</div>
+                <div className="lesson-atlas-truefalse-label">正確</div>
+                <div className="lesson-atlas-truefalse-copy">True</div>
               </div>
             </button>
             <button
               onClick={() => setSelectedAnswer(0)}
               disabled={answered}
-              className={`${isLessonOneAtlas ? 'lesson-atlas-truefalse-card' : 'p-3 sm:p-6 rounded-lg border-2'} transition-all ${
+              className={`lesson-atlas-truefalse-card transition-all ${
                 selectedAnswer === 0
                   ? answered && currentStep.correct === false
                     ? 'border-green-500 bg-green-50'
@@ -2049,19 +2062,19 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="text-center">
-                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-mark' : 'text-3xl sm:text-4xl lg:text-5xl mb-1 sm:mb-2'}>✗</div>
-                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-label' : 'text-lg sm:text-2xl lg:text-3xl font-bold'}>錯誤</div>
-                <div className={isLessonOneAtlas ? 'lesson-atlas-truefalse-copy' : 'text-xs sm:text-sm lg:text-base text-gray-600'}>False</div>
+                <div className="lesson-atlas-truefalse-mark">✗</div>
+                <div className="lesson-atlas-truefalse-label">錯誤</div>
+                <div className="lesson-atlas-truefalse-copy">False</div>
               </div>
             </button>
           </div>
 
           {showFeedback && (
-            <div className={`${isLessonOneAtlas ? 'lesson-atlas-feedback' : 'p-4 rounded-lg'} ${(selectedAnswer === 1 && currentStep.correct) || (selectedAnswer === 0 && !currentStep.correct) ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
-              <p className={isLessonOneAtlas ? 'lesson-atlas-feedback-title' : 'text-xl font-semibold mb-2'}>
+            <div className={`lesson-atlas-feedback ${(selectedAnswer === 1 && currentStep.correct) || (selectedAnswer === 0 && !currentStep.correct) ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'}`}>
+              <p className="lesson-atlas-feedback-title">
                 {(selectedAnswer === 1 && currentStep.correct) || (selectedAnswer === 0 && !currentStep.correct) ? '✓ 正確!' : '✗ 錯誤'}
               </p>
-              <p className={isLessonOneAtlas ? 'lesson-atlas-feedback-copy' : 'text-lg text-gray-700'}>{currentStep.explanation}</p>
+              <p className="lesson-atlas-feedback-copy">{currentStep.explanation}</p>
             </div>
           )}
         </div>

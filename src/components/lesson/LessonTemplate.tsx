@@ -1,3 +1,4 @@
+// Style: shared lesson objective card follows the 「五行研習桌」 parchment file treatment across every course.
 import React from 'react';
 import type { LessonWithBanks } from '../../types/domain';
 import LessonVisuals from './LessonVisuals';
@@ -8,8 +9,9 @@ interface LessonTemplateProps {
 
 export const LessonTemplate: React.FC<LessonTemplateProps> = ({ lesson }) => {
   return (
-    <div className="lesson-template-shell">
-      <div className="lesson-template-panel">
+    <div className="lesson-template-shell mb-6">
+      <div className="lesson-template-panel lesson-atlas-objective">
+        <p className="lesson-atlas-objective-kicker">LEARNING OBJECTIVE</p>
         <h2 className="lesson-template-title">學習目標</h2>
         <p className="lesson-template-copy">{lesson.learning_objectives_cn ?? '（暫無學習目標）'}</p>
       </div>
