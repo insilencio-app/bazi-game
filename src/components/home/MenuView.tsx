@@ -1,20 +1,12 @@
 /**
  * Style: 「五行研習桌」home — compact indigo study bar, parchment cards, gold wayfinding,
- * and progressive disclosure. Desktop retains its snake learning route, but uses the same atlas material system.
+ * and one responsive, three-stage catalog for mobile and desktop.
  */
 import React, { useState } from 'react';
 import { mockLessons } from '../../data/mockData';
+import { COURSE_CATALOG_SEGMENTS, getCourseDisplay, type CourseSegment } from '../../data/courseCatalog';
 
-const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
-  if (/^第.+課/.test(title)) return title;
-  if (new RegExp(`^第${lessonId}課`).test(title)) return title;
-  return `第${lessonId}課：${title}`;
-};
-
-const getHomepageDisplayLessonTitle = (lessonId: number, title: string): string => {
-  if (lessonId === 11) return '第10課：趨吉避凶實踐';
-  return ensureLessonTitlePrefix(lessonId, title);
-};
+const getHomepageDisplayLessonTitle = (lessonId: number, title: string): string => getCourseDisplay(lessonId)?.title ?? title;
 
 type LevelProgress = {
   level: number;
@@ -63,14 +55,6 @@ interface MenuViewProps {
   pathSteps: PathStep[];
   rewardOverlay: React.ReactNode;
 }
-
-type CourseSegment = { id: 'foundation' | 'core' | 'advanced'; order: string; title: string; subtitle: string; lessonIds: number[] };
-
-const MOBILE_COURSE_SEGMENTS: CourseSegment[] = [
-  { id: 'foundation', order: '01', title: '入門基礎', subtitle: '第 0–4 課・先建立四柱、五行與天干地支概念', lessonIds: [0, 1, 2, 3, 4] },
-  { id: 'core', order: '02', title: '核心推演', subtitle: '第 5–7 課・十神、藏干與地支關係', lessonIds: [5, 55, 6, 65, 7] },
-  { id: 'advanced', order: '03', title: '進階實戰', subtitle: '第 8–10 課及補充課・強弱、格局與實踐', lessonIds: [8, 9, 11, 10] },
-];
 
 function getMobileLessonStatus(step: PathStep, isNext: boolean, completedLessonIds: Set<number>) {
   if (completedLessonIds.has(step.id)) return '已完成';
@@ -149,7 +133,7 @@ function MobileHome({
         <section className="mt-7">
           <div className="mb-3 flex items-end justify-between"><div><p className="text-xs font-bold tracking-[0.15em] text-[#9b7330]">課程目錄</p><h2 className="mt-1 font-['Noto_Serif_TC',serif] text-2xl font-black text-[#102b48]">按階段研習</h2></div><p className="text-xs text-slate-500">點選階段展開</p></div>
           <div className="space-y-3">
-            {MOBILE_COURSE_SEGMENTS.map((segment) => {
+            {COURSE_CATALOG_SEGMENTS.map((segment) => {
               const segmentSteps = segment.lessonIds.map((id) => allRequiredLessonSteps.find((step) => step.id === id)).filter((step): step is PathStep => Boolean(step));
               const segmentCompleted = segmentSteps.filter((step) => completedLessonIds.has(step.id)).length;
               const isOpen = openSegment === segment.id;
@@ -230,7 +214,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         <section className="desktop-atlas-catalog mb-8" aria-labelledby="desktop-catalog-title">
           <div className="desktop-atlas-catalog__header"><div><p>課程目錄</p><h2 id="desktop-catalog-title">按階段研習</h2><span>與手機版使用相同的學習地圖與完成規則。</span></div><p>點選課堂開始或繼續學習</p></div>
           <div className="desktop-atlas-catalog__grid">
-            {MOBILE_COURSE_SEGMENTS.map((segment) => {
+            {COURSE_CATALOG_SEGMENTS.map((segment) => {
               const segmentSteps = segment.lessonIds.map((id) => allRequiredLessonSteps.find((step) => step.id === id)).filter((step): step is PathStep => Boolean(step));
               const segmentCompleted = segmentSteps.filter((step) => completedLessonIds.has(step.id)).length;
               return <section key={segment.id} className={`desktop-atlas-catalog__segment desktop-atlas-catalog__segment--${segment.id}`}>

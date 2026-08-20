@@ -10,17 +10,17 @@ import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
 import LessonTemplate from '../components/lesson/LessonTemplate';
 import { LessonOneAtlas, type LessonOneAtlasStage } from '../components/lesson/LessonOneAtlas';
+import { getCourseDisplay } from '../data/courseCatalog';
 import type { LessonWithBanks } from '../types/domain';
 
-const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
-  if (/^第.+課/.test(title)) return title;
-  if (new RegExp(`^第${lessonId}課`).test(title)) return title;
-  return `第${lessonId}課：${title}`;
-};
+const getDisplayLessonTitle = (lessonId: number, title: string): string => getCourseDisplay(lessonId)?.title ?? title;
 
-const getDisplayLessonTitle = (lessonId: number, title: string): string => {
-  if (lessonId === 11) return '第10課：趨吉避凶實踐';
-  return ensureLessonTitlePrefix(lessonId, title);
+const getLessonKicker = (lessonId: number): string => {
+  const course = getCourseDisplay(lessonId);
+  if (course?.kind === 'guide') return '導讀';
+  if (course?.kind === 'practice') return '隨堂練習';
+  if (course?.kind === 'supplement') return '補充專題';
+  return course?.title.match(/^第\d+課/)?.[0] ?? `第 ${lessonId} 課`;
 };
 
 // Disable built-in narration by default. Previously lesson 5 used narration.
@@ -797,7 +797,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       <div className="lesson-atlas-header">
         <div className="lesson-atlas-header-row">
           <div className="min-w-0 flex-1">
-            <p className="lesson-atlas-kicker">第 {lessonId === 11 ? 10 : lessonId} 課／{lessonSectionLabel}　<span>BAZI LEARNING ATLAS</span></p>
+            <p className="lesson-atlas-kicker">{getLessonKicker(lessonId)}／{lessonSectionLabel}　<span>BAZI LEARNING ATLAS</span></p>
             <h1 className="lesson-atlas-title">
               {getDisplayLessonTitle(lesson.id, lesson.title_cn)}
             </h1>

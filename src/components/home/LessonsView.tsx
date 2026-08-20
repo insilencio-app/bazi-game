@@ -1,11 +1,6 @@
 import React from 'react';
 import { mockLessons } from '../../data/mockData';
-
-const ensureLessonTitlePrefix = (lessonId: number, title: string): string => {
-  if (/^第.+課/.test(title)) return title;
-  if (new RegExp(`^第${lessonId}課`).test(title)) return title;
-  return `第${lessonId}課：${title}`;
-};
+import { getCourseDisplay } from '../../data/courseCatalog';
 
 interface LessonsViewProps {
   onLessonStart: (lessonId: number) => void;
@@ -41,7 +36,7 @@ export const LessonsView: React.FC<LessonsViewProps> = ({ onLessonStart, onBack 
           {mockLessons.map((lesson) => (
             <div key={lesson.id} className="bazi-lesson-card">
               <h3 className="bazi-lesson-card-title">
-                {ensureLessonTitlePrefix(lesson.id, lesson.title_cn)}
+                {getCourseDisplay(lesson.id)?.title ?? lesson.title_cn}
               </h3>
               <p className="bazi-lesson-card-subtitle">{lesson.title_en}</p>
               <button
