@@ -1,0 +1,568 @@
+/*
+ * Style: 「封緘研習信箱」— private correspondence within the 五行研習桌 system.
+ * Use these classes for the anonymous question flow and the single-admin case desk.
+ */
+
+@layer components {
+  .mailbox-shell {
+    @apply min-h-full bg-parchment-soft font-sans text-ink;
+    background-image:
+      linear-gradient(90deg, rgba(13, 42, 74, 0.035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255, 253, 247, 0.72), rgba(247, 241, 229, 0.92));
+    background-size: 2.25rem 100%, 100% 100%;
+  }
+
+  .mailbox-page {
+    @apply mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8;
+  }
+
+  .mailbox-reading-column {
+    @apply mx-auto w-full max-w-2xl;
+  }
+
+  .mailbox-panel {
+    @apply border border-parchment-line bg-parchment p-5 shadow-paper sm:p-7;
+    border-radius: theme('borderRadius.panel');
+  }
+
+  .mailbox-panel--ink {
+    @apply border-indigo-deep bg-indigo text-ink-inverse shadow-paper-lg;
+  }
+
+  .mailbox-panel--sensitive {
+    @apply border-gold bg-mailbox-sensitiveBg;
+    border-left-width: 4px;
+  }
+
+  .mailbox-eyebrow {
+    @apply text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-seal;
+  }
+
+  .mailbox-eyebrow--inverse {
+    @apply text-gold-pale;
+  }
+
+  .mailbox-title {
+    @apply font-serif text-2xl font-extrabold leading-tight tracking-[-0.035em] text-ink-strong sm:text-3xl;
+  }
+
+  .mailbox-title--inverse {
+    @apply text-parchment;
+  }
+
+  .mailbox-copy {
+    @apply text-base leading-8 text-ink-muted;
+  }
+
+  .mailbox-copy--inverse {
+    @apply text-indigo-mist;
+  }
+
+  .mailbox-label {
+    @apply mb-2 block text-sm font-extrabold text-ink-strong;
+  }
+
+  .mailbox-help {
+    @apply mt-2 text-sm leading-6 text-ink-muted;
+  }
+
+  .mailbox-input {
+    @apply w-full border border-parchment-line bg-parchment px-3.5 py-3 text-base leading-6 text-ink outline-none transition duration-150 ease-seal-out placeholder:text-ink-faint;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-input:focus {
+    @apply border-indigo-light ring-2 ring-indigo-light/20;
+  }
+
+  .mailbox-input[aria-invalid='true'] {
+    @apply border-mailbox-danger ring-2 ring-mailbox-danger/15;
+  }
+
+  .mailbox-choice {
+    @apply flex min-h-[5.75rem] cursor-pointer flex-col justify-between border border-parchment-line bg-parchment p-4 text-left transition duration-150 ease-seal-out;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-choice:hover {
+    @apply border-gold-muted shadow-paper;
+    transform: translateY(-1px);
+  }
+
+  .mailbox-choice.is-selected {
+    @apply border-indigo bg-indigo text-ink-inverse shadow-paper;
+  }
+
+  .mailbox-choice__title {
+    @apply font-serif text-lg font-extrabold leading-snug;
+  }
+
+  .mailbox-choice__copy {
+    @apply mt-1 text-sm leading-6 text-ink-muted;
+  }
+
+  .mailbox-choice.is-selected .mailbox-choice__copy {
+    @apply text-indigo-mist;
+  }
+
+  .mailbox-note {
+    @apply border px-4 py-3 text-sm leading-6;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-note--privacy {
+    @apply border-indigo-light/30 bg-indigo-mist/45 text-mailbox-privacy;
+  }
+
+  .mailbox-note--sensitive {
+    @apply border-gold-muted/40 bg-mailbox-sensitiveBg text-mailbox-sensitive;
+  }
+
+  .mailbox-note--disclosure {
+    @apply border-gold/40 bg-gold-paper text-gold-dark;
+  }
+
+  .mailbox-note--danger {
+    @apply border-mailbox-danger/30 bg-mailbox-dangerBg text-mailbox-danger;
+  }
+
+  .mailbox-action {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 border px-4 py-2.5 text-sm font-extrabold transition duration-150 ease-seal-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-light focus-visible:ring-offset-2 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-action--primary {
+    @apply border-indigo-deep bg-indigo text-ink-inverse shadow-paper;
+  }
+
+  .mailbox-action--primary:hover:not(:disabled) {
+    @apply bg-indigo-mid;
+    transform: translateY(-1px);
+  }
+
+  .mailbox-action--secondary {
+    @apply border-parchment-line bg-parchment text-ink-strong;
+  }
+
+  .mailbox-action--secondary:hover:not(:disabled) {
+    @apply border-gold-muted bg-parchment-soft;
+  }
+
+  .mailbox-action--danger {
+    @apply border-mailbox-danger/45 bg-mailbox-dangerBg text-mailbox-danger;
+  }
+
+  .mailbox-action--danger:hover:not(:disabled) {
+    @apply border-mailbox-danger bg-[#f4d6d1];
+  }
+
+  .mailbox-status {
+    @apply inline-flex items-center gap-1.5 border px-2.5 py-1 text-xs font-extrabold;
+    border-radius: theme('borderRadius.seal');
+  }
+
+  .mailbox-status--received {
+    @apply border-indigo-light/30 bg-indigo-mist/50 text-mailbox-privacy;
+  }
+
+  .mailbox-status--pending {
+    @apply border-gold-muted/35 bg-mailbox-pendingBg text-mailbox-pending;
+  }
+
+  .mailbox-status--ready {
+    @apply border-mailbox-ready/25 bg-mailbox-readyBg text-mailbox-ready;
+  }
+
+  .mailbox-status--expired {
+    @apply border-mailbox-expired/25 bg-mailbox-expiredBg text-mailbox-expired;
+  }
+
+  .mailbox-key-tag {
+    @apply border border-gold-muted/70 bg-indigo px-4 py-3 font-mono text-sm font-bold tracking-[0.12em] text-parchment shadow-seal;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-case-drawer {
+    @apply border border-gold/45 bg-mailbox-sensitiveBg p-4;
+    border-left-width: 4px;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-admin-shell {
+    @apply grid min-h-dvh bg-parchment-soft font-sans text-ink lg:grid-cols-[minmax(20rem,0.7fr)_minmax(0,1.3fr)];
+  }
+
+  .mailbox-admin-list {
+    @apply border-b border-parchment-line bg-parchment p-4 lg:border-b-0 lg:border-r lg:p-5;
+  }
+
+  .mailbox-admin-detail {
+    @apply min-w-0 p-4 sm:p-6 lg:p-8;
+  }
+
+  .mailbox-dossier {
+    @apply border border-parchment-line bg-parchment p-5 shadow-paper sm:p-7;
+    border-top: 4px solid theme('colors.indigo.DEFAULT');
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-reveal {
+    @apply inline-flex items-center gap-2 border-b border-gold-muted/60 pb-0.5 text-sm font-extrabold text-seal transition-colors duration-150 hover:border-seal hover:text-seal-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-light;
+  }
+
+  .mailbox-topbar {
+    @apply mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-5 sm:px-6;
+  }
+
+  .mailbox-back-link {
+    @apply text-sm font-extrabold text-ink-muted transition-colors hover:text-indigo;
+  }
+
+  .mailbox-topbar__mark,
+  .mailbox-kicker {
+    @apply text-xs font-extrabold uppercase tracking-[0.14em] text-seal;
+  }
+
+  .mailbox-hero {
+    @apply mx-auto w-full max-w-3xl border-y border-gold/35 bg-parchment px-5 py-9 sm:px-8 sm:py-12;
+  }
+
+  .mailbox-hero h1,
+  .mailbox-panel h1,
+  .mailbox-panel h2,
+  .mailbox-admin-header h1,
+  .mailbox-admin-detail h2 {
+    @apply mt-2 font-serif font-extrabold tracking-[-0.035em] text-ink-strong;
+  }
+
+  .mailbox-hero h1 {
+    @apply text-3xl leading-tight sm:text-4xl;
+  }
+
+  .mailbox-hero > p:not(.mailbox-kicker) {
+    @apply mt-4 max-w-2xl text-base leading-8 text-ink-muted;
+  }
+
+  .mailbox-hero__facts {
+    @apply mt-6 flex flex-wrap gap-2 text-xs font-extrabold text-mailbox-privacy;
+  }
+
+  .mailbox-hero__facts span {
+    @apply border border-indigo-light/25 bg-indigo-mist/45 px-2.5 py-1.5;
+    border-radius: theme('borderRadius.seal');
+  }
+
+  .mailbox-tabs {
+    @apply mx-auto flex w-full max-w-3xl border-x border-b border-parchment-line bg-parchment px-3 pt-3;
+  }
+
+  .mailbox-tab {
+    @apply flex-1 border-b-2 border-transparent px-3 py-3 text-sm font-extrabold text-ink-muted transition-colors hover:text-indigo;
+  }
+
+  .mailbox-tab.is-active {
+    @apply border-indigo text-indigo;
+  }
+
+  .mailbox-shell > .mailbox-panel {
+    @apply mx-auto mb-12 w-[calc(100%-2rem)] max-w-3xl rounded-t-none sm:w-[calc(100%-3rem)];
+  }
+
+  .mailbox-section-heading {
+    @apply mb-6 border-b border-parchment-line pb-5;
+  }
+
+  .mailbox-section-heading h2,
+  .mailbox-success h2 {
+    @apply text-2xl leading-tight sm:text-3xl;
+  }
+
+  .mailbox-section-heading > p:not(.mailbox-kicker),
+  .mailbox-success > p:not(.mailbox-kicker) {
+    @apply mt-2 leading-7 text-ink-muted;
+  }
+
+  .mailbox-choice-grid {
+    @apply grid gap-3 sm:grid-cols-2;
+  }
+
+  .mailbox-choice input {
+    @apply sr-only;
+  }
+
+  .mailbox-choice strong {
+    @apply font-serif text-lg font-extrabold;
+  }
+
+  .mailbox-choice span {
+    @apply mt-2 text-sm leading-6 text-ink-muted;
+  }
+
+  .mailbox-choice.is-selected span {
+    @apply text-indigo-mist;
+  }
+
+  .mailbox-field {
+    @apply relative mt-5 block text-sm font-extrabold text-ink-strong;
+  }
+
+  .mailbox-field input,
+  .mailbox-field select,
+  .mailbox-field textarea {
+    @apply mt-2 block w-full border border-parchment-line bg-parchment px-3.5 py-3 text-base font-normal leading-6 text-ink outline-none transition placeholder:text-ink-faint focus:border-indigo-light focus:ring-2 focus:ring-indigo-light/20 disabled:cursor-not-allowed disabled:bg-parchment-soft;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-char-count {
+    @apply mt-1 block text-right text-xs font-medium text-ink-faint;
+  }
+
+  .mailbox-field-grid {
+    @apply mt-4 grid gap-x-4 sm:grid-cols-2;
+  }
+
+  .mailbox-field-grid .mailbox-field {
+    @apply mt-3;
+  }
+
+  .mailbox-check {
+    @apply mt-4 flex items-start gap-2 text-sm font-semibold leading-6 text-ink-muted;
+  }
+
+  .mailbox-check input {
+    @apply mt-1 h-4 w-4 shrink-0 accent-indigo;
+  }
+
+  .mailbox-disclosure {
+    @apply mt-6 border border-gold/40 bg-gold-paper p-4;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-disclosure h3,
+  .mailbox-disclosure p {
+    @apply text-sm leading-6 text-gold-dark;
+  }
+
+  .mailbox-disclosure h3 {
+    @apply font-extrabold;
+  }
+
+  .mailbox-disclosure p {
+    @apply mt-2;
+  }
+
+  .mailbox-disclosure .mailbox-check {
+    @apply text-gold-dark;
+  }
+
+  .mailbox-error {
+    @apply mt-4 border border-mailbox-danger/35 bg-mailbox-dangerBg px-4 py-3 text-sm font-semibold leading-6 text-mailbox-danger;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-success-message {
+    @apply mt-4 border border-mailbox-ready/30 bg-mailbox-readyBg px-4 py-3 text-sm font-semibold leading-6 text-mailbox-ready;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-success .mailbox-action,
+  .mailbox-panel form > .mailbox-action--primary {
+    @apply mt-6 w-full sm:w-auto;
+  }
+
+  .mailbox-code-card {
+    @apply mt-5 overflow-hidden border border-indigo-deep bg-indigo shadow-seal;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-code-card div {
+    @apply grid grid-cols-[7rem_minmax(0,1fr)] gap-3 border-b border-indigo-light/25 px-4 py-3 last:border-b-0;
+  }
+
+  .mailbox-code-card dt {
+    @apply text-xs font-extrabold tracking-wide text-indigo-mist;
+  }
+
+  .mailbox-code-card dd {
+    @apply min-w-0 break-all font-mono text-sm font-bold tracking-wide text-parchment;
+  }
+
+  .mailbox-access-form {
+    @apply grid gap-1 sm:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] sm:gap-x-4;
+  }
+
+  .mailbox-access-form .mailbox-action {
+    @apply sm:col-span-2;
+  }
+
+  .mailbox-letter {
+    @apply mt-8 border border-parchment-line bg-parchment-soft p-5 shadow-paper sm:p-7;
+    border-top: 4px solid theme('colors.indigo.DEFAULT');
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-letter > header,
+  .mailbox-admin-header,
+  .mailbox-case-list__header {
+    @apply flex items-start justify-between gap-4;
+  }
+
+  .mailbox-letter h3 {
+    @apply mt-1 font-serif text-xl font-extrabold text-ink-strong;
+  }
+
+  .mailbox-letter__status {
+    @apply mt-4 border-b border-parchment-line pb-4 text-sm leading-6 text-ink-muted;
+  }
+
+  .mailbox-letter__meta {
+    @apply my-5 grid gap-3 border-y border-parchment-line py-4 sm:grid-cols-3;
+  }
+
+  .mailbox-letter__meta dt {
+    @apply text-xs font-extrabold text-ink-faint;
+  }
+
+  .mailbox-letter__meta dd {
+    @apply mt-1 text-sm font-bold text-ink-strong;
+  }
+
+  .mailbox-letter h4,
+  .mailbox-admin-question h3 {
+    @apply font-serif text-lg font-extrabold text-ink-strong;
+  }
+
+  .mailbox-preserved-text {
+    @apply mt-3 whitespace-pre-wrap leading-8 text-ink;
+  }
+
+  .mailbox-case-summary {
+    @apply mt-5 border-l-4 border-gold bg-mailbox-sensitiveBg p-4 text-sm leading-6 text-mailbox-sensitive;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-case-summary summary {
+    @apply cursor-pointer font-extrabold text-gold-dark;
+  }
+
+  .mailbox-answer {
+    @apply mt-6 border border-indigo-light/25 bg-indigo-mist/35 p-4;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-answer--declined {
+    @apply border-mailbox-danger/25 bg-mailbox-dangerBg;
+  }
+
+  .mailbox-disclaimer-inline {
+    @apply mt-5 border-t border-indigo-light/20 pt-4 text-xs leading-6 text-ink-muted;
+  }
+
+  .mailbox-delete {
+    @apply mt-6 text-sm font-extrabold text-mailbox-danger underline decoration-mailbox-danger/40 underline-offset-4 hover:decoration-mailbox-danger;
+  }
+
+  .mailbox-status--waiting,
+  .mailbox-status--reviewing {
+    @apply border-gold-muted/35 bg-mailbox-pendingBg text-mailbox-pending;
+  }
+
+  .mailbox-status--declined {
+    @apply border-mailbox-danger/25 bg-mailbox-dangerBg text-mailbox-danger;
+  }
+
+  .mailbox-admin-shell {
+    @apply min-h-dvh bg-parchment-soft font-sans text-ink;
+  }
+
+  .mailbox-admin-header {
+    @apply border-b border-parchment-line bg-parchment px-4 py-5 sm:px-6 lg:px-8;
+  }
+
+  .mailbox-admin-header h1 {
+    @apply text-2xl;
+  }
+
+  .mailbox-action--quiet {
+    @apply border-parchment-line bg-parchment text-ink-muted hover:border-gold-muted hover:text-indigo;
+  }
+
+  .mailbox-admin-layout {
+    @apply grid min-h-[calc(100dvh-5.5rem)] lg:grid-cols-[minmax(19rem,0.58fr)_minmax(0,1.42fr)];
+  }
+
+  .mailbox-case-list {
+    @apply border-b border-parchment-line bg-parchment p-4 lg:border-b-0 lg:border-r lg:p-5;
+  }
+
+  .mailbox-case-list__header h2 {
+    @apply font-serif text-xl font-extrabold text-ink-strong;
+  }
+
+  .mailbox-case-list__header button {
+    @apply text-sm font-extrabold text-indigo underline underline-offset-4;
+  }
+
+  .mailbox-case-row {
+    @apply mt-3 flex w-full flex-col items-start border border-parchment-line bg-parchment-soft p-3 text-left transition hover:border-gold-muted hover:shadow-paper;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-case-row.is-selected {
+    @apply border-indigo bg-indigo-mist/40;
+  }
+
+  .mailbox-case-row > span,
+  .mailbox-case-row small {
+    @apply text-xs font-bold text-ink-faint;
+  }
+
+  .mailbox-case-row strong {
+    @apply mt-1 text-sm text-ink-strong;
+  }
+
+  .mailbox-case-row em {
+    @apply mt-2 not-italic;
+  }
+
+  .mailbox-empty {
+    @apply mt-6 text-sm leading-7 text-ink-muted;
+  }
+
+  .mailbox-empty--detail {
+    @apply mx-auto max-w-md pt-16 text-center;
+  }
+
+  .mailbox-admin-detail {
+    @apply min-w-0 p-4 sm:p-6 lg:p-8;
+  }
+
+  .mailbox-admin-detail > header {
+    @apply border-b border-parchment-line pb-5;
+  }
+
+  .mailbox-admin-detail > header > p:not(.mailbox-kicker) {
+    @apply mt-2 text-sm text-ink-muted;
+  }
+
+  .mailbox-admin-question {
+    @apply mt-6 border border-parchment-line bg-parchment p-5 shadow-paper;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-admin-actions {
+    @apply mt-5 flex flex-wrap gap-3;
+  }
+
+  .mailbox-admin-actions button {
+    @apply border border-parchment-line bg-parchment px-3 py-2 text-sm font-extrabold text-ink-strong hover:border-gold-muted disabled:cursor-not-allowed disabled:opacity-40;
+    border-radius: theme('borderRadius.paper');
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mailbox-choice,
+  .mailbox-action {
+    transition: none;
+  }
+}

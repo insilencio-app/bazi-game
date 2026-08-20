@@ -6,6 +6,8 @@ export const ROUTES = {
   stems: '/stems',
   gods: '/gods',
   totalQuiz: '/total-quiz',
+  mailbox: '/mailbox',
+  mailboxAdmin: '/mailbox/admin',
 } as const;
 
 export type GameMode = 'menu' | 'elements' | 'lessons' | 'badges' | 'stems' | 'gods' | 'total-quiz';

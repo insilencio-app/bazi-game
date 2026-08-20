@@ -1,4 +1,6 @@
 import { HomePage } from './pages/HomePage';
+import { MailboxAdminPage } from './pages/MailboxAdminPage';
+import { MailboxPage } from './pages/MailboxPage';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LESSON_ROUTE_PATTERN, ROUTES } from './routes';
 
@@ -15,6 +17,8 @@ function App() {
           <Route path={ROUTES.stems} element={<HomePage />} />
           <Route path={ROUTES.gods} element={<HomePage />} />
           <Route path={ROUTES.totalQuiz} element={<HomePage />} />
+          <Route path={ROUTES.mailbox} element={<MailboxPage />} />
+          <Route path={ROUTES.mailboxAdmin} element={<MailboxAdminPage />} />
           <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
         </Routes>
       </div>

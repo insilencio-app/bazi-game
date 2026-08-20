@@ -22,6 +22,16 @@ import {
   loadSessionQuestionIds,
   upsertExposureRows,
 } from './db';
+import {
+  createMailboxService,
+  loadMailboxConfig,
+  MailboxConfigurationError,
+  MailboxRateLimitError,
+  MailboxValidationError,
+  REQUIRED_REPLY_DISCLOSURE,
+  type DeclineReason,
+  type InquiryStatus,
+} from './mailbox';
 
 const app = express();
 const db = createDatabase();
@@ -89,6 +99,49 @@ const setCachedAnalytics = (key: string, value: unknown) => {
 const clearAnalyticsCache = () => {
   analyticsCache.clear();
 };
+
+const getMailboxService = (response: express.Response) => {
+  try {
+    return createMailboxService(db, loadMailboxConfig());
+  } catch (error) {
+    if (error instanceof MailboxConfigurationError) {
+      response.status(503).json({ message: 'Private mailbox is not configured' });
+      return null;
+    }
+
+    response.status(500).json({ message: 'Private mailbox is unavailable' });
+    return null;
+  }
+};
+
+const sendMailboxError = (response: express.Response, error: unknown) => {
+  if (error instanceof MailboxValidationError) {
+    response.status(400).json({ message: error.message });
+    return;
+  }
+  if (error instanceof MailboxRateLimitError) {
+    response.status(429).json({ message: 'Too many private mailbox submissions. Please try again later.' });
+    return;
+  }
+  if (error instanceof MailboxConfigurationError) {
+    response.status(503).json({ message: 'Private mailbox is not configured' });
+    return;
+  }
+
+  console.error('[private-mailbox] request failed');
+  response.status(500).json({ message: 'Private mailbox request failed' });
+};
+
+const getHeaderToken = (request: express.Request, headerName: string) => {
+  const value = request.header(headerName);
+  return value ? value.trim() : '';
+};
+
+const isInquiryStatus = (value: unknown): value is InquiryStatus =>
+  value === 'received' || value === 'reviewing' || value === 'replied' || value === 'declined';
+
+const isDeclineReason = (value: unknown): value is DeclineReason =>
+  value === 'sensitive_data' || value === 'out_of_scope' || value === 'safety' || value === 'capacity';
 
 const rateLimiter: express.RequestHandler = (request, response, next) => {
   const now = Date.now();
@@ -177,6 +230,180 @@ const normalizePolicy = (raw: unknown): SelectionPolicy => {
 
 app.get('/api/health', (_request, response) => {
   response.json({ ok: true, service: 'bazi-quiz-api' });
+});
+
+app.post('/api/inquiries', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+
+  const body = request.body ?? {};
+  const inquiryType = body.inquiryType === 'personal_case' ? 'personal_case' : body.inquiryType === 'concept' ? 'concept' : 'invalid';
+
+  try {
+    const result = mailbox.submit({
+      inquiryType: inquiryType as 'concept' | 'personal_case',
+      category: typeof body.category === 'string' ? body.category : '',
+      body: typeof body.body === 'string' ? body.body : '',
+      personalCase: body.personalCase,
+      disclosureAccepted: body.disclosureAccepted === true,
+      personalCaseConsentAccepted: body.personalCaseConsentAccepted === true,
+      clientFingerprint: request.ip || 'unknown',
+    });
+
+    response.status(201).json({
+      ok: true,
+      publicId: result.publicId,
+      accessCode: result.accessCode,
+      replyDueAt: result.replyDueAt,
+      expiresAt: result.expiresAt,
+      createdAt: result.createdAt,
+    });
+  } catch (error) {
+    sendMailboxError(response, error);
+  }
+});
+
+app.post('/api/inquiries/:publicId/access', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  const accessCode = typeof request.body?.accessCode === 'string' ? request.body.accessCode : '';
+
+  try {
+    const inquiry = mailbox.getByAccessCode(request.params.publicId, accessCode);
+    if (!inquiry) {
+      response.status(404).json({ message: 'This link is invalid or has expired.' });
+      return;
+    }
+
+    response.json({ ok: true, inquiry, requiredReplyDisclosure: REQUIRED_REPLY_DISCLOSURE });
+  } catch (error) {
+    sendMailboxError(response, error);
+  }
+});
+
+app.post('/api/inquiries/:publicId/delete', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  const accessCode = typeof request.body?.accessCode === 'string' ? request.body.accessCode : '';
+
+  try {
+    const deleted = mailbox.deleteByAccessCode(request.params.publicId, accessCode);
+    if (!deleted) {
+      response.status(404).json({ message: 'This link is invalid or has expired.' });
+      return;
+    }
+
+    response.status(204).send();
+  } catch (error) {
+    sendMailboxError(response, error);
+  }
+});
+
+app.get('/api/admin/inquiries', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  if (!mailbox.verifyAdminToken(getHeaderToken(request, 'x-mailbox-admin-token'))) {
+    response.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  const statusValue = typeof request.query.status === 'string' ? request.query.status : undefined;
+  if (statusValue && !isInquiryStatus(statusValue)) {
+    response.status(400).json({ message: 'Invalid inquiry status' });
+    return;
+  }
+
+  const status: InquiryStatus | undefined = statusValue && isInquiryStatus(statusValue) ? statusValue : undefined;
+  response.json({ ok: true, inquiries: mailbox.listAdmin(status) });
+});
+
+app.get('/api/admin/inquiries/:id', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  if (!mailbox.verifyAdminToken(getHeaderToken(request, 'x-mailbox-admin-token'))) {
+    response.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  const inquiry = mailbox.getAdminInquiry(request.params.id);
+  if (!inquiry) {
+    response.status(404).json({ message: 'Not found' });
+    return;
+  }
+  response.json({ ok: true, inquiry, requiredReplyDisclosure: REQUIRED_REPLY_DISCLOSURE });
+});
+
+app.post('/api/admin/inquiries/:id/review', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  if (!mailbox.verifyAdminToken(getHeaderToken(request, 'x-mailbox-admin-token'))) {
+    response.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  const inquiry = mailbox.markReviewing(request.params.id);
+  if (!inquiry) {
+    response.status(404).json({ message: 'Not found' });
+    return;
+  }
+  response.json({ ok: true, inquiry });
+});
+
+app.post('/api/admin/inquiries/:id/reply', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  if (!mailbox.verifyAdminToken(getHeaderToken(request, 'x-mailbox-admin-token'))) {
+    response.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  try {
+    const inquiry = mailbox.reply(request.params.id, typeof request.body?.body === 'string' ? request.body.body : '');
+    if (!inquiry) {
+      response.status(404).json({ message: 'Not found' });
+      return;
+    }
+    response.json({ ok: true, inquiry, requiredReplyDisclosure: REQUIRED_REPLY_DISCLOSURE });
+  } catch (error) {
+    sendMailboxError(response, error);
+  }
+});
+
+app.post('/api/admin/inquiries/:id/decline', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  if (!mailbox.verifyAdminToken(getHeaderToken(request, 'x-mailbox-admin-token'))) {
+    response.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  const reason = request.body?.reason;
+  if (!isDeclineReason(reason)) {
+    response.status(400).json({ message: 'Invalid decline reason' });
+    return;
+  }
+
+  try {
+    const inquiry = mailbox.decline(request.params.id, reason);
+    if (!inquiry) {
+      response.status(404).json({ message: 'Not found' });
+      return;
+    }
+    response.json({ ok: true, inquiry });
+  } catch (error) {
+    sendMailboxError(response, error);
+  }
+});
+
+app.post('/api/internal/mailbox/maintenance', (request, response) => {
+  const mailbox = getMailboxService(response);
+  if (!mailbox) return;
+  if (!mailbox.verifyMaintenanceToken(getHeaderToken(request, 'x-mailbox-maintenance-token'))) {
+    response.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  response.json({ ok: true, maintenance: mailbox.runMaintenance() });
 });
 
 app.get('/api/security-status', (_request, response) => {
@@ -389,7 +616,7 @@ app.get('/api/quiz/sessions/:sessionId', (request, response) => {
 
 app.post('/api/quiz/sessions/:sessionId/attempts', (request, response) => {
   const sessionId = request.params.sessionId;
-  const attemptsRaw = Array.isArray(request.body?.attempts) ? request.body.attempts : [];
+  const attemptsRaw: unknown[] = Array.isArray(request.body?.attempts) ? request.body.attempts : [];
 
   if (attemptsRaw.length === 0) {
     response.status(400).json({ message: 'attempts is required' });

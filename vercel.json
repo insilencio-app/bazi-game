@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/cron/mailbox-cleanup",
+      "schedule": "0 2 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
