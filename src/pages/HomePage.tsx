@@ -478,7 +478,7 @@ export const HomePage: React.FC = () => {
     {
       id: 8,
       title: getPathLessonTitle(8, '第8課'),
-      subtitle: '根氣、得令、得地與強弱判斷',
+      subtitle: '月柱順逆與起運時間',
       emoji: '🏔️',
       accent: 'from-slate-500 to-gray-400',
       chip: '高級',

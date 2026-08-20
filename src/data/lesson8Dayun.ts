@@ -5,7 +5,7 @@
 
 export const lesson8Dayun = {
   id: 8,
-  title_cn: '第8課：排大運——由月柱推演時間節奏',
+  title_cn: '第8課：大運排法',
   title_en: 'Luck Pillar Calculation: Direction, Start Date & Ten-Year Sequence',
   learning_objectives_cn: '以月柱判斷大運順逆，換算起運間隔並加回出生時刻，排出第一柱及後續十年時間軸。',
   level: 'advanced',
