@@ -11,10 +11,15 @@ export const REQUIRED_REPLY_DISCLOSURE =
 
 export class MailboxValidationError extends Error {}
 export class MailboxAuthorizationError extends Error {}
+class MissingMailboxEnvironmentError extends Error {
+  constructor(readonly variableName: string) {
+    super(`Missing required environment variable: ${variableName}`);
+  }
+}
 
 const requireEnv = (name: string) => {
   const value = process.env[name]?.trim();
-  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  if (!value) throw new MissingMailboxEnvironmentError(name);
   return value;
 };
 
@@ -282,7 +287,7 @@ const sendError = (response: ApiResponse, error: unknown) => {
   }
   const errorMessage = error instanceof Error ? error.message : 'unknown_error';
   const diagnosticCode =
-    /Missing required environment variable/i.test(errorMessage) ? 'mailbox_configuration_missing' :
+    error instanceof MissingMailboxEnvironmentError ? `missing_${error.variableName.toLowerCase()}` :
     /Invalid API key|JWT|secret key/i.test(errorMessage) ? 'supabase_credentials_rejected' :
     /permission denied|row-level security|not authorized/i.test(errorMessage) ? 'supabase_permission_denied' :
     /relation .* does not exist|schema cache|column .* does not exist/i.test(errorMessage) ? 'supabase_schema_unavailable' :
