@@ -1,4 +1,4 @@
-import { createSupabaseMailboxService } from '../../server/supabaseMailbox';
+import { createSupabaseMailboxService } from '../_lib/supabaseMailbox';
 
 type CronRequest = { method?: string; headers: Record<string, string | string[] | undefined> };
 type CronResponse = { status(code: number): CronResponse; json(value: unknown): void };

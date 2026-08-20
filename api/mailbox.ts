@@ -1,4 +1,4 @@
-import { createSupabaseMailboxService, MailboxAuthorizationError, MailboxValidationError, REQUIRED_REPLY_DISCLOSURE } from '../server/supabaseMailbox';
+import { createSupabaseMailboxService, MailboxAuthorizationError, MailboxValidationError, REQUIRED_REPLY_DISCLOSURE } from './_lib/supabaseMailbox';
 
 type ApiRequest = {
   method?: string;
