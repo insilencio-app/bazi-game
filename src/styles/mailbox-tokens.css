@@ -476,11 +476,11 @@
   }
 
   .mailbox-admin-header {
-    @apply border-b border-parchment-line bg-parchment px-4 py-5 sm:px-6 lg:px-8;
+    @apply border-b border-parchment-line bg-parchment px-4 py-4 sm:px-6 sm:py-5 xl:px-10;
   }
 
   .mailbox-admin-header h1 {
-    @apply text-2xl;
+    @apply text-xl sm:text-2xl;
   }
 
   .mailbox-action--quiet {
@@ -488,14 +488,42 @@
   }
 
   .mailbox-admin-layout {
-    @apply grid min-h-[calc(100dvh-5.5rem)] lg:grid-cols-[minmax(19rem,0.58fr)_minmax(0,1.42fr)];
+    @apply grid min-h-[calc(100dvh-5.5rem)];
+  }
+
+  @media (min-width: 1280px) {
+    .mailbox-admin-layout {
+      grid-template-columns: minmax(17.5rem, 19.5rem) minmax(0, 1fr);
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .mailbox-admin-layout {
+      grid-template-columns: minmax(19.5rem, 22rem) minmax(0, 1fr);
+    }
   }
 
   .mailbox-case-list {
     @apply border-b border-parchment-line bg-parchment p-4 lg:border-b-0 lg:border-r lg:p-5;
   }
 
-  @media (min-width: 1024px) {
+  @media (max-width: 1279px) {
+    .mailbox-case-list {
+      max-height: min(22rem, 45dvh);
+      overflow-y: auto;
+    }
+
+    .mailbox-case-list__header {
+      position: sticky;
+      top: -1rem;
+      z-index: 2;
+      margin: -1rem -1rem 0;
+      padding: 1rem;
+      background: theme('colors.parchment.DEFAULT');
+    }
+  }
+
+  @media (min-width: 1280px) {
     .mailbox-case-list {
       position: sticky;
       top: 0;
@@ -521,7 +549,7 @@
   }
 
   .mailbox-case-row {
-    @apply mt-3 flex w-full flex-col items-start border border-parchment-line bg-parchment-soft p-3 text-left transition hover:border-gold-muted hover:shadow-paper;
+    @apply mt-3 flex min-h-[7.25rem] w-full flex-col items-start border border-parchment-line bg-parchment-soft p-3 text-left transition hover:border-gold-muted hover:shadow-paper;
     border-radius: theme('borderRadius.paper');
   }
 
@@ -551,11 +579,11 @@
   }
 
   .mailbox-admin-detail {
-    @apply min-w-0 bg-parchment-soft p-4 sm:p-6 lg:p-8;
+    @apply min-w-0 border-t border-parchment-line bg-parchment-soft p-4 sm:p-6 xl:border-t-0 xl:px-10 xl:py-9 2xl:px-14;
   }
 
   .mailbox-admin-workspace {
-    @apply mx-auto w-full max-w-4xl;
+    @apply mx-auto w-full max-w-5xl;
   }
 
   .mailbox-admin-detail__header {
@@ -581,7 +609,7 @@
   }
 
   .mailbox-reply-composer {
-    @apply mt-6 border border-indigo-light/25 bg-parchment p-5 shadow-paper sm:p-6;
+    @apply mt-6 border border-indigo-light/25 bg-parchment p-5 shadow-paper sm:p-6 xl:p-7;
     border-top: 4px solid theme('colors.indigo.DEFAULT');
     border-radius: theme('borderRadius.paper');
   }
@@ -622,7 +650,7 @@
   }
 
   .mailbox-admin-message {
-    @apply mx-4 sm:mx-6 lg:mx-8;
+    @apply mx-4 sm:mx-6 xl:mx-10;
   }
 }
 
