@@ -13,6 +13,22 @@ Production Function 只需由 Supabase 整合注入的伺服器端設定；它�
 
 系統以 `SUPABASE_SECRET_KEY` 對三個固定用途標籤作 HMAC 衍生，分別供取件碼雜湊、個人命例 AES-256-GCM 加密與維護流程使用。用途標籤不可變更；更換 Supabase service-role 金鑰會令舊取件碼雜湊及舊加密命例無法再以相同子密鑰驗證或解密，因此必須先完成既有資料的到期清理，或規劃一次受控資料重設。
 
+## 已驗證的 Vercel 與 Supabase 連線
+
+正式網站 `bazi-game` 必須在 Vercel Storage 連接到 `bazi-atlas` 的 **Production** branch。不要把它連到空白或測試用的其他 Supabase project；Function 若指向沒有 mailbox schema 的 project，會無法查詢私密信箱資料表。
+
+管理端前端只需要公開的 Supabase Project URL 與 publishable key。`vite.config.ts` 會在建置時優先使用手動 `VITE_SUPABASE_URL`／`VITE_SUPABASE_PUBLISHABLE_KEY`，否則安全映射 Vercel integration 已注入的 `SUPABASE_URL`／`SUPABASE_PUBLISHABLE_KEY`。這個映射**絕不可**包含 `SUPABASE_SECRET_KEY` 或其他 server-side secret。
+
+## 資料庫初始化與 Data API 權限
+
+在新的正式資料庫依順序執行以下 migrations：
+
+1. `supabase/migrations/20260820_private_mailbox.sql`
+2. `supabase/migrations/20260821_mailbox_service_role_grants.sql`
+3. `supabase/migrations/20260821_mailbox_cleanup_cron.sql`
+
+2026 年後建立的 Supabase project 可能要求明確 grants 才會將新 `public` 資料表加入 Data API。migration 會授予標準 API roles 資料表層權限，但 RLS 仍是私密資料的強制存取邊界：匿名角色沒有信箱資料政策；已登入角色只有列入 `mailbox_admins` 的管理員可通過管理端資料政策。
+
 ## API 路徑
 
 | 路徑 | 用途 |
@@ -36,4 +52,4 @@ Production Function 只需由 Supabase 整合注入的伺服器端設定；它�
 
 ## 部署前檢查
 
-私密個人命例不可只保存於本機 SQLite、前端 localStorage、Git 或短暫記憶體。正式部署前，應把問答資料改存至具備持久儲存、受存取控制、加密連線及備份／清除流程的資料庫；目前 SQLite 實作適合作為本機開發與 API 契約驗證。
+私密個人命例不可保存於前端 localStorage、Git 或短暫記憶體。正式問答資料保存於已連接的 Supabase PostgreSQL；資料表受 RLS、管理員名單、保存期限清理與個人命例欄位加密保護。若更換 Supabase project，必須先完成上述 migrations、唯一管理員設定與完整提交／取件／回覆／刪除驗收，才可切換 Production 連線。
