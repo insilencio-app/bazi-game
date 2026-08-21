@@ -5,6 +5,7 @@ type InquiryType = 'concept' | 'personal_case';
 type InquiryStatus = 'received' | 'reviewing' | 'replied' | 'declined';
 type DeclineReason = 'sensitive_data' | 'out_of_scope' | 'safety' | 'capacity';
 type PersonalCase = { calendar: 'solar' | 'lunar'; birthDate: string; birthTime: string | null; timeUncertain: boolean; timezone: string; calculationSex: 'male' | 'female' | null };
+type MailboxAnswer = { body: string; created_at: string };
 
 export const REQUIRED_REPLY_DISCLOSURE =
   '免責聲明：八字及其他玄學屬傳統文化與詮釋性觀點，並非精密科學，也不能保證預測結果。本回覆由真人按你提供的有限資料作出，只供學習及參考。請勿過份迷信，亦不要把它作為醫療、心理健康、法律、投資、婚姻、職業、教育或其他重大人生決定的唯一或主要依據；需要時請向合資格專業人士尋求協助。';
@@ -101,8 +102,7 @@ class InlineSupabaseMailboxService {
     this.client = createClient(requireEnv('SUPABASE_URL'), supabaseSecretKey, { auth: { autoRefreshToken: false, persistSession: false } });
   }
 
-  private toPublic(row: any, includeCase: boolean) {
-    const answer = Array.isArray(row.mailbox_answers) ? row.mailbox_answers[0] ?? null : null;
+  private toPublic(row: any, includeCase: boolean, answer: MailboxAnswer | null = null) {
     return {
       id: row.id,
       publicId: row.public_id,
@@ -119,6 +119,16 @@ class InlineSupabaseMailboxService {
       answer: answer?.body ?? null,
       answerCreatedAt: answer?.created_at ?? null,
     };
+  }
+
+  private async getAnswer(inquiryId: string): Promise<MailboxAnswer | null> {
+    const { data, error } = await this.client
+      .from('mailbox_answers')
+      .select('body, created_at')
+      .eq('inquiry_id', inquiryId)
+      .maybeSingle();
+    if (error) throw error;
+    return data ?? null;
   }
 
   private async audit(inquiryId: string, actorId: string, action: string) {
@@ -164,9 +174,10 @@ class InlineSupabaseMailboxService {
   }
 
   async getByAccessCode(publicId: string, accessCode: string) {
-    const { data, error } = await this.client.from('mailbox_inquiries').select('*, mailbox_answers(body, created_at)').eq('public_id', publicId).gt('expires_at', new Date().toISOString()).maybeSingle();
+    const { data, error } = await this.client.from('mailbox_inquiries').select('*').eq('public_id', publicId).gt('expires_at', new Date().toISOString()).maybeSingle();
     if (error) throw error;
-    return data && codesMatch(accessCode, data.access_code_hash, this.pepper) ? this.toPublic(data, true) : null;
+    if (!data || !codesMatch(accessCode, data.access_code_hash, this.pepper)) return null;
+    return this.toPublic(data, true, await this.getAnswer(data.id));
   }
 
   async deleteByAccessCode(publicId: string, accessCode: string) {
@@ -196,17 +207,17 @@ class InlineSupabaseMailboxService {
   }
 
   async getAdminInquiry(id: string) {
-    const { data, error } = await this.client.from('mailbox_inquiries').select('*, mailbox_answers(body, created_at)').eq('id', id).maybeSingle();
+    const { data, error } = await this.client.from('mailbox_inquiries').select('*').eq('id', id).maybeSingle();
     if (error) throw error;
-    return data ? this.toPublic(data, true) : null;
+    return data ? this.toPublic(data, true, await this.getAnswer(data.id)) : null;
   }
 
   async markReviewing(id: string, adminId: string) {
-    const { data, error } = await this.client.from('mailbox_inquiries').update({ status: 'reviewing' }).eq('id', id).in('status', ['received', 'reviewing']).select('*, mailbox_answers(body, created_at)').maybeSingle();
+    const { data, error } = await this.client.from('mailbox_inquiries').update({ status: 'reviewing' }).eq('id', id).in('status', ['received', 'reviewing']).select('*').maybeSingle();
     if (error) throw error;
     if (!data) return null;
     await this.audit(id, adminId, 'marked_reviewing');
-    return this.toPublic(data, true);
+    return this.toPublic(data, true, await this.getAnswer(data.id));
   }
 
   async reply(id: string, adminId: string, body: unknown) {
@@ -225,11 +236,11 @@ class InlineSupabaseMailboxService {
   async decline(id: string, adminId: string, reason: unknown) {
     const allowed: DeclineReason[] = ['sensitive_data', 'out_of_scope', 'safety', 'capacity'];
     if (!allowed.includes(reason as DeclineReason)) throw new MailboxValidationError('Invalid decline reason');
-    const { data, error } = await this.client.from('mailbox_inquiries').update({ status: 'declined', decline_reason: reason, expires_at: addDays(new Date(), 7).toISOString() }).eq('id', id).select('*, mailbox_answers(body, created_at)').maybeSingle();
+    const { data, error } = await this.client.from('mailbox_inquiries').update({ status: 'declined', decline_reason: reason, expires_at: addDays(new Date(), 7).toISOString() }).eq('id', id).select('*').maybeSingle();
     if (error) throw error;
     if (!data) return null;
     await this.audit(id, adminId, `declined:${reason}`);
-    return this.toPublic(data, true);
+    return this.toPublic(data, true, await this.getAnswer(data.id));
   }
 }
 
