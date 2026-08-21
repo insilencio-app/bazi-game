@@ -292,8 +292,15 @@ const sendError = (response: ApiResponse, error: unknown) => {
     /permission denied|row-level security|not authorized/i.test(errorMessage) ? 'supabase_permission_denied' :
     /relation .* does not exist|schema cache|column .* does not exist/i.test(errorMessage) ? 'supabase_schema_unavailable' :
     'supabase_connection_failed';
+  const runtimeKeyStatus = {
+    mailboxAccessCodePepperPresent: Boolean(process.env.MAILBOX_ACCESS_CODE_PEPPER?.trim()),
+    mailboxEncryptionSecretPresent: Boolean(process.env.MAILBOX_ENCRYPTION_SECRET?.trim()),
+    mailboxMaintenanceTokenPresent: Boolean(process.env.MAILBOX_MAINTENANCE_TOKEN?.trim()),
+    supabaseUrlPresent: Boolean(process.env.SUPABASE_URL?.trim()),
+    supabaseSecretKeyPresent: Boolean(process.env.SUPABASE_SECRET_KEY?.trim()),
+  };
   console.error('[mailbox-api] operation failed', { diagnosticCode, errorMessage });
-  response.status(500).json({ message: 'Private mailbox is temporarily unavailable.', diagnosticCode });
+  response.status(500).json({ message: 'Private mailbox is temporarily unavailable.', diagnosticCode, runtimeKeyStatus });
 };
 
 export default async function handler(request: ApiRequest, response: ApiResponse) {
