@@ -289,8 +289,15 @@ const sendError = (response: ApiResponse, error: unknown) => {
     return;
   }
   const errorMessage = error instanceof Error ? error.message : 'unknown_error';
-  console.error('[mailbox-api] operation failed', { errorMessage });
-  response.status(500).json({ message: 'Private mailbox is temporarily unavailable.' });
+  const diagnosticCode =
+    error instanceof MissingMailboxEnvironmentError ? 'server_configuration_missing' :
+    /Invalid API key|JWT|secret key/i.test(errorMessage) ? 'supabase_credentials_rejected' :
+    /permission denied|row-level security|not authorized/i.test(errorMessage) ? 'supabase_permission_denied' :
+    /relation .* does not exist|schema cache|column .* does not exist/i.test(errorMessage) ? 'supabase_schema_unavailable' :
+    /fetch failed|ENOTFOUND|ECONNREFUSED|network/i.test(errorMessage) ? 'supabase_unreachable' :
+    'supabase_connection_failed';
+  console.error('[mailbox-api] operation failed', { diagnosticCode, errorMessage });
+  response.status(500).json({ message: 'Private mailbox is temporarily unavailable.', diagnosticCode });
 };
 
 export default async function handler(request: ApiRequest, response: ApiResponse) {
