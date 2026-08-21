@@ -40,6 +40,8 @@ const addBusinessDays = (date: Date, days: number) => {
 };
 
 const hash = (value: string, pepper: string) => createHmac('sha256', pepper).update(value).digest('hex');
+const deriveMailboxSecret = (rootSecret: string, purpose: string) =>
+  createHmac('sha256', rootSecret).update(purpose).digest('hex');
 const cryptoKey = (secret: string) => createHmac('sha256', 'bazi-mailbox-encryption').update(secret).digest();
 
 const codesMatch = (candidate: string, expected: string, pepper: string) => {
@@ -91,11 +93,12 @@ class InlineSupabaseMailboxService {
   private readonly submissionMax: number;
 
   constructor() {
-    this.pepper = requireEnv('MAILBOX_ACCESS_CODE_PEPPER');
-    this.encryptionSecret = requireEnv('MAILBOX_ENCRYPTION_SECRET');
+    const supabaseSecretKey = requireEnv('SUPABASE_SECRET_KEY');
+    this.pepper = deriveMailboxSecret(supabaseSecretKey, 'bazi-mailbox/access-code-pepper/v1');
+    this.encryptionSecret = deriveMailboxSecret(supabaseSecretKey, 'bazi-mailbox/personal-case-encryption/v1');
     this.submissionWindowMs = Number(process.env.MAILBOX_SUBMISSION_WINDOW_MS ?? 86_400_000);
     this.submissionMax = Number(process.env.MAILBOX_SUBMISSION_MAX ?? 3);
-    this.client = createClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SECRET_KEY'), { auth: { autoRefreshToken: false, persistSession: false } });
+    this.client = createClient(requireEnv('SUPABASE_URL'), supabaseSecretKey, { auth: { autoRefreshToken: false, persistSession: false } });
   }
 
   private toPublic(row: any, includeCase: boolean) {
@@ -286,21 +289,8 @@ const sendError = (response: ApiResponse, error: unknown) => {
     return;
   }
   const errorMessage = error instanceof Error ? error.message : 'unknown_error';
-  const diagnosticCode =
-    error instanceof MissingMailboxEnvironmentError ? `missing_${error.variableName.toLowerCase()}` :
-    /Invalid API key|JWT|secret key/i.test(errorMessage) ? 'supabase_credentials_rejected' :
-    /permission denied|row-level security|not authorized/i.test(errorMessage) ? 'supabase_permission_denied' :
-    /relation .* does not exist|schema cache|column .* does not exist/i.test(errorMessage) ? 'supabase_schema_unavailable' :
-    'supabase_connection_failed';
-  const runtimeKeyStatus = {
-    mailboxAccessCodePepperPresent: Boolean(process.env.MAILBOX_ACCESS_CODE_PEPPER?.trim()),
-    mailboxEncryptionSecretPresent: Boolean(process.env.MAILBOX_ENCRYPTION_SECRET?.trim()),
-    mailboxMaintenanceTokenPresent: Boolean(process.env.MAILBOX_MAINTENANCE_TOKEN?.trim()),
-    supabaseUrlPresent: Boolean(process.env.SUPABASE_URL?.trim()),
-    supabaseSecretKeyPresent: Boolean(process.env.SUPABASE_SECRET_KEY?.trim()),
-  };
-  console.error('[mailbox-api] operation failed', { diagnosticCode, errorMessage });
-  response.status(500).json({ message: 'Private mailbox is temporarily unavailable.', diagnosticCode, runtimeKeyStatus });
+  console.error('[mailbox-api] operation failed', { errorMessage });
+  response.status(500).json({ message: 'Private mailbox is temporarily unavailable.' });
 };
 
 export default async function handler(request: ApiRequest, response: ApiResponse) {
