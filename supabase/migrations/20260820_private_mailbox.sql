@@ -168,3 +168,16 @@ $$;
 
 revoke all on function public.mailbox_purge_expired(timestamptz) from public;
 grant execute on function public.mailbox_purge_expired(timestamptz) to service_role;
+
+-- Supabase projects created after the 2026 Data API exposure change require
+-- explicit grants before newly created public tables appear in PostgREST.
+-- Only the server-side service_role receives these grants; browser clients
+-- continue to have no direct table access and must use the Vercel Function.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table
+  public.mailbox_inquiries,
+  public.mailbox_answers,
+  public.mailbox_admins,
+  public.mailbox_audit_events,
+  public.mailbox_rate_limits
+to service_role;
