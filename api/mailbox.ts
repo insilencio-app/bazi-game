@@ -53,7 +53,7 @@ const codesMatch = (candidate: string, expected: string, pepper: string) => {
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 
-const normalizeCase = (value: unknown): PersonalCase => {
+const normalizeCase = (value: unknown, requireCalculationSex = false): PersonalCase => {
   if (!isRecord(value)) throw new MailboxValidationError('Personal case details are required');
   const calendar = value.calendar;
   const birthDate = value.birthDate;
@@ -67,6 +67,7 @@ const normalizeCase = (value: unknown): PersonalCase => {
   if (typeof timeUncertain !== 'boolean') throw new MailboxValidationError('Time certainty is required');
   if (typeof timezone !== 'string' || timezone.length < 2 || timezone.length > 64) throw new MailboxValidationError('Timezone is required');
   if (calculationSex !== null && calculationSex !== 'male' && calculationSex !== 'female') throw new MailboxValidationError('Invalid calculation sex');
+  if (requireCalculationSex && calculationSex !== 'male' && calculationSex !== 'female') throw new MailboxValidationError('請選擇性別');
   return { calendar, birthDate, birthTime, timeUncertain, timezone, calculationSex };
 };
 
@@ -155,7 +156,7 @@ class InlineSupabaseMailboxService {
     } : { key_hash: keyHash, window_started_at: now.toISOString(), request_count: 1, expires_at: addDays(now, 2).toISOString() });
     if (upsertError) throw upsertError;
 
-    const personalCase = inquiryType === 'personal_case' ? normalizeCase(input.personalCase) : null;
+    const personalCase = inquiryType === 'personal_case' ? normalizeCase(input.personalCase, true) : null;
     const accessCode = randomBytes(18).toString('base64url');
     const { data, error } = await this.client.from('mailbox_inquiries').insert({
       public_id: `Q-${randomBytes(4).toString('hex').toUpperCase()}`,

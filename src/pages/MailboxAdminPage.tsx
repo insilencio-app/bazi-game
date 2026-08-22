@@ -178,7 +178,7 @@ export function MailboxAdminPage() {
         <section className="mailbox-panel mailbox-login">
           <p className="mailbox-kicker">僅限管理員</p>
           <h1>開啟私密案卷桌</h1>
-          <p>請以 Supabase 中已獲授權的唯一管理員帳戶登入。</p>
+          <p>請以管理員帳戶登入。</p>
           <form onSubmit={signIn}>
             <label className="mailbox-field">電郵<input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" /></label>
             <label className="mailbox-field">密碼<input required type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" /></label>

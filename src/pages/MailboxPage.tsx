@@ -199,11 +199,11 @@ export function MailboxPage() {
                     <label className="mailbox-check"><input type="checkbox" checked={timeUncertain} onChange={(event) => setTimeUncertain(event.target.checked)} />出生時間不確定</label>
                     <label className="mailbox-field">時區<input required value={timezone} onChange={(event) => setTimezone(event.target.value)} aria-describedby="timezone-help" /></label>
                     <p className="mailbox-help" id="timezone-help">香港可填寫 `Asia/Hong_Kong`。</p>
-                    <label className="mailbox-field">傳統計算法性別（可略過）
-                      <select value={calculationSex} onChange={(event) => setCalculationSex(event.target.value)}><option value="">不提供</option><option value="male">男</option><option value="female">女</option></select>
+                    <label className="mailbox-field">性別
+                      <select required value={calculationSex} onChange={(event) => setCalculationSex(event.target.value)}><option value="">請選擇性別</option><option value="male">男</option><option value="female">女</option></select>
                     </label>
                   </div>
-                  <p className="mailbox-help">請不要填姓名、電話、電郵、地址、相片或他人的出生資料。</p>
+                  <p className="mailbox-help">請不要填個人資料。</p>
                 </section>
               )}
 
