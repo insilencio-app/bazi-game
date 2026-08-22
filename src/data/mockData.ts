@@ -1929,10 +1929,10 @@ export const mockLessons = [
       },
       {
         id: 35,
-        question: '以下哪個地支屬土且為陰？',
+        question: '以下哪個地支屬土、為陰，且對應丑時（01:00–03:00）？',
         options: ['辰', '未', '戌', '丑'],
-        correct: 1,
-        explanation: '未屬土且為陰。',
+        correct: 3,
+        explanation: '丑屬土、為陰，對應丑時（01:00–03:00）。未同樣屬陰土，但對應未時（13:00–15:00），所以原本的題幹不足以區分兩者。',
       },
     ],
     trueFalseBank: [
