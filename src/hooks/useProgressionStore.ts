@@ -228,6 +228,31 @@ export const useProgressionStore = <TBadgeId extends string>({
     window.localStorage.setItem(storageKey, JSON.stringify(payload));
   }, [storageKey, userProgress, completedLessonIds, perfectLessonIds, highScoreLessonIds, lessonAttemptCounts, unlockedBadgeIds]);
 
+  React.useEffect(() => {
+    const achievedBadges = getAchievedBadges(
+      userProgress,
+      completedLessonIds,
+      perfectLessonIds,
+      highScoreLessonIds,
+      lessonAttemptCounts
+    );
+
+    setUnlockedBadgeIds((currentUnlockedBadgeIds) => {
+      const newlyAchievedBadgeIds = getNewBadgeIds(achievedBadges, currentUnlockedBadgeIds);
+
+      return newlyAchievedBadgeIds.length > 0
+        ? [...currentUnlockedBadgeIds, ...newlyAchievedBadgeIds]
+        : currentUnlockedBadgeIds;
+    });
+  }, [
+    userProgress,
+    completedLessonIds,
+    perfectLessonIds,
+    highScoreLessonIds,
+    lessonAttemptCounts,
+    getAchievedBadges,
+  ]);
+
   const spendHint = React.useCallback(() => {
     setUserProgress((prev) => ({
       ...prev,
@@ -307,23 +332,11 @@ export const useProgressionStore = <TBadgeId extends string>({
         },
       };
 
-      const achievedBadges = getAchievedBadges(
-        nextProgress,
-        nextCompletedLessonIds,
-        nextPerfectLessonIds,
-        nextHighScoreLessonIds,
-        nextLessonAttemptCounts
-      );
-      const newBadges = getNewBadgeIds(achievedBadges, unlockedBadgeIds);
-
       setCompletedLessonIds(nextCompletedLessonIds);
       setPerfectLessonIds(nextPerfectLessonIds);
       setHighScoreLessonIds(nextHighScoreLessonIds);
       setLessonAttemptCounts(nextLessonAttemptCounts);
       setUserProgress(nextProgress);
-      if (newBadges.length > 0) {
-        setUnlockedBadgeIds((prev) => [...prev, ...newBadges]);
-      }
     },
     [
       completedLessonIds,
@@ -331,11 +344,9 @@ export const useProgressionStore = <TBadgeId extends string>({
       highScoreLessonIds,
       lessonAttemptCounts,
       userProgress,
-      unlockedBadgeIds,
       xpConfig.correctAnswerXp,
       xpConfig.lessonCompleteXp,
       xpConfig.perfectLessonBonusXp,
-      getAchievedBadges,
     ]
   );
 
@@ -358,19 +369,7 @@ export const useProgressionStore = <TBadgeId extends string>({
         totalQuizLatestPercent: percentage,
       };
 
-      const achievedBadges = getAchievedBadges(
-        nextProgress,
-        completedLessonIds,
-        perfectLessonIds,
-        highScoreLessonIds,
-        lessonAttemptCounts
-      );
-      const newBadges = getNewBadgeIds(achievedBadges, unlockedBadgeIds);
-
       setUserProgress(nextProgress);
-      if (newBadges.length > 0) {
-        setUnlockedBadgeIds((prev) => [...prev, ...newBadges]);
-      }
     },
     [
       userProgress,
@@ -378,11 +377,9 @@ export const useProgressionStore = <TBadgeId extends string>({
       perfectLessonIds,
       highScoreLessonIds,
       lessonAttemptCounts,
-      unlockedBadgeIds,
       xpConfig.correctAnswerXp,
       xpConfig.totalQuizMasteryBonusXp,
       xpConfig.totalQuizPerfectBonusXp,
-      getAchievedBadges,
     ]
   );
 
