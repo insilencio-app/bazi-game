@@ -213,7 +213,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
           <aside className="desktop-atlas-profile" aria-label="目前學習檔案">
             <p>LEARNING PROFILE</p>
             <div><strong>Lv.{levelProgress.level}</strong><span>{getLevelTitle(levelProgress.level)}</span></div>
-            <div className="desktop-atlas-profile__meta"><small>{levelProgress.xpIntoCurrentLevel} / {levelProgress.xpToNextLevel} XP</small><button type="button" onClick={onOpenBadgeGallery}>徽章 {unlockedBadgeIds.length} ↗</button></div>
+            <div className="desktop-atlas-profile__meta"><small>{levelProgress.xpIntoCurrentLevel} / {levelProgress.xpToNextLevel} XP</small><button type="button" onClick={onOpenBadgeGallery} aria-label={`開啟徽章圖鑑，目前已解鎖 ${unlockedBadgeIds.length} 枚徽章`}><span>徽章圖鑑</span><b>{unlockedBadgeIds.length}</b><i aria-hidden="true">↗</i></button></div>
             <div className="desktop-atlas-profile__track"><span style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }} /></div>
           </aside>
         </div>
