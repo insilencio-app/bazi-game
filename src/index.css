@@ -4543,6 +4543,20 @@ body {
   font-size: 1.15rem;
 }
 
+.badge-unlock-overlay--level .badge-unlock-overlay__card {
+  border-top-color: #315e43;
+  background: linear-gradient(145deg, rgba(255,253,247,0.98) 0%, rgba(231,242,229,0.98) 100%);
+}
+
+.badge-unlock-overlay--level .badge-unlock-overlay__serial,
+.badge-unlock-overlay--level .badge-unlock-overlay__kicker {
+  color: #315e43;
+}
+
+.badge-unlock-overlay--level .badge-unlock-overlay__note {
+  color: #4d7259;
+}
+
 @media (max-width: 560px) {
   .badge-unlock-overlay {
     width: min(100%, 22rem);

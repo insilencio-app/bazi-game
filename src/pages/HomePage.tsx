@@ -547,18 +547,18 @@ export const HomePage: React.FC = () => {
     (levelUpNotice !== null || activeBadgeNotice) ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-300">
         {levelUpNotice !== null && (
-          <div className="w-full max-w-md rounded-3xl bg-gradient-to-br from-indigo-600 to-blue-600 text-white shadow-2xl px-6 py-8 text-center animate-in zoom-in-95 duration-300 pointer-events-auto">
-            <p className="text-sm opacity-90">等級提升</p>
-            <p className="text-4xl mt-2">🎉</p>
-            <p className="text-2xl sm:text-3xl font-extrabold mt-2">升到 Lv.{levelUpNotice}</p>
-            <p className="text-xl sm:text-2xl font-bold mt-2 opacity-95">{getLevelTitle(levelUpNotice)}</p>
-            <button
-              onClick={dismissLevelUpNotice}
-              className="mt-6 w-full rounded-xl bg-white/20 hover:bg-white/30 transition-colors py-2 font-semibold"
-            >
-              繼續
-            </button>
-          </div>
+          <section className="badge-unlock-overlay badge-unlock-overlay--level" role="dialog" aria-modal="true" aria-labelledby="level-up-title">
+            <div className="badge-unlock-overlay__card animate-in zoom-in-95 duration-300">
+              <div className="badge-unlock-overlay__serial"><span>研習紀錄</span><span>LEVEL UP</span></div>
+              <div className="badge-unlock-overlay__badge"><EnamelBadge icon="star" unlocked groupId="continuity" number={Math.max(1, levelUpNotice)} /></div>
+              <p className="badge-unlock-overlay__kicker">研習等級提升</p>
+              <h2 id="level-up-title">Lv.{levelUpNotice}・{getLevelTitle(levelUpNotice)}</h2>
+              <p className="badge-unlock-overlay__copy">你的累積研習經驗已跨過新的階段。</p>
+              <div className="badge-unlock-overlay__rule" />
+              <p className="badge-unlock-overlay__note">等級與本次解鎖徽章會依序收錄。</p>
+              <button onClick={dismissLevelUpNotice} className="badge-unlock-overlay__button">記錄完成・查看解鎖 <span aria-hidden="true">→</span></button>
+            </div>
+          </section>
         )}
 
         {levelUpNotice === null && activeBadgeNotice && (
