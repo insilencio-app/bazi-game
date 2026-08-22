@@ -10,6 +10,7 @@ import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
 import { EarthlyBranchJourney } from '../components/lesson/EarthlyBranchJourney';
 import { TenGodsLessonGuide } from '../components/lesson/TenGodsLessonGuide';
+import { BranchRelationsGuide } from '../components/lesson/BranchRelationsGuide';
 import LessonTemplate from '../components/lesson/LessonTemplate';
 import { LessonOneAtlas, type LessonOneAtlasStage } from '../components/lesson/LessonOneAtlas';
 import { getCourseDisplay } from '../data/courseCatalog';
@@ -865,6 +866,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             )}
           </div>
           {lessonId === 5 && <TenGodsLessonGuide stepId={currentStep.id} />}
+          {lessonId === 7 && <BranchRelationsGuide stepId={currentStep.id} />}
           {!(lessonId === 6 && currentStep.id === 1) && currentStep.paragraphs?.map((text, idx) => (
             <p key={idx} className="lesson-atlas-body-copy lesson-atlas-copy">
               {text}
@@ -1733,9 +1735,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 el1: em ? em[1] : BRANCH_EL[m[1]] ?? '', el2: em ? em[2] : BRANCH_EL[m[2]] ?? '' });
             });
             return (
-              <div className="flex flex-row items-center gap-2">
-                {/* Clock SVG — larger on the left */}
-                <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-72 h-72 shrink-0 sm:w-80 sm:h-80">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                {/* Clock SVG — full width on mobile, left-side anchor on desktop */}
+                <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="mx-auto h-auto w-full max-w-[300px] shrink-0 lg:mx-0 lg:w-80">
                   {/* Outer ring */}
                   <circle cx={cx2} cy={cy2} r={clockR + nodeR + 5} fill="none" stroke="#e2e8f0" strokeWidth="1.5" />
                   {/* Clash lines */}
@@ -1760,8 +1762,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                   <text x={cx2} y={cy2 - 7} textAnchor="middle" fontSize="11" fontWeight="bold" fill="#94a3b8">六沖</text>
                   <text x={cx2} y={cy2 + 8} textAnchor="middle" fontSize="9" fill="#cbd5e1">對沖圖</text>
                 </svg>
-                {/* Pair legend — stacked on the right */}
-                <div className="flex flex-col gap-1 flex-1 min-w-0">
+                {/* Pair legend — two-column scan on mobile, stacked reference on desktop */}
+                <div className="grid grid-cols-2 gap-1.5 lg:flex lg:flex-1 lg:flex-col lg:gap-1 lg:min-w-0">
                   {pairs.map((p, i) => (
                     <div key={i} className="flex items-center gap-1 bg-gray-50 rounded-lg px-1.5 py-1 border border-gray-100">
                       <span style={{ color: EL_FILL[p.el1] }} className="text-lg font-bold leading-none">{p.b1}</span>
@@ -1774,23 +1776,22 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               </div>
             );
           })() : lessonId === 7 && currentStep.id === 9 && currentStep.bullets ? (() => {
-            /* L7 id:9 — Intensity spectrum bar */
+            /* L7 id:9 — Relationship reading cards, not a deterministic strength ranking */
             const SPECTRUM = [
-              { label: '合', tone: 'bg-emerald-500', desc: '吸引、和諧、長期融合', width: 'w-full'  },
-              { label: '沖', tone: 'bg-red-500',     desc: '對抗、衝突、直接爆發', width: 'w-5/6'  },
-              { label: '刑', tone: 'bg-orange-400',  desc: '互傷、懲罰、複雜反覆', width: 'w-4/6'  },
-              { label: '破', tone: 'bg-yellow-400',  desc: '破壞、衰落、逐漸消退', width: 'w-3/6'  },
-              { label: '害', tone: 'bg-gray-400',    desc: '暗傷、阻礙、隱性影響', width: 'w-2/6'  },
+              { label: '合', tone: 'border-emerald-200 bg-emerald-50 text-emerald-800', desc: '提示聚合與連動；仍要看是否有條件成局。' },
+              { label: '沖', tone: 'border-rose-200 bg-rose-50 text-rose-800', desc: '提示明顯動象；先定位對沖落在哪一柱。' },
+              { label: '刑', tone: 'border-orange-200 bg-orange-50 text-orange-800', desc: '提示反覆摩擦；需看組合、位置與場景。' },
+              { label: '破', tone: 'border-amber-200 bg-amber-50 text-amber-800', desc: '提示結構鬆動或耗損，常作輔助判斷。' },
+              { label: '害', tone: 'border-slate-200 bg-slate-50 text-slate-700', desc: '提示隱性阻礙或消耗；不可脫離全局定論。' },
             ];
             return (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {SPECTRUM.map((item) => (
-                  <div key={item.label} className="flex items-center gap-3">
-                    <span className="text-xl font-bold text-gray-700 w-6 shrink-0 text-center">{item.label}</span>
-                    <div className="w-28 shrink-0">
-                      <div className={`${item.width} h-8 ${item.tone} rounded-lg`} />
+                  <div key={item.label} className={`rounded-xl border p-3 ${item.tone}`}>
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-lg font-black">{item.label}</span>
+                      <p className="text-sm leading-6">{item.desc}</p>
                     </div>
-                    <span className="text-sm text-gray-600 whitespace-nowrap">{item.desc}</span>
                   </div>
                 ))}
               </div>
