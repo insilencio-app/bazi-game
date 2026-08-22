@@ -3098,13 +3098,13 @@ export const mockLessons = [
     id: 5,
     title_cn: '第5課：十神判讀',
     title_en: 'Ten Gods Interpretation',
-    learning_objectives_cn: '掌握十神系統與判讀流程：五行關係→陰陽定正偏→旺衰→透根→互動。',
+    learning_objectives_cn: '把「日主＋一個天干」轉成十神名稱，再由旺衰、位置、透根與互動完成結構化判讀。',
     level: 'intermediate',
     steps: [
       {
         id: 1,
         type: 'content',
-        title: '十神是什麼？',
+        title: '任務起點：十神是相對關係',
         paragraphs: [
           '十神是以日主為中心的關係系統，把其他干支與日主之間的五行生剋，轉成可讀的人事與結構語言。',
           '它不是十個固定人格標籤，而是十種功能位置：誰在生我、剋我、與我同類、被我所生、被我所剋。',
@@ -3114,7 +3114,7 @@ export const mockLessons = [
       {
         id: 2,
         type: 'content',
-        title: '十神的思考方式',
+        title: '先關係，後名稱',
         bullets: [
           '先抓「關係」，再談「名稱」：十神的本質是相對於日主的功能，不是先天地寫死的性格卡。',
           '同一顆十神可同時對應外在人事角色，也可對應內在驅動力與行為傾向。',
@@ -3124,7 +3124,7 @@ export const mockLessons = [
       {
         id: 25,
         type: 'content',
-        title: '五大十神家族速讀',
+        title: '五大家族：先辨五行方向',
         bullets: [
           '印星（正印／偏印）：學習、保護、吸收、支持。',
           '比劫（比肩／劫財）：自我、同類、競爭、分資源。',
@@ -3136,7 +3136,7 @@ export const mockLessons = [
       {
         id: 3,
         type: 'content',
-        title: '十神判定規則（以日主為中心）',
+        title: '兩步轉換：五行＋陰陽',
         bullets: [
           '第1步：先問它和日主是什麼五行關係。',
           '第2步：再問陰陽同異，定出正偏。',
@@ -3150,7 +3150,7 @@ export const mockLessons = [
       {
         id: 4,
         type: 'content',
-        title: '速查表是工具，不是結論',
+        title: '速查表：工具而非結論',
         bullets: [
           '十日主速查表的作用，是幫你快速定位十神名稱。',
           '查到名稱，只代表你找到入口，不代表你已經完成判讀。',
@@ -3160,7 +3160,7 @@ export const mockLessons = [
       {
         id: 45,
         type: 'content',
-        title: '從查表走向判讀：實戰流程',
+        title: '判讀工作流：由定位到互動',
         bullets: [
           '第1步：定類別。先看是比劫、食傷、財、官殺、還是印。',
           '第2步：定正偏。陰陽同異決定是正官還是七殺、正財還是偏財。',
@@ -3173,7 +3173,7 @@ export const mockLessons = [
       {
         id: 46,
         type: 'content',
-        title: '十神互動入門：先看組合，不只看單顆',
+        title: '組合先行：十神如何互動',
         bullets: [
           '官印相生：規則與支持彼此連接，結構通常較穩。',
           '食神制殺：輸出與節制能把壓力整理成可用的力量。',
@@ -3184,7 +3184,7 @@ export const mockLessons = [
       {
         id: 5,
         type: 'content',
-        title: '十神實戰補充：先看透干，再看有根',
+        title: '根與透：力量是否站得住',
         bullets: [
           '有透有根：外顯且站得住，通常最穩。',
           '有透無根：看得見，但續航未必足。',
@@ -3195,7 +3195,7 @@ export const mockLessons = [
       {
         id: 71,
         type: 'content',
-        title: '體用分層：本命、運勢、時間粒度',
+        title: '由粗到細：體用與時間',
         bullets: [
           '本命層：先看原局本身具備哪些十神結構。',
           '大運流年層：再看外部時勢如何增減某些十神力量。',
@@ -3206,7 +3206,7 @@ export const mockLessons = [
       {
         id: 72,
         type: 'content',
-        title: '制化與發揮：把判讀變成策略',
+        title: '策略收束：制化與發揮',
         bullets: [
           '忌神年先做制化，重點是降低風險暴露。',
           '喜神年重在發揮，把優勢轉成作品、合作、成果或突破。',

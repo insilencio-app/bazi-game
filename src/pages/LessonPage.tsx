@@ -9,6 +9,7 @@ import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
 import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
 import { EarthlyBranchJourney } from '../components/lesson/EarthlyBranchJourney';
+import { TenGodsLessonGuide } from '../components/lesson/TenGodsLessonGuide';
 import LessonTemplate from '../components/lesson/LessonTemplate';
 import { LessonOneAtlas, type LessonOneAtlasStage } from '../components/lesson/LessonOneAtlas';
 import { getCourseDisplay } from '../data/courseCatalog';
@@ -863,6 +864,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               </button>
             )}
           </div>
+          {lessonId === 5 && <TenGodsLessonGuide stepId={currentStep.id} />}
           {!(lessonId === 6 && currentStep.id === 1) && currentStep.paragraphs?.map((text, idx) => (
             <p key={idx} className="lesson-atlas-body-copy lesson-atlas-copy">
               {text}
