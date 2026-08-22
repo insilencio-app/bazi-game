@@ -1,4 +1,5 @@
 import React from 'react';
+/* Design reminder — 五行研習桌：總測驗是集中判讀的工作頁；使用短檔頭與清楚進度，不以大型 hero 搶奪題目空間。 */
 import { MultipleChoiceQuestion } from '../quiz/MultipleChoiceQuestion';
 import { QuizActionButton } from '../quiz/QuizActionButton';
 
@@ -127,9 +128,9 @@ export const TotalQuizView: React.FC<TotalQuizViewProps> = ({
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg">
-      <div className="mb-6">
+      <div className="total-quiz-header mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h1>
+          <div><p className="total-quiz-header__kicker">INTEGRATED REVIEW</p><h1 className="text-2xl sm:text-3xl font-bold text-gray-800">總測驗</h1></div>
           <QuizActionButton label="返回主頁" onClick={onBack} variant="accent" size="compact" stretch={false} />
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2 mt-4">

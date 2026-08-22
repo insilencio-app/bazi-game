@@ -44,9 +44,15 @@ body {
   box-shadow: 0 18px 35px rgba(16, 46, 76, 0.16);
 }
 
+/* Header hierarchy — only the homepage retains hero scale. Reference and collection pages use a shorter archival masthead so their content starts sooner. */
+.bazi-home-header > div {
+  padding-top: 1.05rem !important;
+  padding-bottom: 1.15rem !important;
+}
+
 .bazi-home-title {
   font-family: 'Noto Serif TC', 'Microsoft JhengHei', serif;
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(1.78rem, 3vw, 2.65rem);
   line-height: 1.1;
   letter-spacing: -0.04em;
   font-weight: 800;
@@ -54,9 +60,9 @@ body {
 }
 
 .bazi-home-subtitle {
-  margin-top: 0.25rem;
+  margin-top: 0.16rem;
   color: rgba(255, 253, 247, 0.82);
-  font-size: clamp(0.8rem, 1.4vw, 1.2rem);
+  font-size: clamp(0.78rem, 1.1vw, 1rem);
   letter-spacing: 0.02em;
 }
 
@@ -1555,8 +1561,8 @@ body {
 }
 
 .lesson-atlas-header {
-  margin: 0 0 1.15rem;
-  padding: 1rem 1.2rem 0.9rem;
+  margin: 0 0 0.85rem;
+  padding: 0.82rem 1.05rem 0.72rem;
   border: 0;
   background: #0d2a4a;
   color: #fffdf7;
@@ -1570,7 +1576,7 @@ body {
 }
 
 .lesson-atlas-kicker {
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.28rem;
   color: #e1c178;
   font-size: 0.7rem;
   font-weight: 700;
@@ -1585,14 +1591,14 @@ body {
 
 .lesson-atlas-title {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(1.55rem, 3.4vw, 2.25rem);
+  font-size: clamp(1.45rem, 3vw, 2.05rem);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.15;
 }
 
 .lesson-atlas-subtitle {
-  margin-top: 0.55rem;
+  margin-top: 0.34rem;
   color: #dce7ee;
   font-size: 0.88rem;
   line-height: 1.65;
@@ -1629,7 +1635,7 @@ body {
 
 .lesson-atlas-progress {
   height: 3px;
-  margin-top: 0.85rem;
+  margin-top: 0.62rem;
   overflow: hidden;
   background: rgba(255, 253, 247, 0.18);
 }
@@ -3434,7 +3440,49 @@ body {
 
 /* Desktop homepage refinement — the desktop view now uses the same paper, indigo, gold and file-card hierarchy as the mobile home and classroom. */
 .desktop-atlas-hero {
-  padding: clamp(2rem, 5vw, 4rem) 1.5rem 2rem;
+  padding: clamp(1.6rem, 4vw, 3.1rem) 1.5rem 1.45rem;
+}
+
+.badge-vault__header > div {
+  padding-top: 1rem !important;
+  padding-bottom: 1.1rem !important;
+}
+
+.badge-vault__header .bazi-home-title {
+  font-size: clamp(1.8rem, 2.8vw, 2.45rem);
+}
+
+.total-quiz-header {
+  padding: 0.9rem 1rem 0.85rem;
+  border: 1px solid #d8c9af;
+  border-top: 3px solid #0d2a4a;
+  background: #fffdf7;
+}
+
+.total-quiz-header__kicker {
+  margin-bottom: 0.14rem;
+  color: #9b7330;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.total-quiz-header h1 {
+  color: #102b48 !important;
+  font-family: 'Noto Serif TC', serif;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 640px) {
+  .bazi-home-header > div,
+  .badge-vault__header > div {
+    padding-top: 0.9rem !important;
+    padding-bottom: 0.95rem !important;
+  }
+
+  .lesson-atlas-header {
+    padding: 0.76rem 0.85rem 0.68rem;
+  }
 }
 
 .desktop-atlas-hero__inner,

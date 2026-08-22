@@ -1,6 +1,6 @@
 /*
  * Style: 「封緘研習信箱」— private correspondence within the 五行研習桌 system.
- * Use these classes for the anonymous question flow and the single-admin case desk.
+ * Keep the public correspondence header compact so the task flow, not the banner, leads the page.
  */
 
 @layer components {
@@ -13,7 +13,7 @@
   }
 
   .mailbox-page {
-    @apply mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8;
+    @apply mx-auto w-full max-w-5xl px-4 py-4 sm:px-6 sm:py-7 lg:px-8;
   }
 
   .mailbox-reading-column {
@@ -211,7 +211,7 @@
   }
 
   .mailbox-topbar {
-    @apply mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-5 sm:px-6;
+    @apply mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4;
   }
 
   .mailbox-back-link {
@@ -224,7 +224,7 @@
   }
 
   .mailbox-hero {
-    @apply mx-auto w-full max-w-3xl border-y border-gold/35 bg-parchment px-5 py-9 sm:px-8 sm:py-12;
+    @apply mx-auto w-full max-w-3xl border-y border-gold/35 bg-parchment px-5 py-6 sm:px-8 sm:py-8;
   }
 
   .mailbox-hero h1,
@@ -236,15 +236,15 @@
   }
 
   .mailbox-hero h1 {
-    @apply text-3xl leading-tight sm:text-4xl;
+    @apply text-2xl leading-tight sm:text-3xl;
   }
 
   .mailbox-hero > p:not(.mailbox-kicker) {
-    @apply mt-4 max-w-2xl text-base leading-8 text-ink-muted;
+    @apply mt-2.5 max-w-2xl text-[0.95rem] leading-7 text-ink-muted;
   }
 
   .mailbox-hero__facts {
-    @apply mt-6 flex flex-wrap gap-2 text-xs font-extrabold text-mailbox-privacy;
+    @apply mt-4 flex flex-wrap gap-2 text-xs font-extrabold text-mailbox-privacy;
   }
 
   .mailbox-hero__facts span {
