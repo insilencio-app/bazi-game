@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+/* 五行研習桌設計提醒：首頁主線以第 8 至 11 課形成「排運→氣勢→大運→實踐」的進階閱讀路徑；課程卡只提示下一步，不替代課堂判讀。 */
 import { mockElements, mockLessons } from '../data/mockData';
 import { getCourseDisplay } from '../data/courseCatalog';
 import { ElementsView } from '../components/home/ElementsView';
@@ -65,7 +66,7 @@ const TOTAL_QUIZ_MASTERY_BONUS_XP = 40;
 const TOTAL_QUIZ_PERFECT_BONUS_XP = 60;
 const HINT_XP_COST = 50;
 const PROGRESS_STORAGE_KEY = 'bazi-progression-v1';
-const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 55, 6, 65, 7, 8, 9, 11] as const;
+const MAIN_PATH_LESSON_IDS = [0, 1, 2, 3, 4, 5, 55, 6, 65, 7, 8, 9, 10, 11] as const;
 const MAIN_PATH_LESSON_COUNT = MAIN_PATH_LESSON_IDS.length;
 
 const BADGE_DEFINITIONS: Record<BadgeId, { name: string; emoji: string; hintShort: string; hintLong: string }> = {
@@ -498,8 +499,19 @@ export const HomePage: React.FC = () => {
       onClick: () => handleLessonStart(9),
     },
     {
+      id: 10,
+      title: getPathLessonTitle(10, '第10課'),
+      subtitle: getPathLessonSubtitle(10, '原局、運干、運支與氣勢變化'),
+      emoji: '〰️',
+      accent: 'from-sky-500 to-indigo-500',
+      chip: '高級',
+      isLesson: true,
+      isMainPath: true,
+      onClick: () => handleLessonStart(10),
+    },
+    {
       id: 11,
-      title: getPathLessonTitle(11, '第10課'),
+      title: getPathLessonTitle(11, '第11課'),
       subtitle: getPathLessonSubtitle(11, '把喜忌、制化與行為策略連起來'),
       emoji: '🛡️',
       accent: 'from-emerald-500 to-teal-400',
@@ -518,17 +530,6 @@ export const HomePage: React.FC = () => {
       isLesson: false,
       isMainPath: false,
       onClick: () => navigateToMode('total-quiz'),
-    },
-    {
-      id: 10,
-      title: getPathLessonTitle(10, '補充專題'),
-      subtitle: getPathLessonSubtitle(10, '流派補充：體用觀的特定師承解法'),
-      emoji: '📚',
-      accent: 'from-stone-500 to-zinc-400',
-      chip: '補充',
-      isLesson: true,
-      isMainPath: false,
-      onClick: () => handleLessonStart(10),
     },
   ];
 

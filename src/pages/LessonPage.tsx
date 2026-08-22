@@ -1,4 +1,5 @@
 // Style: every lesson shares the 「五行研習桌」 parchment, indigo, and gold chrome; Lesson 1 alone keeps bespoke interactive atlas scenes.
+/* 五行研習桌設計提醒：各課專屬工作台只承載不計分的證據式練習；正式題庫、提示、XP 與完成流程仍由共用課堂流程管理。 */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { mockEarthlyBranches, mockElements, mockHeavenlySteams, mockLessons, mockTenGods, ELEMENT_STYLES } from '../data/mockData';
 import { loadQuizSessionQuestions, type QuizApiQuestion } from '../api/quizApi';
@@ -12,6 +13,7 @@ import { EarthlyBranchJourney } from '../components/lesson/EarthlyBranchJourney'
 import { TenGodsLessonGuide } from '../components/lesson/TenGodsLessonGuide';
 import { BranchRelationsGuide } from '../components/lesson/BranchRelationsGuide';
 import { TiYongMomentumWorkbench } from '../components/lesson/TiYongMomentumWorkbench';
+import { DayunMomentumWorkbench } from '../components/lesson/DayunMomentumWorkbench';
 import LessonTemplate from '../components/lesson/LessonTemplate';
 import { LessonOneAtlas, type LessonOneAtlasStage } from '../components/lesson/LessonOneAtlas';
 import { getCourseDisplay } from '../data/courseCatalog';
@@ -869,6 +871,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           {lessonId === 5 && <TenGodsLessonGuide stepId={currentStep.id} />}
           {lessonId === 7 && <BranchRelationsGuide stepId={currentStep.id} />}
           {lessonId === 9 && <TiYongMomentumWorkbench stepId={currentStep.id} />}
+          {lessonId === 10 && <DayunMomentumWorkbench stepId={currentStep.id} />}
           {!(lessonId === 6 && currentStep.id === 1) && currentStep.paragraphs?.map((text, idx) => (
             <p key={idx} className="lesson-atlas-body-copy lesson-atlas-copy">
               {text}

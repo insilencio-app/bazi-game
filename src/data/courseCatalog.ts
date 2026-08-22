@@ -30,8 +30,8 @@ export const COURSE_DISPLAY_BY_ID: Record<number, CourseDisplay> = {
   7: { title: '第7課：地支關係', subtitle: '三合、六合、刑、沖、破、害', kind: 'lesson' },
   8: { title: '第8課：大運排法', subtitle: '月柱順逆與起運時間', kind: 'lesson' },
   9: { title: '第9課：八字體用與干支氣勢', subtitle: '形、氣、勢與五氣全局', kind: 'lesson' },
-  11: { title: '第10課：取用與實踐', subtitle: '整合原局、格局與時間座標', kind: 'lesson' },
-  10: { title: '補充專題：體用的師承語境', subtitle: '定義差異與證據式閱讀', kind: 'supplement' },
+  10: { title: '第10課：大運的升降浮沉', subtitle: '原局、運干、運支與氣勢變化', kind: 'lesson' },
+  11: { title: '第11課：取用與實踐', subtitle: '整合原局、格局與時間座標', kind: 'lesson' },
 };
 
 export const COURSE_CATALOG_SEGMENTS: CourseSegment[] = [
@@ -53,8 +53,8 @@ export const COURSE_CATALOG_SEGMENTS: CourseSegment[] = [
     id: 'advanced',
     order: '03',
     title: '進階應用',
-    subtitle: '第8–10課及補充專題・排運、氣勢與應用',
-    lessonIds: [8, 9, 11, 10],
+    subtitle: '第8–11課・排運、氣勢與應用',
+    lessonIds: [8, 9, 10, 11],
   },
 ];
 
