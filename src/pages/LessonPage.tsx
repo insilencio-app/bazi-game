@@ -8,6 +8,7 @@ import { MultipleChoiceQuestion } from '../components/quiz/MultipleChoiceQuestio
 import { QuizHintPanel } from '../components/quiz/QuizHintPanel';
 import { QuizActionButton } from '../components/quiz/QuizActionButton';
 import { EarthlyBranchRing } from '../components/EarthlyBranchRing';
+import { EarthlyBranchJourney } from '../components/lesson/EarthlyBranchJourney';
 import LessonTemplate from '../components/lesson/LessonTemplate';
 import { LessonOneAtlas, type LessonOneAtlasStage } from '../components/lesson/LessonOneAtlas';
 import { getCourseDisplay } from '../data/courseCatalog';
@@ -959,7 +960,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 </div>
               </div>
             );
-          })() : lessonId === 2 && currentStep.id === 2 ? (() => {
+          })() : lessonId === 3 && currentStep.id >= 1 && currentStep.id <= 5 ? (
+            <EarthlyBranchJourney stage={currentStep.id as 1 | 2 | 3 | 4 | 5} />
+          ) : lessonId === 2 && currentStep.id === 2 ? (() => {
             const ELEMENT_ORDER = ['木', '火', '土', '金', '水'] as const;
             const grouped = ELEMENT_ORDER.map((el) => ({
               element: el,
@@ -1014,8 +1017,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 </div>
               </div>
             );
-          })() : lessonId === 3 && currentStep.id === 2 ? (() => {
-            return <EarthlyBranchRing showStems={false} showSeasons={true} />;
           })() : lessonId === 1 && currentStep.id === 3 ? (() => {
               /* L1 id:3 — interactive 生剋 map + quick challenge */
               const circleSize = 320;
