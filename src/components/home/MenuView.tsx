@@ -209,12 +209,11 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <p>BAZI LEARNING ATLAS</p>
             </div>
             <h1>輕鬆學八字</h1>
-            <p className="desktop-atlas-hero__subtitle">以圖譜、任務與練習，建立可重複使用的八字判讀框架。</p>
           </div>
           <aside className="desktop-atlas-profile" aria-label="目前學習檔案">
             <p>LEARNING PROFILE</p>
             <div><strong>Lv.{levelProgress.level}</strong><span>{getLevelTitle(levelProgress.level)}</span></div>
-            <small>{levelProgress.xpIntoCurrentLevel} / {levelProgress.xpToNextLevel} XP</small>
+            <div className="desktop-atlas-profile__meta"><small>{levelProgress.xpIntoCurrentLevel} / {levelProgress.xpToNextLevel} XP</small><button type="button" onClick={onOpenBadgeGallery}>徽章 {unlockedBadgeIds.length} ↗</button></div>
             <div className="desktop-atlas-profile__track"><span style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }} /></div>
           </aside>
         </div>
@@ -230,12 +229,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
             <button type="button" onClick={() => (isAllLessonsCompleted ? totalQuizStep?.onClick() : nextLessonStep?.onClick())} className="desktop-atlas-action desktop-atlas-action--primary">
               <span><small>{isAllLessonsCompleted ? 'INTEGRATED REVIEW' : 'CONTINUE LEARNING'}</small><b>{isAllLessonsCompleted ? '挑戰總測驗' : '從這裡繼續'}</b></span><i aria-hidden="true">→</i>
             </button>
-            <button type="button" onClick={onOpenBadgeGallery} className="desktop-atlas-action desktop-atlas-action--secondary">
-              <span><small>LEARNING ARCHIVE</small><b>查看學習檔案</b></span><i aria-hidden="true">↗</i>
-            </button>
           </div>
           <a href="/mailbox" className="desktop-atlas-mailbox">
-            <span><small>封緘研習信箱</small><b>有問題，交給真人導師。</b></span><em>匿名提問・私密取件・一般七個工作天內盡量回覆</em><i aria-hidden="true">→</i>
+            <span><small>封緘研習信箱</small><b>有問題，交給真人導師。</b></span><em>匿名提問・私密取件</em><i aria-hidden="true">→</i>
           </a>
         </section>
 
