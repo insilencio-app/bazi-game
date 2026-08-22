@@ -8,7 +8,7 @@ import { StemsView } from '../components/home/StemsView';
 import { GodsView } from '../components/home/GodsView';
 import { MenuView } from '../components/home/MenuView';
 import { TotalQuizView } from '../components/home/TotalQuizView';
-import { BadgesView } from '../components/home/BadgesView';
+import { BADGE_GROUPS, BADGE_ICON_MAP, BadgesView, EnamelBadge, type BadgeGroupId } from '../components/home/BadgesView';
 import { LessonPage } from './LessonPage';
 import { useGameRouteMode } from '../hooks/useGameRouteMode';
 import { useTotalQuizSession } from '../hooks/useTotalQuizSession';
@@ -167,6 +167,16 @@ const getLevelTitle = (level: number): string => {
   if (level === 3) return '習者';
   if (level === 2) return '入門生';
   return '啟蒙者';
+};
+
+const getBadgeEnamelPresentation = (badgeId: BadgeId) => {
+  const group = BADGE_GROUPS.find((item) => item.badgeIds.includes(badgeId));
+  const number = group ? group.badgeIds.indexOf(badgeId) + 1 : 1;
+  return {
+    groupId: (group?.id ?? 'appendix') as BadgeGroupId,
+    icon: BADGE_ICON_MAP[badgeId] ?? 'star',
+    number: Math.max(1, number),
+  };
 };
 
 const calculateLevelProgress = (totalXp: number) => {
@@ -552,18 +562,24 @@ export const HomePage: React.FC = () => {
         )}
 
         {levelUpNotice === null && activeBadgeNotice && (
-          <div className="w-full max-w-md rounded-3xl bg-white border border-amber-200 shadow-2xl px-6 py-8 text-center animate-pulse pointer-events-auto">
-            <p className="text-sm text-amber-700 font-semibold">新徽章解鎖</p>
-            <p className="text-5xl mt-3">{BADGE_DEFINITIONS[activeBadgeNotice].emoji}</p>
-            <p className="text-2xl sm:text-3xl font-extrabold text-gray-800 mt-2">{BADGE_DEFINITIONS[activeBadgeNotice].name}</p>
-            <p className="text-sm sm:text-base text-gray-500 mt-2">{BADGE_DEFINITIONS[activeBadgeNotice].hintLong}</p>
-            <button
-              onClick={dismissActiveBadgeNotice}
-              className="mt-6 w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white transition-colors py-2 font-semibold"
-            >
-              繼續
-            </button>
-          </div>
+          (() => {
+            const badge = BADGE_DEFINITIONS[activeBadgeNotice];
+            const presentation = getBadgeEnamelPresentation(activeBadgeNotice);
+            return (
+              <section className="badge-unlock-overlay" role="dialog" aria-modal="true" aria-labelledby="badge-unlock-title">
+                <div className="badge-unlock-overlay__card animate-in zoom-in-95 duration-300">
+                  <div className="badge-unlock-overlay__serial"><span>研習印記</span><span>UNLOCKED</span></div>
+                  <div className="badge-unlock-overlay__badge"><EnamelBadge icon={presentation.icon} unlocked groupId={presentation.groupId} number={presentation.number} /></div>
+                  <p className="badge-unlock-overlay__kicker">新徽章已收錄</p>
+                  <h2 id="badge-unlock-title">{badge.name}</h2>
+                  <p className="badge-unlock-overlay__copy">{badge.hintLong}</p>
+                  <div className="badge-unlock-overlay__rule" />
+                  <p className="badge-unlock-overlay__note">已記入你的研習徽章圖鑑。</p>
+                  <button onClick={dismissActiveBadgeNotice} className="badge-unlock-overlay__button">收錄完成・繼續研習 <span aria-hidden="true">→</span></button>
+                </div>
+              </section>
+            );
+          })()
         )}
       </div>
     ) : null

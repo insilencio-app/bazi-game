@@ -1,4 +1,5 @@
 /* Design reminder — 五行研習桌：徽章牆以金屬外圈、五行琺瑯、統一線條圖示和羊皮紙抽屜呈現；解鎖是彩色收藏品，未解鎖是同圖形的壓印輪廓。 */
+/* 五行研習桌設計提醒：琺瑯徽章是全站一致的收藏印記；圖鑑與即時解鎖彈窗共用圖形、分類與金屬琺瑯材質，不退回 emoji 樣式。 */
 type BadgeDefinition = {
   name: string;
   emoji: string;
@@ -13,8 +14,8 @@ interface BadgesViewProps {
   onBack: () => void;
 }
 
-type BadgeGroupId = 'milestone' | 'practice' | 'mastery' | 'continuity' | 'appendix';
-type BadgeIcon = 'footstep' | 'book' | 'pillar' | 'leaf' | 'spark' | 'target' | 'crown' | 'medal' | 'flame' | 'bolt' | 'calendar' | 'loop' | 'mountain' | 'chest' | 'star';
+export type BadgeGroupId = 'milestone' | 'practice' | 'mastery' | 'continuity' | 'appendix';
+export type BadgeIcon = 'footstep' | 'book' | 'pillar' | 'leaf' | 'spark' | 'target' | 'crown' | 'medal' | 'flame' | 'bolt' | 'calendar' | 'loop' | 'mountain' | 'chest' | 'star';
 
 type BadgeGroup = {
   id: BadgeGroupId;
@@ -24,7 +25,7 @@ type BadgeGroup = {
   badgeIds: readonly string[];
 };
 
-const BADGE_GROUPS: readonly BadgeGroup[] = [
+export const BADGE_GROUPS: readonly BadgeGroup[] = [
   {
     id: 'milestone',
     serial: '檔案一',
@@ -55,7 +56,7 @@ const BADGE_GROUPS: readonly BadgeGroup[] = [
   },
 ];
 
-const BADGE_ICON_MAP: Record<string, BadgeIcon> = {
+export const BADGE_ICON_MAP: Record<string, BadgeIcon> = {
   'first-step': 'footstep', 'lesson-master': 'book', 'wood-starter': 'leaf', 'stems-master': 'pillar', 'branches-master': 'pillar', 'season-calc-pro': 'spark', 'gods-expert': 'book', 'hidden-stems-master': 'spark', 'relations-master': 'target', 'all-courses-80': 'medal', 'master-scholar': 'crown', 'perfect-combo': 'star', 'late-bloomer': 'mountain',
   'quiz-starter': 'target', 'ten-correct': 'target', 'twenty-correct': 'target', 'fifty-correct': 'medal', 'seventy-five-correct': 'medal', 'hundred-correct': 'crown', 'one-fifty-correct': 'star', 'two-hundred-correct': 'star', 'two-fifty-correct': 'mountain', 'three-hundred-correct': 'flame', 'four-hundred-correct': 'crown', 'five-hundred-correct': 'crown', 'streak-5': 'flame', 'streak-10': 'bolt', 'speed-star': 'bolt',
   'perfect-lesson': 'star', 'total-quiz-80': 'medal', 'total-quiz-100': 'crown', 'total-quiz-finisher': 'target', 'total-quiz-finisher-5': 'loop', 'quiz-warrior': 'bolt',
@@ -86,7 +87,7 @@ const BadgeIconGlyph: React.FC<{ icon: BadgeIcon }> = ({ icon }) => (
   </svg>
 );
 
-const EnamelBadge: React.FC<{ icon: BadgeIcon; unlocked: boolean; groupId: BadgeGroupId; number: number }> = ({ icon, unlocked, groupId, number }) => (
+export const EnamelBadge: React.FC<{ icon: BadgeIcon; unlocked: boolean; groupId: BadgeGroupId; number: number }> = ({ icon, unlocked, groupId, number }) => (
   <div className={`enamel-badge enamel-badge--${groupId} ${unlocked ? 'is-unlocked' : 'is-locked'}`} aria-hidden="true">
     <div className="enamel-badge__rim"><span /><span /><span /><span /><span /></div>
     <div className="enamel-badge__face"><BadgeIconGlyph icon={icon} /></div>
