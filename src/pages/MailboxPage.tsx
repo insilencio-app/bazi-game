@@ -1,7 +1,9 @@
 /* 封緘研習信箱：五行研習桌視覺，手機優先、私密取件碼與明確安全邊界。 */
-import { FormEvent, useState } from 'react';
+/* 五行研習桌設計提醒：信箱提交成功頁以「封緘後的回看路標」輔助匿名取件；不保存行事曆帳戶、不寫入問題內容，取件資料只在用戶主動選擇後放進 fragment。 */
+import { FormEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../routes';
+import { downloadMailboxReminder, getMailboxCredentialsFromFragmentAndClear } from '../lib/mailboxCalendar';
 
 type InquiryType = 'concept' | 'personal_case';
 
@@ -66,6 +68,15 @@ export function MailboxPage() {
   const [accessError, setAccessError] = useState('');
   const [isAccessing, setIsAccessing] = useState(false);
   const [deleteNotice, setDeleteNotice] = useState('');
+  const [calendarNotice, setCalendarNotice] = useState('');
+
+  useEffect(() => {
+    const credentials = getMailboxCredentialsFromFragmentAndClear();
+    if (!credentials) return;
+    setView('access');
+    setPublicId(credentials.publicId);
+    setAccessCode(credentials.accessCode);
+  }, []);
 
   const submitInquiry = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -96,6 +107,7 @@ export function MailboxPage() {
         replyDueAt: result.inquiry.replyDueAt,
         expiresAt: result.inquiry.expiresAt,
       });
+      setCalendarNotice('');
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : '暫時未能送出信件。');
     } finally {
@@ -127,6 +139,25 @@ export function MailboxPage() {
       setDeleteNotice('這封私密信件已永久刪除。');
     } catch (error) {
       setAccessError(error instanceof Error ? error.message : '暫時未能刪除信件。');
+    }
+  };
+
+  const downloadReminder = (includePrivateLink: boolean) => {
+    if (!submitted) return;
+    try {
+      downloadMailboxReminder({
+        publicId: submitted.publicId,
+        accessCode: submitted.accessCode,
+        replyDueAt: submitted.replyDueAt,
+        siteOrigin: window.location.origin,
+        mailboxPath: ROUTES.mailbox,
+        includePrivateLink,
+      });
+      setCalendarNotice(includePrivateLink
+        ? '已下載含私密取件連結的行事曆提醒。請只匯入自己的非共用行事曆。'
+        : '已下載不含取件資料的行事曆提醒。請繼續保存上方兩組取件資料。');
+    } catch (error) {
+      setCalendarNotice(error instanceof Error ? error.message : '暫時未能建立行事曆提醒。');
     }
   };
 
@@ -163,6 +194,16 @@ export function MailboxPage() {
                 <div><dt>秘密取件碼</dt><dd>{submitted.accessCode}</dd></div>
               </dl>
               <p className="mailbox-note">一般會於 <strong>{formatDate(submitted.replyDueAt)}</strong> 或之前盡量回覆。此信件最遲保存至 {formatDate(submitted.expiresAt)}。</p>
+              <section className="mailbox-disclosure" aria-labelledby="calendar-reminder-heading">
+                <h3 id="calendar-reminder-heading">加入行事曆回看提醒</h3>
+                <p>可在預計回覆日加入上午 9:00 的提醒。第一版只按星期一至五計算，不涵蓋各地公眾假期。</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <button className="mailbox-action mailbox-action--primary" type="button" onClick={() => downloadReminder(true)}>加入提醒（含私密取件連結）</button>
+                  <button className="mailbox-action mailbox-action--quiet" type="button" onClick={() => downloadReminder(false)}>只加入提醒（不含取件資料）</button>
+                </div>
+                <p className="mailbox-note">含私密連結的日曆事件相當於保存取件憑證；請勿轉寄、分享，或加入共用行事曆。</p>
+                {calendarNotice && <p className="mailbox-success-message" role="status">{calendarNotice}</p>}
+              </section>
               <button className="mailbox-action mailbox-action--primary" type="button" onClick={() => { setView('access'); setPublicId(submitted.publicId); setAccessCode(submitted.accessCode); }}>前往私密信箱</button>
             </div>
           ) : (
