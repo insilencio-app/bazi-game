@@ -201,23 +201,77 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const isAllLessonsCompleted = allRequiredLessonSteps.every((step) => completedLessonIds.has(step.id));
   const desktopHome = (
     <div className="desktop-atlas-home hidden min-h-screen md:block">
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white shadow-lg">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-2 flex items-center gap-4">
-            <img src="/bazi_logo.jpg" alt="BaZi Game Logo" className="h-16 w-16 rounded-xl border border-white/30 object-cover shadow" />
-            <h1 className="text-5xl font-bold lg:text-6xl">輕鬆學八字</h1>
+      <header className="desktop-atlas-hero">
+        <div className="desktop-atlas-hero__inner">
+          <div className="desktop-atlas-hero__brand">
+            <div className="desktop-atlas-hero__seal-row">
+              <img src="/bazi_logo.jpg" alt="輕鬆學八字" className="desktop-atlas-hero__seal" />
+              <p>BAZI LEARNING ATLAS</p>
+            </div>
+            <h1>輕鬆學八字</h1>
+            <p className="desktop-atlas-hero__subtitle">以圖譜、任務與練習，建立可重複使用的八字判讀框架。</p>
           </div>
-          <p className="text-lg opacity-90 lg:text-2xl">Learn BaZi in an Interactive Way</p>
-          <div className="mt-6 grid grid-cols-3 gap-4">
-            <div className="rounded-lg bg-white p-6 text-center shadow"><div className="flex items-baseline justify-center gap-3"><span className="text-4xl font-bold text-blue-600 lg:text-5xl">Lv.{levelProgress.level}</span><span className="text-xl font-semibold text-gray-800 lg:text-2xl">{getLevelTitle(levelProgress.level)}</span></div><p className="mt-2 text-base text-gray-600 lg:text-lg">等級</p></div>
-            <div className="rounded-lg bg-white p-6 shadow"><div className="flex items-baseline justify-between gap-2"><p className="text-base text-gray-700">經驗值</p><p className="text-sm text-gray-600">{levelProgress.xpIntoCurrentLevel}/{levelProgress.xpToNextLevel}</p></div><div className="mt-3 h-3 w-full rounded-full bg-gray-200"><div className="h-3 rounded-full bg-blue-600 transition-all duration-300" style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }} /></div></div>
-            <button onClick={onOpenBadgeGallery} className="rounded-lg bg-white p-6 text-center shadow transition-shadow hover:shadow-md"><p className="text-4xl font-bold text-amber-600 lg:text-5xl">{unlockedBadgeIds.length}</p><p className="mt-2 text-base text-gray-600 lg:text-lg">已解鎖徽章</p><p className="mt-1 text-sm font-medium text-amber-600">徽章圖鑑 →</p></button>
-          </div>
+          <aside className="desktop-atlas-profile" aria-label="目前學習檔案">
+            <p>LEARNING PROFILE</p>
+            <div><strong>Lv.{levelProgress.level}</strong><span>{getLevelTitle(levelProgress.level)}</span></div>
+            <small>{levelProgress.xpIntoCurrentLevel} / {levelProgress.xpToNextLevel} XP</small>
+            <div className="desktop-atlas-profile__track"><span style={{ width: `${Math.min(100, levelProgress.progressPercent)}%` }} /></div>
+          </aside>
         </div>
       </header>
-      <div className="mx-auto max-w-6xl p-6">
-        <div className="mb-6 rounded-lg bg-white p-6 shadow"><div className="mb-4 flex items-center justify-between gap-3"><div><p className="text-xl font-bold text-gray-900">開始今天的學習</p><p className="mt-1 text-sm text-gray-600">{isAllLessonsCompleted ? '全部課程已完成，建議挑戰總測驗' : `下一步：${nextLessonStep?.title ?? '課程'}`}</p></div><p className="text-sm text-gray-600">快速開始，不中斷學習節奏</p></div><div className="grid grid-cols-2 gap-3"><button onClick={() => (isAllLessonsCompleted ? totalQuizStep?.onClick() : nextLessonStep?.onClick())} className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700">{isAllLessonsCompleted ? '🎯 挑戰總測驗' : '▶ 繼續學習'}</button><button onClick={onOpenBadgeGallery} className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 font-semibold text-amber-800 transition-colors hover:bg-amber-100">查看學習檔案</button><a href="/mailbox" className="col-span-2 flex min-h-14 items-center justify-between gap-4 border border-[#b48a43] bg-[#f3e8cf] px-4 py-3 text-left text-[#765b2d] shadow-[3px_3px_0_rgba(180,138,67,.2)] transition-colors hover:bg-[#fff6df]"><span><span className="block text-xs font-bold tracking-[0.12em] text-[#9b7330]">封緘研習信箱</span><span className="mt-1 block font-serif text-lg font-black">真人導師 · 匿名提問 · 私密取件</span></span><span className="shrink-0 text-sm font-bold">寫一封私密信 →</span></a></div></div>
-        <div className="mb-8"><div className="rounded-lg bg-white p-6 shadow"><button onClick={onToggleProgressCharts} className="mb-3 flex w-full items-center justify-between text-left"><div><p className="text-lg font-bold text-gray-800">學習進度統計</p><p className="text-sm text-gray-600">累計表現與最近一次成績</p></div><span className="text-base font-medium text-blue-600">{isProgressChartsOpen ? '收起 ▲' : '查看全部 ▼'}</span></button><div className="grid grid-cols-2 gap-2">{progressLessons.slice(0, isProgressChartsOpen ? progressLessons.length : 2).map((lesson) => { const stats = userProgress.lessonPerformance[lesson.id]; const attempts = stats?.attempts ?? 0; const correct = stats?.correct ?? 0; const cumulativePercent = attempts > 0 ? Math.round((correct / attempts) * 100) : 0; const recentWindowSize = Math.max(1, userProgress.lessonRecentWindowSize[lesson.id] ?? 10); const latestPercent = userProgress.lessonLatestPercent[lesson.id]; const recentAnswerSource = (userProgress.lessonRecentAnswers[lesson.id] ?? []).filter((value): value is boolean => typeof value === 'boolean'); const recentAnswers = recentAnswerSource.slice(-recentWindowSize); const recentAttempts = recentAnswers.length; const recentCorrect = recentAnswers.filter(Boolean).length; const displayPercent = typeof latestPercent === 'number' ? latestPercent : 0; const displayBarPercent = Math.min(100, Math.max(0, displayPercent)); const hasDisplayPercent = typeof latestPercent === 'number'; return <div key={lesson.id} className="rounded-lg border border-gray-100 p-3"><div className="mb-1 flex items-center justify-between"><div className="flex-1"><p className="text-sm font-medium text-gray-700">{getHomepageDisplayLessonTitle(lesson.id, lesson.title_cn)}</p><p className="text-xs text-gray-500">{attempts > 0 ? `累計 ${correct}/${attempts} • ${cumulativePercent}%` : '尚未開始'}</p>{typeof latestPercent === 'number' ? <p className="mt-0.5 text-xs font-medium text-blue-600">最近一次：{latestPercent}%</p> : recentAttempts > 0 ? <p className="mt-0.5 text-xs text-gray-400">最近{recentWindowSize}題：{recentCorrect}/{recentAttempts}</p> : null}</div><div className="text-right"><p className="mb-0.5 text-xs text-gray-500">最新進度</p><div className={`text-2xl font-bold ${displayPercent >= 80 ? 'text-green-600' : displayPercent >= 60 ? 'text-yellow-600' : 'text-gray-400'}`}>{hasDisplayPercent ? `${displayPercent}%` : '-'}</div></div></div><div className="h-1.5 w-full rounded-full bg-gray-200"><div className={`h-1.5 rounded-full transition-all duration-300 ${displayPercent >= 80 ? 'bg-green-600' : displayPercent >= 60 ? 'bg-yellow-600' : 'bg-blue-400'}`} style={{ width: `${displayBarPercent}%` }} /></div></div>; })}</div><div className="mt-3 grid grid-cols-3 gap-2 border-t border-gray-200 pt-3">{[[userProgress.correctAnswers, '累計答對', 'text-blue-600'], [userProgress.hintsUsed, '使用提示', 'text-purple-600'], [userProgress.bestStreak, '最佳連勝', 'text-orange-600'], [levelProgress.level, '當前等級', 'text-green-600'], [userProgress.dailyStreak, '連玩天數', 'text-pink-600'], [userProgress.totalXp, '累計經驗值', 'text-cyan-600']].map(([value, label, color]) => <div key={label as string} className="rounded-lg bg-gray-50 p-2 text-center"><p className={`text-2xl font-bold ${color}`}>{value}</p><p className="text-xs text-gray-600">{label}</p></div>)}</div></div></div>
+      <main className="desktop-atlas-main">
+        <section className="desktop-atlas-next" aria-labelledby="desktop-next-title">
+          <div className="desktop-atlas-next__copy">
+            <p>今日下一步</p>
+            <h2 id="desktop-next-title">{isAllLessonsCompleted ? '把所有路徑收束為一次總測驗。' : `從${nextLessonStep?.title ?? '下一課'}繼續。`}</h2>
+            <span>{isAllLessonsCompleted ? '所有主線課程已完成，現在可整合所學並接受檢驗。' : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。'}</span>
+          </div>
+          <div className="desktop-atlas-next__actions">
+            <button type="button" onClick={() => (isAllLessonsCompleted ? totalQuizStep?.onClick() : nextLessonStep?.onClick())} className="desktop-atlas-action desktop-atlas-action--primary">
+              <span><small>{isAllLessonsCompleted ? 'INTEGRATED REVIEW' : 'CONTINUE LEARNING'}</small><b>{isAllLessonsCompleted ? '挑戰總測驗' : '從這裡繼續'}</b></span><i aria-hidden="true">→</i>
+            </button>
+            <button type="button" onClick={onOpenBadgeGallery} className="desktop-atlas-action desktop-atlas-action--secondary">
+              <span><small>LEARNING ARCHIVE</small><b>查看學習檔案</b></span><i aria-hidden="true">↗</i>
+            </button>
+          </div>
+          <a href="/mailbox" className="desktop-atlas-mailbox">
+            <span><small>封緘研習信箱</small><b>有問題，交給真人導師。</b></span><em>匿名提問・私密取件・一般七個工作天內盡量回覆</em><i aria-hidden="true">→</i>
+          </a>
+        </section>
+
+        <section className="desktop-atlas-progress" aria-labelledby="desktop-progress-title">
+          <button type="button" onClick={onToggleProgressCharts} className="desktop-atlas-progress__header" aria-expanded={isProgressChartsOpen}>
+            <span><small>LEARNING RECORD</small><h2 id="desktop-progress-title">研習紀錄</h2><p>最近一次成績、累計答題與學習節奏。</p></span>
+            <b>{isProgressChartsOpen ? '收起紀錄 ↑' : '展開紀錄 ↓'}</b>
+          </button>
+          <div className="desktop-atlas-progress__lessons">
+            {progressLessons.slice(0, isProgressChartsOpen ? progressLessons.length : 2).map((lesson) => {
+              const stats = userProgress.lessonPerformance[lesson.id];
+              const attempts = stats?.attempts ?? 0;
+              const correct = stats?.correct ?? 0;
+              const cumulativePercent = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
+              const recentWindowSize = Math.max(1, userProgress.lessonRecentWindowSize[lesson.id] ?? 10);
+              const latestPercent = userProgress.lessonLatestPercent[lesson.id];
+              const recentAnswerSource = (userProgress.lessonRecentAnswers[lesson.id] ?? []).filter((value): value is boolean => typeof value === 'boolean');
+              const recentAnswers = recentAnswerSource.slice(-recentWindowSize);
+              const recentAttempts = recentAnswers.length;
+              const recentCorrect = recentAnswers.filter(Boolean).length;
+              const displayPercent = typeof latestPercent === 'number' ? latestPercent : 0;
+              const displayBarPercent = Math.min(100, Math.max(0, displayPercent));
+              const hasDisplayPercent = typeof latestPercent === 'number';
+              return (
+                <div key={lesson.id} className="desktop-atlas-lesson-record">
+                  <div><p>{getHomepageDisplayLessonTitle(lesson.id, lesson.title_cn)}</p><small>{attempts > 0 ? `累計 ${correct}/${attempts}・${cumulativePercent}%` : '尚未開始'}</small>{typeof latestPercent === 'number' ? <em>最近一次：{latestPercent}%</em> : recentAttempts > 0 ? <em>最近 {recentWindowSize} 題：{recentCorrect}/{recentAttempts}</em> : null}</div>
+                  <b>{hasDisplayPercent ? `${displayPercent}%` : '—'}</b>
+                  <div className="desktop-atlas-lesson-record__track"><span style={{ width: `${displayBarPercent}%` }} /></div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="desktop-atlas-metrics">
+            {[[userProgress.correctAnswers, '累計答對'], [userProgress.hintsUsed, '使用提示'], [userProgress.bestStreak, '最佳連勝'], [levelProgress.level, '當前等級'], [userProgress.dailyStreak, '連玩天數'], [userProgress.totalXp, '累計經驗值']].map(([value, label]) => <div key={label as string}><b>{value}</b><span>{label}</span></div>)}
+          </div>
+        </section>
         <section className="desktop-atlas-catalog mb-8" aria-labelledby="desktop-catalog-title">
           <div className="desktop-atlas-catalog__header"><div><p>課程目錄</p><h2 id="desktop-catalog-title">按階段研習</h2><span>與手機版使用相同的學習地圖與完成規則。</span></div><p>點選課堂開始或繼續學習</p></div>
           <div className="desktop-atlas-catalog__grid">
@@ -238,7 +292,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </div>
           {isAllLessonsCompleted && totalQuizStep && <button type="button" onClick={totalQuizStep.onClick} className="desktop-atlas-catalog__quiz"><span><small>所有課程已完成</small><b>總測驗</b></span><span aria-hidden="true">→</span></button>}
         </section>
-      </div>
+      </main>
     </div>
   );
 
