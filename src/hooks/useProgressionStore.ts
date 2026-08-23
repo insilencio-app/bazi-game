@@ -74,25 +74,21 @@ export const applyDailyPlay = (progress: UserProgress): UserProgress => {
 };
 
 export const calculateLessonEarnedXp = (
-  score: number,
   isNewCompletion: boolean,
   isPerfectLesson: boolean,
   xpConfig: UseProgressionStoreParams<string>['xpConfig']
 ): number => {
   return (
-    score * xpConfig.correctAnswerXp +
     (isNewCompletion ? xpConfig.lessonCompleteXp : 0) +
     (isPerfectLesson && isNewCompletion ? xpConfig.perfectLessonBonusXp : 0)
   );
 };
 
 export const calculateTotalQuizEarnedXp = (
-  quizScore: number,
   percentage: number,
   xpConfig: UseProgressionStoreParams<string>['xpConfig']
 ): number => {
   return (
-    quizScore * xpConfig.correctAnswerXp +
     (percentage >= 80 ? xpConfig.totalQuizMasteryBonusXp : 0) +
     (percentage === 100 ? xpConfig.totalQuizPerfectBonusXp : 0)
   );
@@ -304,7 +300,7 @@ export const useProgressionStore = <TBadgeId extends string>({
         nextPerfectLessonIds.add(lessonId);
       }
 
-      const lessonPercent = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
+      const lessonPercent = totalQuestions > 0 ? Math.min(100, Math.max(0, (score / totalQuestions) * 100)) : 0;
       const nextHighScoreLessonIds = new Set(highScoreLessonIds);
       if (lessonId <= 11 && lessonPercent >= 80) {
         nextHighScoreLessonIds.add(lessonId);
@@ -315,13 +311,13 @@ export const useProgressionStore = <TBadgeId extends string>({
         [lessonId]: (lessonAttemptCounts[lessonId] ?? 0) + 1,
       };
 
-      const earnedXp = calculateLessonEarnedXp(score, isNewCompletion, isPerfectLesson, xpConfig);
+      const earnedXp = calculateLessonEarnedXp(isNewCompletion, isPerfectLesson, xpConfig);
 
       const nextProgress: UserProgress = {
         ...applyDailyPlay(userProgress),
         totalScore: userProgress.totalScore + (isNewCompletion ? score : 0),
         totalXp: userProgress.totalXp + earnedXp,
-        correctAnswers: userProgress.correctAnswers + score,
+        correctAnswers: userProgress.correctAnswers,
         lessonRecentWindowSize: {
           ...userProgress.lessonRecentWindowSize,
           [lessonId]: Math.max(1, totalQuestions),
@@ -354,13 +350,13 @@ export const useProgressionStore = <TBadgeId extends string>({
     (quizScore: number, totalQuestions: number, maxQuizStreak: number, fastCorrectInRun: number) => {
       if (totalQuestions <= 0) return;
 
-      const percentage = Math.round((quizScore / totalQuestions) * 100);
-      const earnedXp = calculateTotalQuizEarnedXp(quizScore, percentage, xpConfig);
+      const percentage = Math.min(100, Math.max(0, Math.round((quizScore / totalQuestions) * 100)));
+      const earnedXp = calculateTotalQuizEarnedXp(percentage, xpConfig);
 
       const nextProgress: UserProgress = {
         ...applyDailyPlay(userProgress),
         totalXp: userProgress.totalXp + earnedXp,
-        correctAnswers: userProgress.correctAnswers + quizScore,
+        correctAnswers: userProgress.correctAnswers,
         totalQuizMastered: userProgress.totalQuizMastered + (percentage >= 80 ? 1 : 0),
         totalQuizPerfect: userProgress.totalQuizPerfect + (percentage === 100 ? 1 : 0),
         totalQuizAttempts: userProgress.totalQuizAttempts + 1,

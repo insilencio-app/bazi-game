@@ -17,20 +17,20 @@ const xpConfig = {
 };
 
 describe('progression logic', () => {
-  it('calculates lesson XP with completion and perfect bonuses only on first completion', () => {
-    const firstCompletionXp = calculateLessonEarnedXp(5, true, true, xpConfig);
-    const repeatCompletionXp = calculateLessonEarnedXp(5, false, true, xpConfig);
+  it('calculates lesson completion and perfect bonuses without re-awarding per-question XP', () => {
+    const firstCompletionXp = calculateLessonEarnedXp(true, true, xpConfig);
+    const repeatCompletionXp = calculateLessonEarnedXp(false, true, xpConfig);
 
-    expect(firstCompletionXp).toBe(100);
-    expect(repeatCompletionXp).toBe(50);
+    expect(firstCompletionXp).toBe(50);
+    expect(repeatCompletionXp).toBe(0);
   });
 
-  it('calculates total quiz XP with mastery/perfect thresholds', () => {
-    const masteredXp = calculateTotalQuizEarnedXp(8, 80, xpConfig);
-    const perfectXp = calculateTotalQuizEarnedXp(10, 100, xpConfig);
+  it('calculates total quiz mastery and perfect bonuses without re-awarding per-question XP', () => {
+    const masteredXp = calculateTotalQuizEarnedXp(80, xpConfig);
+    const perfectXp = calculateTotalQuizEarnedXp(100, xpConfig);
 
-    expect(masteredXp).toBe(120);
-    expect(perfectXp).toBe(200);
+    expect(masteredXp).toBe(40);
+    expect(perfectXp).toBe(100);
   });
 
   it('returns only newly unlocked badges', () => {

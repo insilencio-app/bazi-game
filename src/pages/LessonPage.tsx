@@ -139,6 +139,19 @@ type LessonBankMatch = {
   pairs: { left: string; right: string }[];
 };
 
+type ScoredLessonStep = Extract<LessonStep, { type: 'mcq' | 'truefalse' | 'match' }>;
+
+type LessonQuestionRecord = {
+  selectedAnswer: number | null;
+  matchedPairs: Array<[string, string]>;
+  isCorrect: boolean;
+};
+
+const isScoredLessonStep = (step: LessonStep | undefined): step is ScoredLessonStep =>
+  step?.type === 'mcq' || step?.type === 'truefalse' || step?.type === 'match';
+
+const getLessonQuestionKey = (step: ScoredLessonStep) => `${step.type}:${step.sourceQuestionId}`;
+
 const isMcqQuestion = (question: QuizApiQuestion): question is QuizApiQuestion & { type: 'mcq'; options: string[]; answer: number } =>
   question.type === 'mcq' && Array.isArray(question.options) && typeof question.answer === 'number';
 
@@ -454,7 +467,6 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   );
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -468,6 +480,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const [lesson1Challenge, setLesson1Challenge] = useState(LESSON1_CHALLENGES[0]);
   const [lesson1ChallengeFeedback, setLesson1ChallengeFeedback] = useState<string | null>(null);
   const [lesson1CollectedElements, setLesson1CollectedElements] = useState<Lesson1ElementName[]>([]);
+  const [questionRecords, setQuestionRecords] = useState<Record<string, LessonQuestionRecord>>({});
+  const recordedQuestionKeysRef = useRef<Set<string>>(new Set());
 
   const lesson1Elements = useMemo(
     () =>
@@ -484,6 +498,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   }, []);
 
   const currentStep = steps[currentStepIndex];
+  const currentQuestionKey = isScoredLessonStep(currentStep) ? getLessonQuestionKey(currentStep) : null;
+  const currentQuestionRecord = currentQuestionKey ? questionRecords[currentQuestionKey] : undefined;
+  const score = useMemo(
+    () => Math.min(totalQuestions, Object.values(questionRecords).filter((record) => record.isCorrect).length),
+    [questionRecords, totalQuestions]
+  );
   const lessonOneStage: LessonOneAtlasStage | null = lessonId === 1 && currentStep
     ? ({ 1: 'intro', 2: 'elements', 3: 'relations', 4: 'practice', 5: 'recap' } as Record<number, LessonOneAtlasStage>)[currentStep.id] ?? null
     : null;
@@ -574,18 +594,24 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   }, []);
 
   useEffect(() => {
-    setSelectedAnswer(null);
-    setAnswered(false);
-    setShowFeedback(false);
+    setQuestionRecords({});
+    recordedQuestionKeysRef.current.clear();
+    setFinished(false);
+  }, [lessonId]);
+
+  useEffect(() => {
+    setSelectedAnswer(currentQuestionRecord?.selectedAnswer ?? null);
+    setAnswered(Boolean(currentQuestionRecord));
+    setShowFeedback(Boolean(currentQuestionRecord && currentStep?.type !== 'match'));
     setSelectedLeft(null);
-    setMatchedPairs([]);
-    setMatchMessage(null);
+    setMatchedPairs(currentQuestionRecord?.matchedPairs ?? []);
+    setMatchMessage(currentQuestionRecord?.isCorrect && currentStep?.type === 'match' ? '✓ 此題已記錄，可回看配對結果' : null);
     setShowHint(false);
 
     if (lessonId !== NARRATED_LESSON_ID || currentStep?.type !== 'content') {
       stopNarration();
     }
-  }, [currentStepIndex]);
+  }, [currentQuestionRecord, currentStep?.type, currentStepIndex, lessonId]);
 
   useEffect(() => {
     if (!canNarrateCurrentStep || currentStep?.type !== 'content') {
@@ -673,6 +699,18 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     );
   }
 
+  const recordCurrentQuestionOnce = (record: LessonQuestionRecord) => {
+    if (!isScoredLessonStep(currentStep)) return false;
+
+    const questionKey = getLessonQuestionKey(currentStep);
+    if (recordedQuestionKeysRef.current.has(questionKey)) return false;
+
+    recordedQuestionKeysRef.current.add(questionKey);
+    setQuestionRecords((previous) => ({ ...previous, [questionKey]: record }));
+    onQuestionAnswered(lessonId, record.isCorrect);
+    return true;
+  };
+
   const handleCheck = () => {
     if (!currentStep) return;
     if (currentStep.type !== 'mcq' && currentStep.type !== 'truefalse') return;
@@ -684,22 +722,17 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     let isCorrect = false;
 
     // For MCQ: check if selectedAnswer matches correct index
-    if (currentStep.type === 'mcq' && selectedAnswer === currentStep.correct) {
-      setScore((prev) => prev + 1);
-      isCorrect = true;
-    }
+    if (currentStep.type === 'mcq' && selectedAnswer === currentStep.correct) isCorrect = true;
     
     // For true/false: selectedAnswer 1 = true, 0 = false
     if (currentStep.type === 'truefalse') {
       const userAnswerIsTrue = selectedAnswer === 1;
       if (userAnswerIsTrue === currentStep.correct) {
-        setScore((prev) => prev + 1);
         isCorrect = true;
       }
     }
 
-    // Track performance
-    onQuestionAnswered(lessonId, isCorrect);
+    recordCurrentQuestionOnce({ selectedAnswer, matchedPairs: [], isCorrect });
   };
 
   const handleUseHint = () => {
@@ -2164,9 +2197,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
 
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
-          <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
-          <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
-        </div>
+              <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
+              <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
+              <p className="text-xs sm:text-sm text-slate-600 basis-full text-center">此題答案已記錄；返回可回看解析，不會再次計分。</p>
+            </div>
       )}
 
       {currentStep?.type === 'match' && isMatchComplete && (
@@ -2176,9 +2210,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             label="繼續"
             onClick={() => {
               if (!answered) {
-                setScore((prev) => prev + 1);
                 setAnswered(true);
-                onQuestionAnswered(lessonId, true);
+                recordCurrentQuestionOnce({ selectedAnswer: null, matchedPairs, isCorrect: true });
               }
               handleNext();
             }}

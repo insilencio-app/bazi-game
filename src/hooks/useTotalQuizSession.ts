@@ -29,6 +29,11 @@ type TotalQuizQuestion = {
   lessonTitle: string;
 };
 
+type TotalQuizQuestionRecord = {
+  selectedAnswer: number;
+  isCorrect: boolean;
+};
+
 interface UseTotalQuizSessionParams {
   currentMode: GameMode;
   userXp: number;
@@ -74,7 +79,6 @@ export const useTotalQuizSession = ({
   onUseHint,
 }: UseTotalQuizSessionParams) => {
   const [quizIndex, setQuizIndex] = React.useState(0);
-  const [quizScore, setQuizScore] = React.useState(0);
   const [selectedAnswer, setSelectedAnswer] = React.useState<number | null>(null);
   const [answered, setAnswered] = React.useState(false);
   const [isQuizFinished, setIsQuizFinished] = React.useState(false);
@@ -83,7 +87,8 @@ export const useTotalQuizSession = ({
   const [currentQuizStreak, setCurrentQuizStreak] = React.useState(0);
   const [maxQuizStreak, setMaxQuizStreak] = React.useState(0);
   const [fastCorrectInRun, setFastCorrectInRun] = React.useState(0);
-  const [totalQuizAnswerHistory, setTotalQuizAnswerHistory] = React.useState<boolean[]>([]);
+  const [questionRecords, setQuestionRecords] = React.useState<Record<string, TotalQuizQuestionRecord>>({});
+  const recordedQuestionIdsRef = React.useRef<Set<string>>(new Set());
   const [questionStartAt, setQuestionStartAt] = React.useState<number | null>(null);
   const [showTotalQuizHint, setShowTotalQuizHint] = React.useState(false);
   const [apiSessionId, setApiSessionId] = React.useState<string | null>(null);
@@ -204,7 +209,6 @@ export const useTotalQuizSession = ({
     if (currentMode !== 'total-quiz') {
       setRandomQuestions([]);
       setQuizIndex(0);
-      setQuizScore(0);
       setSelectedAnswer(null);
       setAnswered(false);
       setIsQuizFinished(false);
@@ -212,7 +216,8 @@ export const useTotalQuizSession = ({
       setCurrentQuizStreak(0);
       setMaxQuizStreak(0);
       setFastCorrectInRun(0);
-      setTotalQuizAnswerHistory([]);
+      setQuestionRecords({});
+      recordedQuestionIdsRef.current.clear();
       setQuestionStartAt(null);
       setShowTotalQuizHint(false);
       setApiSessionId(null);
@@ -272,8 +277,16 @@ export const useTotalQuizSession = ({
     selectedAnswer,
   ]);
   const totalQuestions = randomQuestions.length;
+  const quizScore = React.useMemo(
+    () => Math.min(totalQuestions, Object.values(questionRecords).filter((record) => record.isCorrect).length),
+    [questionRecords, totalQuestions]
+  );
+  const totalQuizAnswerHistory = React.useMemo(
+    () => randomQuestions.flatMap((question) => (questionRecords[question.id] ? [questionRecords[question.id].isCorrect] : [])),
+    [questionRecords, randomQuestions]
+  );
   const progress = totalQuestions ? ((quizIndex + 1) / totalQuestions) * 100 : 0;
-  const latestPercent = totalQuestions ? Math.round((quizScore / totalQuestions) * 100) : 0;
+  const latestPercent = totalQuestions ? Math.min(100, Math.max(0, Math.round((quizScore / totalQuestions) * 100))) : 0;
   const recentWindowSize = Math.max(1, totalQuestions);
   const recentAnswers = totalQuizAnswerHistory.slice(-recentWindowSize);
   const recentAttempts = recentAnswers.length;
@@ -296,6 +309,7 @@ export const useTotalQuizSession = ({
   const handleCheck = () => {
     if (!currentQuestion) return;
     if (selectedAnswer === null || answered) return;
+    if (recordedQuestionIdsRef.current.has(currentQuestion.id)) return;
 
     setAnswered(true);
     const evaluation = evaluateTotalQuizAnswer({
@@ -308,7 +322,6 @@ export const useTotalQuizSession = ({
     });
 
     if (evaluation.isCorrect) {
-      setQuizScore((prev) => prev + evaluation.scoreDelta);
       setCurrentQuizStreak(evaluation.nextStreak);
       setMaxQuizStreak(evaluation.nextMaxStreak);
 
@@ -319,7 +332,11 @@ export const useTotalQuizSession = ({
       setCurrentQuizStreak(0);
     }
 
-    setTotalQuizAnswerHistory((prev) => [...prev, evaluation.isCorrect]);
+    recordedQuestionIdsRef.current.add(currentQuestion.id);
+    setQuestionRecords((previous) => ({
+      ...previous,
+      [currentQuestion.id]: { selectedAnswer, isCorrect: evaluation.isCorrect },
+    }));
     onQuestionAnswered(currentQuestion.lessonId, evaluation.isCorrect);
 
     const responseMs = questionStartAt ? Math.max(0, Date.now() - questionStartAt) : null;
