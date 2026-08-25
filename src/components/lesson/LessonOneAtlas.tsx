@@ -82,6 +82,7 @@ export function LessonOneAtlas({ stage }: { stage: LessonOneAtlasStage }) {
   const [activeRelation, setActiveRelation] = useState('wood-fire');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [elementTaskFeedback, setElementTaskFeedback] = useState<string | null>(null);
   const selected = useMemo(() => ELEMENTS.find((element) => element.name === selectedElement) ?? ELEMENTS[0], [selectedElement]);
 
   useEffect(() => {
@@ -93,6 +94,11 @@ export function LessonOneAtlas({ stage }: { stage: LessonOneAtlasStage }) {
     const expected = question === 'waterWood' ? '相生' : '相剋';
     setAnswers((previous) => ({ ...previous, [question]: choice }));
     setFeedback(choice === expected ? (question === 'waterWood' ? '正確。水能滋養木，所以是水生木。' : '正確。水能制約火，所以是水剋火。') : (question === 'waterWood' ? '提示：水滋養木；這是相生關係。' : '提示：水制約火；這是相剋關係。'));
+  };
+
+  const selectRingElement = (element: ElementName) => {
+    setSelectedElement(element);
+    setElementTaskFeedback(element === '金' ? '✓ 對，金對應秋。你剛剛用季節線索找到元素。' : `提示：${element} 對應${ELEMENTS.find((item) => item.name === element)?.season}；再找找「秋」。`);
   };
 
   if (stage === 'intro') {
@@ -110,18 +116,27 @@ export function LessonOneAtlas({ stage }: { stage: LessonOneAtlasStage }) {
   }
 
   if (stage === 'elements') {
-    return <section className="atlas-study-scene atlas-elements-scene">
-      <AtlasHeading number="02" eyebrow="五種方向" title="五行先不是性格，而是動態感。"><p>選一個元素，先從它的方向、季節和行動感認識它；五個元素不再是一排資料格，而是一份可以逐張翻閱的元素檔案。</p></AtlasHeading>
-      <div className="atlas-elements-layout">
-        <article className={`atlas-element-file ${selected.tone}`}>
-          <div className="atlas-element-file-mark" aria-hidden="true">{selected.name}</div>
-          <div className="atlas-element-file-title"><span>ELEMENT FILE</span><h3>{selected.name}</h3><p>{selected.english}</p></div>
-          <dl>
-            {[['方向', selected.direction], ['季節', selected.season], ['情感', selected.emotion], ['記憶', selected.cue]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
-          </dl>
-        </article>
-        <div className="atlas-element-index" role="tablist" aria-label="五行元素">
-          {ELEMENTS.map((element, index) => <button key={element.name} type="button" role="tab" aria-selected={selected.name === element.name} onClick={() => setSelectedElement(element.name)} className={`atlas-element-tab ${element.tone} ${selected.name === element.name ? 'is-active' : ''}`}><span>{String(index + 1).padStart(2, '0')}</span><b>{element.name}</b><em>{element.cue}</em></button>)}
+    return <section className="atlas-study-scene atlas-elements-scene atlas-elements-scene--ring">
+      <AtlasHeading number="02" eyebrow="五行速覽" title="先看完整圓環，再聚焦一行。"><p>點選圓環上的元素；中央只保留當下最需要的動態、方向與季節線索。</p></AtlasHeading>
+      <div className="atlas-element-ring-layout">
+        <div className="atlas-element-ring" role="tablist" aria-label="五行元素圓環">
+          <div className="atlas-element-ring-orbit" aria-hidden="true" />
+          {NODE_POSITIONS.map((node) => {
+            const element = ELEMENTS.find((item) => item.name === node.name) ?? ELEMENTS[0];
+            const isActive = selected.name === element.name;
+            return <button key={element.name} type="button" role="tab" aria-selected={isActive} onClick={() => selectRingElement(element.name)} className={`atlas-element-ring-node ${element.tone} ${isActive ? 'is-active' : ''}`} style={{ left: `${node.x}%`, top: `${node.y}%` }}><span>{element.name}</span><em>{element.direction}</em></button>;
+          })}
+          <article className={`atlas-element-ring-focus ${selected.tone}`}>
+            <p>目前聚焦</p><h3>{selected.name}</h3><strong>{selected.cue}</strong>
+            <div><span>方向 <b>{selected.direction}</b></span><span>季節 <b>{selected.season}</b></span></div>
+          </article>
+        </div>
+        <div className="atlas-element-ring-task">
+          <p className="atlas-element-ring-task__eyebrow">不計分小任務</p>
+          <h3>哪一個元素與「秋」相連？</h3>
+          <p>直接點選圓環上的元素；選對後會在這裡確認。</p>
+          {elementTaskFeedback && <p role="status" className={`atlas-element-ring-task__feedback ${elementTaskFeedback.startsWith('✓') ? 'is-correct' : ''}`}>{elementTaskFeedback}</p>}
+          <details><summary>展開更多線索</summary><dl><div><dt>情感</dt><dd>{selected.emotion}</dd></div><div><dt>英文</dt><dd>{selected.english}</dd></div><div><dt>記憶</dt><dd>{selected.cue}</dd></div></dl></details>
         </div>
       </div>
     </section>;
