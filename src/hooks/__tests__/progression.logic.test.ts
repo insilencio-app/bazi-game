@@ -25,6 +25,11 @@ describe('progression logic', () => {
     expect(repeatCompletionXp).toBe(0);
   });
 
+  it('keeps the unscored guide completion at zero XP', () => {
+    expect(calculateLessonEarnedXp(true, false, xpConfig, 0)).toBe(0);
+    expect(calculateLessonEarnedXp(true, true, xpConfig, 0)).toBe(0);
+  });
+
   it('calculates total quiz mastery and perfect bonuses without re-awarding per-question XP', () => {
     const masteredXp = calculateTotalQuizEarnedXp(80, xpConfig);
     const perfectXp = calculateTotalQuizEarnedXp(100, xpConfig);

@@ -2902,6 +2902,16 @@ body {
   gap: 1rem;
 }
 
+.lesson-atlas-match-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .lesson-atlas-match-desktop {
+    display: grid;
+  }
+}
+
 .lesson-atlas-match-column {
   display: grid;
   align-content: start;

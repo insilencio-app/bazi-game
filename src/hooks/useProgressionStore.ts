@@ -76,8 +76,11 @@ export const applyDailyPlay = (progress: UserProgress): UserProgress => {
 export const calculateLessonEarnedXp = (
   isNewCompletion: boolean,
   isPerfectLesson: boolean,
-  xpConfig: UseProgressionStoreParams<string>['xpConfig']
+  xpConfig: UseProgressionStoreParams<string>['xpConfig'],
+  lessonId?: number
 ): number => {
+  if (lessonId === 0) return 0;
+
   return (
     (isNewCompletion ? xpConfig.lessonCompleteXp : 0) +
     (isPerfectLesson && isNewCompletion ? xpConfig.perfectLessonBonusXp : 0)
@@ -287,6 +290,7 @@ export const useProgressionStore = <TBadgeId extends string>({
 
   const completeLesson = React.useCallback(
     (lessonId: number, score: number, totalQuestions: number) => {
+      const isUnscoredGuide = lessonId === 0;
       const isNewCompletion = !completedLessonIds.has(lessonId);
 
       const nextCompletedLessonIds = new Set(completedLessonIds);
@@ -311,21 +315,25 @@ export const useProgressionStore = <TBadgeId extends string>({
         [lessonId]: (lessonAttemptCounts[lessonId] ?? 0) + 1,
       };
 
-      const earnedXp = calculateLessonEarnedXp(isNewCompletion, isPerfectLesson, xpConfig);
+      const earnedXp = calculateLessonEarnedXp(isNewCompletion, isPerfectLesson, xpConfig, lessonId);
 
       const nextProgress: UserProgress = {
         ...applyDailyPlay(userProgress),
         totalScore: userProgress.totalScore + (isNewCompletion ? score : 0),
         totalXp: userProgress.totalXp + earnedXp,
         correctAnswers: userProgress.correctAnswers,
-        lessonRecentWindowSize: {
-          ...userProgress.lessonRecentWindowSize,
-          [lessonId]: Math.max(1, totalQuestions),
-        },
-        lessonLatestPercent: {
-          ...userProgress.lessonLatestPercent,
-          [lessonId]: Math.round(lessonPercent),
-        },
+        lessonRecentWindowSize: isUnscoredGuide
+          ? userProgress.lessonRecentWindowSize
+          : {
+              ...userProgress.lessonRecentWindowSize,
+              [lessonId]: Math.max(1, totalQuestions),
+            },
+        lessonLatestPercent: isUnscoredGuide
+          ? userProgress.lessonLatestPercent
+          : {
+              ...userProgress.lessonLatestPercent,
+              [lessonId]: Math.round(lessonPercent),
+            },
       };
 
       setCompletedLessonIds(nextCompletedLessonIds);

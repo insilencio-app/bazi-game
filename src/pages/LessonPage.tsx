@@ -460,7 +460,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     return steps;
   }, [lessonBanks, lessonId]);
 
-  const steps = useMemo(() => [...baseSteps, ...quizSteps], [baseSteps, quizSteps]);
+  // 導讀只建立方向感：保留三個內容步驟，並以不計分的定位練習收束，不載入正式題庫。
+  const steps = useMemo(() => (lessonId === 0 ? baseSteps : [...baseSteps, ...quizSteps]), [baseSteps, lessonId, quizSteps]);
   const totalQuestions = steps.filter((step) => step.type === 'mcq' || step.type === 'truefalse' || step.type === 'match').length;
   const firstQuizStepIndex = steps.findIndex(
     (step) => step.type === 'mcq' || step.type === 'truefalse' || step.type === 'match'
@@ -481,6 +482,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const [lesson1ChallengeFeedback, setLesson1ChallengeFeedback] = useState<string | null>(null);
   const [lesson1CollectedElements, setLesson1CollectedElements] = useState<Lesson1ElementName[]>([]);
   const [lesson6SelectedBranch, setLesson6SelectedBranch] = useState('子');
+  const [guidePracticeStage, setGuidePracticeStage] = useState<'pillar' | 'day-master' | 'complete'>('pillar');
+  const [guidePracticeFeedback, setGuidePracticeFeedback] = useState<string | null>(null);
   const [questionRecords, setQuestionRecords] = useState<Record<string, LessonQuestionRecord>>({});
   const recordedQuestionKeysRef = useRef<Set<string>>(new Set());
 
@@ -647,6 +650,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setLesson1CollectedElements([]);
   }, [lessonId]);
 
+  useEffect(() => {
+    if (lessonId !== 0) return;
+    setGuidePracticeStage('pillar');
+    setGuidePracticeFeedback(null);
+  }, [lessonId]);
+
   const shuffledRights = useMemo(() => {
     if (!currentStep || currentStep.type !== 'match') return [];
 
@@ -791,6 +800,24 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setShowHint(false);
   };
 
+  const handleGuidePracticePillar = (pillar: '年' | '月' | '日' | '時') => {
+    if (pillar === '日') {
+      setGuidePracticeStage('day-master');
+      setGuidePracticeFeedback('對，先鎖定日柱；下一步在日柱內找到日主。');
+      return;
+    }
+    setGuidePracticeFeedback('先找「日柱」；日主就在日柱之內。');
+  };
+
+  const handleGuidePracticeDayMaster = (position: '天干' | '地支') => {
+    if (position === '天干') {
+      setGuidePracticeStage('complete');
+      setGuidePracticeFeedback('完成：日柱天干就是日主。之後再看月令與全局。');
+      return;
+    }
+    setGuidePracticeFeedback('日柱地支很重要，但日主是日柱上方的天干。');
+  };
+
   const handleMatchLeft = (value: string, index: number) => {
     if (currentStep?.type !== 'match') return;
     const uniqueKey = `${value}-${index}`;
@@ -828,6 +855,22 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     }
   };
 
+  const handleMobileMatchRight = (rightWithIndex: { right: string; originalIndex: number; id: string }) => {
+    if (currentStep?.type !== 'match') return;
+    const activeIndex = currentStep.pairs.findIndex((pair, index) => !matchedPairs.some((matched) => matched[0] === `${pair.left}-${index}`));
+    if (activeIndex < 0 || matchedPairs.some((matched) => matched[1] === rightWithIndex.id)) return;
+
+    const activePair = currentStep.pairs[activeIndex];
+    const activeKey = `${activePair.left}-${activeIndex}`;
+    if (activePair.right === rightWithIndex.right) {
+      setMatchedPairs((previous) => [...previous, [activeKey, rightWithIndex.id]]);
+      setSelectedLeft(null);
+      setMatchMessage(activeIndex === currentStep.pairs.length - 1 ? '✓ 全部配對完成' : '✓ 正確，下一組。');
+      return;
+    }
+    setMatchMessage('✗ 再看一次這個概念的對應關係。');
+  };
+
   const matchedCount = currentStep?.type === 'match' ? matchedPairs.length : 0;
   const isMatchComplete = currentStep?.type === 'match' && matchedCount === currentStep.pairs.length;
 
@@ -835,7 +878,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     return (
       <div className="lesson-atlas-shell lesson-atlas-finish">
         <h2 className="text-5xl font-bold mb-4">{isGuideLesson ? '導讀完成・第一張地圖已建立' : '課程完成！'}</h2>
-        <p className="lesson-atlas-finish-copy text-xl mb-6">{isGuideLesson ? '你已認識四柱、找到日主，並完成第一輪快速自檢。' : '做得很好！你已完成此課程的所有步驟。'}</p>
+        <p className="lesson-atlas-finish-copy text-xl mb-6">{isGuideLesson ? '你已認識四柱、找到日主，並完成不計分的 30 秒定位練習。' : '做得很好！你已完成此課程的所有步驟。'}</p>
         {isGuideLesson && <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900">回到研習桌後，會收錄第一枚「初學者」研習印記；下一步可開始第 1 課五行基礎。</p>}
         {totalQuestions > 0 && (
           <div className="lesson-atlas-score p-8 mb-6">
@@ -1881,6 +1924,16 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               ))}
             </ul>
           ) : null}
+          {lessonId === 0 && currentStep.id === 3 && (
+            <section className="mt-6 border-2 border-[#d9ab58] bg-[#fffaf0] p-4 shadow-[4px_4px_0_rgba(217,171,88,.16)]" aria-labelledby="guide-practice-title">
+              <p className="text-xs font-bold tracking-[0.14em] text-[#9b7330]">30 秒定位練習・不計分</p>
+              <h3 id="guide-practice-title" className="mt-1 font-['Noto_Serif_TC',serif] text-xl font-black text-[#102b48]">先找日柱，再找日主</h3>
+              {guidePracticeStage === 'pillar' && <><p className="mt-2 text-sm leading-6 text-slate-700">四柱之中，請先找哪一柱，才能開始定位日主？</p><div className="mt-3 grid grid-cols-4 gap-2">{(['年', '月', '日', '時'] as const).map((pillar) => <button key={pillar} type="button" onClick={() => handleGuidePracticePillar(pillar)} className="min-h-12 border border-[#d9ccb6] bg-white px-2 font-['Noto_Serif_TC',serif] text-lg font-black text-[#153756] transition-colors hover:border-[#d9ab58] hover:bg-[#f7edda]">{pillar}</button>)}</div></>}
+              {guidePracticeStage === 'day-master' && <><p className="mt-2 text-sm leading-6 text-slate-700">已找到日柱。日柱中的哪一個位置才是日主？</p><div className="mt-3 grid grid-cols-2 gap-2"><button type="button" onClick={() => handleGuidePracticeDayMaster('天干')} className="min-h-12 border border-[#0d2a4a] bg-[#0d2a4a] px-3 font-bold text-white shadow-[2px_2px_0_#d9ab58]">日柱天干</button><button type="button" onClick={() => handleGuidePracticeDayMaster('地支')} className="min-h-12 border border-[#d9ccb6] bg-white px-3 font-bold text-[#153756] hover:border-[#d9ab58] hover:bg-[#f7edda]">日柱地支</button></div></>}
+              {guidePracticeFeedback && <p role="status" className={`mt-3 text-sm font-bold ${guidePracticeStage === 'complete' ? 'text-emerald-700' : 'text-[#765b2d]'}`}>{guidePracticeFeedback}</p>}
+              {guidePracticeStage === 'complete' && <p className="mt-2 text-sm leading-6 text-slate-600">這一輪不計分、不扣 XP；你只需要記住：先定日主，再看月令。</p>}
+            </section>
+          )}
         </div>
       )}
 
@@ -2115,8 +2168,17 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {currentStep?.type === 'match' && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-match' : 'mb-8'}>
           <h2 className={isLessonOneAtlas ? 'lesson-atlas-question-title' : 'text-xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-800'}>{currentStep.prompt}</h2>
-          <p className={isLessonOneAtlas ? 'lesson-atlas-match-instruction' : 'text-sm sm:text-base text-gray-700 mb-4'}>先選擇左邊的項目，然後點擊右邊對應的選項進行配對</p>
-          <div className={isLessonOneAtlas ? 'lesson-atlas-match-grid' : 'grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4'}>
+          <p className={isLessonOneAtlas ? 'lesson-atlas-match-instruction' : 'text-sm sm:text-base text-gray-700 mb-4'}><span className="md:hidden">每次只配一組；選對後會自動前往下一組。</span><span className="hidden md:inline">先選擇左邊的項目，然後點擊右邊對應的選項進行配對。</span></p>
+          <div className="md:hidden border border-[#d9ccb6] bg-[#fffdf7] p-4 shadow-[3px_3px_0_rgba(173,145,91,.16)]">
+            {(() => {
+              const activeIndex = currentStep.pairs.findIndex((pair, index) => !matchedPairs.some((matched) => matched[0] === `${pair.left}-${index}`));
+              const activePair = activeIndex >= 0 ? currentStep.pairs[activeIndex] : null;
+              const availableRights = shuffledRights.filter((item) => !matchedPairs.some((matched) => matched[1] === item.id));
+              if (!activePair) return <p className="text-center text-sm font-bold text-emerald-700">✓ 所有配對已完成。</p>;
+              return <><div className="flex items-center justify-between gap-3"><p className="text-xs font-bold tracking-[0.12em] text-[#9b7330]">第 {activeIndex + 1} / {currentStep.pairs.length} 組</p><p className="text-xs text-slate-500">已完成 {matchedCount} 組</p></div><div className="mt-3 border-l-4 border-[#0d2a4a] bg-[#f7f1e5] px-4 py-3"><p className="text-xs font-bold tracking-[0.12em] text-[#765b2d]">請為這個項目找對應</p><p className="mt-1 font-['Noto_Serif_TC',serif] text-2xl font-black text-[#102b48]">{activePair.left}</p></div><div className="mt-4 grid gap-2">{availableRights.map((item) => <button key={item.id} type="button" onClick={() => handleMobileMatchRight(item)} className="min-h-12 border border-[#d9ccb6] bg-white px-4 text-left text-sm font-bold text-[#153756] transition-colors hover:border-[#d9ab58] hover:bg-[#f7edda]">{item.right}</button>)}</div></>;
+            })()}
+          </div>
+          <div className={`lesson-atlas-match-desktop ${isLessonOneAtlas ? 'lesson-atlas-match-grid' : 'grid-cols-2 gap-3 sm:gap-4'}`}>
             <div className={isLessonOneAtlas ? 'lesson-atlas-match-column' : 'space-y-1.5 sm:space-y-2'}>
               <h3 className={isLessonOneAtlas ? 'lesson-atlas-match-heading' : 'text-xs sm:text-base font-semibold text-gray-700 mb-1 sm:mb-2'}>選擇項目：</h3>
               {currentStep.pairs.map((pair, index) => {
@@ -2214,7 +2276,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {currentStep?.type === 'content' && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
-          <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
+          <QuizActionButton label={isGuideLesson && currentStep.id === 3 ? '完成導讀' : '繼續'} onClick={handleNext} disabled={isGuideLesson && currentStep.id === 3 && guidePracticeStage !== 'complete'} className={lessonAtlasActionClass('primary')} />
           {canSkipToQuiz && (
             <QuizActionButton label={isGuideLesson ? '先做自檢' : '跳到測驗'} onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
           )}

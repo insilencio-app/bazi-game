@@ -95,7 +95,7 @@ function MobileHome({
   const learningDescription = isAllLessonsCompleted
     ? '所有課程已完成，現在可整合所學並接受檢驗。'
     : isFirstJourney
-    ? '先認四柱、找到日主，再用三題快速自檢確認方向。'
+    ? '先認四柱、找到日主，再完成一段不計分的 30 秒定位練習。'
     : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。';
 
   return (
@@ -121,7 +121,7 @@ function MobileHome({
           <p className="text-xs font-bold tracking-[0.16em] text-[#9b7330]">今日下一步</p>
           <h1 className="mt-2 font-['Noto_Serif_TC',serif] text-[1.7rem] font-black leading-tight text-[#102b48]">{learningTitle}</h1>
           <p className="mt-2 text-[15px] leading-6 text-slate-600">{learningDescription}</p>
-          {isFirstJourney ? <div className="mt-4 border-y border-[#e2d7c5] py-3"><p className="text-xs font-bold tracking-[0.14em] text-[#9b7330]">12 分鐘新手路徑</p><ol className="mt-2 grid grid-cols-3 gap-2 text-center text-xs font-bold text-[#153756]"><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">01</span>認識四柱</li><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">02</span>找到日主</li><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">03</span>快速自檢</li></ol><p className="mt-3 text-xs font-bold text-[#765b2d]">完成導讀後，收錄第一枚「初學者」研習印記。</p></div> : !isAllLessonsCompleted && nextLessonStep && <p className="mt-4 border-y border-[#e2d7c5] py-2 text-sm font-bold text-[#765b2d]">課程進度：第 {completedCount + 1} / {requiredCount} 課</p>}
+          {isFirstJourney ? <div className="mt-4 border-y border-[#e2d7c5] py-3"><p className="text-xs font-bold tracking-[0.14em] text-[#9b7330]">12 分鐘新手路徑</p><ol className="mt-2 grid grid-cols-3 gap-2 text-center text-xs font-bold text-[#153756]"><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">01</span>認識四柱</li><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">02</span>找到日主</li><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">03</span>定位練習</li></ol><p className="mt-3 text-xs font-bold text-[#765b2d]">完成導讀後，收錄第一枚「初學者」研習印記。</p></div> : !isAllLessonsCompleted && nextLessonStep && <p className="mt-4 border-y border-[#e2d7c5] py-2 text-sm font-bold text-[#765b2d]">課程進度：第 {completedCount + 1} / {requiredCount} 課</p>}
           <button type="button" onClick={learningAction} className="mt-4 flex min-h-12 w-full items-center justify-between bg-[#0d2a4a] px-4 text-left font-bold text-white shadow-[3px_3px_0_#d9ab58] transition-transform active:translate-y-0.5">
             <span>{isAllLessonsCompleted ? '開始總測驗' : isFirstJourney ? '開始 12 分鐘導讀' : '從這裡繼續'}</span><span aria-hidden="true">→</span>
           </button>
@@ -227,8 +227,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
           <div className="desktop-atlas-next__copy">
             <p>今日下一步</p>
             <h2 id="desktop-next-title">{isAllLessonsCompleted ? '把所有路徑收束為一次總測驗。' : isFirstJourney ? '用 12 分鐘建立第一張八字地圖。' : `從${nextLessonStep?.title ?? '下一課'}繼續。`}</h2>
-            <span>{isAllLessonsCompleted ? '所有主線課程已完成，現在可整合所學並接受檢驗。' : isFirstJourney ? '先認四柱、找到日主，再用三題快速自檢確認方向。' : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。'}</span>
-            {isFirstJourney && <div className="desktop-atlas-next__starter-path"><span>01 認識四柱</span><span>02 找到日主</span><span>03 快速自檢</span><b>完成導讀後，收錄「初學者」研習印記。</b></div>}
+            <span>{isAllLessonsCompleted ? '所有主線課程已完成，現在可整合所學並接受檢驗。' : isFirstJourney ? '先認四柱、找到日主，再完成一段不計分的 30 秒定位練習。' : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。'}</span>
+            {isFirstJourney && <div className="desktop-atlas-next__starter-path"><span>01 認識四柱</span><span>02 找到日主</span><span>03 定位練習</span><b>完成導讀後，收錄「初學者」研習印記。</b></div>}
           </div>
           <div className="desktop-atlas-next__actions">
             <button type="button" onClick={() => (isAllLessonsCompleted ? totalQuizStep?.onClick() : nextLessonStep?.onClick())} className="desktop-atlas-action desktop-atlas-action--primary">
