@@ -1,4 +1,5 @@
 import React from 'react';
+/* 五行研習桌設計提醒：完整十二地支環保留給平板與桌面；手機先以本步聚焦支位的摘要卡閱讀，避免固定環圖壓過課堂文字。 */
 import { mockEarthlyBranches, ELEMENT_STYLES } from '../data/mockData';
 
 interface EarthlyBranchRingProps {
@@ -7,6 +8,7 @@ interface EarthlyBranchRingProps {
   showSeasons?: boolean;
   showTrinityLines?: boolean;
   showTrinityLegend?: boolean;
+  compactOnMobile?: boolean;
   title?: string;
 }
 
@@ -16,6 +18,7 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
   showSeasons = true,
   showTrinityLines = false,
   showTrinityLegend = false,
+  compactOnMobile = false,
   title,
 }) => {
   const SIZE = 380;
@@ -48,6 +51,9 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
 
   const getStemForBranch = (branchNumber: number) => branchToStemMap[branchNumber] || '?';
   const isHighlighted = (branchName: string) => highlightedBranches.length === 0 || highlightedBranches.includes(branchName);
+  const mobileBranches = highlightedBranches.length > 0
+    ? mockEarthlyBranches.filter((branch) => highlightedBranches.includes(branch.name_cn))
+    : mockEarthlyBranches;
 
   const seasonArcs = [
     { name: '春', branches: '寅卯辰', elementNote: '木旺', color: '#22c55e', startDeg: -45, endDeg: 45, labelDeg: 0 },
@@ -99,7 +105,25 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
   return (
     <div className={title ? 'rounded-2xl border border-indigo-200 bg-indigo-50 p-3 sm:p-4' : ''}>
       {title && <p className="text-xs sm:text-sm font-semibold text-indigo-800 mb-2">{title}</p>}
-      <div className="overflow-x-auto">
+      {compactOnMobile && (
+        <section className="sm:hidden" aria-label="手機版地支摘要">
+          <p className="mb-2 text-xs font-semibold leading-5 text-indigo-700">手機先看本步聚焦支位；完整環圖會在平板與桌面顯示。</p>
+          <div className={`grid gap-2 ${mobileBranches.length > 8 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+            {mobileBranches.map((branch) => {
+              const style = ELEMENT_STYLES[branch.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+              return (
+                <div key={`mobile-${branch.id}`} className={`rounded-xl border ${style.border} ${style.bg} px-2.5 py-2 text-center`}>
+                  <span className={`font-serif text-2xl font-black ${style.text}`}>{branch.name_cn}</span>
+                  <p className={`mt-0.5 text-xs font-bold ${style.text}`}>本氣・{getStemForBranch(branch.branch_number)}</p>
+                  <p className="mt-0.5 text-[11px] text-slate-600">{branch.yin_yang === 'yang' ? '陽' : '陰'}・{branch.element}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+      <div className={compactOnMobile ? 'hidden sm:block' : ''}>
+        <div className="overflow-x-auto">
         <div className={showTrinityLegend ? 'flex flex-col sm:flex-row sm:items-center sm:justify-center gap-2' : ''}>
           <div className="relative mx-auto" style={{ width: SIZE, height: SIZE }}>
             {showTrinityLines && (
@@ -242,6 +266,7 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
           </div>
         )}
 
+        </div>
       </div>
     </div>
   );

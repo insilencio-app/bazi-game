@@ -940,11 +940,11 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                   ))}
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm">
+                <div className="flex flex-col items-center justify-center gap-1.5 text-xs sm:flex-row sm:gap-2 sm:text-sm">
                   <span className="rounded-full border border-gray-200 bg-white px-2 py-1 font-semibold text-gray-700">地支（外在符號）</span>
-                  <span className="text-gray-400">→</span>
+                  <span className="text-gray-400 sm:hidden">↓</span><span className="hidden text-gray-400 sm:inline">→</span>
                   <span className="rounded-full border border-gray-200 bg-white px-2 py-1 font-semibold text-gray-700">藏干（內在結構）</span>
-                  <span className="text-gray-400">→</span>
+                  <span className="text-gray-400 sm:hidden">↓</span><span className="hidden text-gray-400 sm:inline">→</span>
                   <span className="rounded-full border border-gray-200 bg-white px-2 py-1 font-semibold text-gray-700">判讀結果</span>
                 </div>
 
@@ -1127,8 +1127,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       )}
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <div className="mx-auto relative" style={{ width: circleSize, height: circleSize }}>
+                    <div className="flex justify-center overflow-hidden">
+                      <div className="relative aspect-square w-full max-w-[280px] sm:max-w-[320px]">
                         <svg className="absolute inset-0 w-full h-full" viewBox={`0 0 ${circleSize} ${circleSize}`}>
                           {positions.map((point) => {
                             const target = activeMap[point.element];
@@ -1172,7 +1172,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                               className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${style.border} ${style.bg} ${style.text} font-bold transition-transform ${
                                 isSelected ? 'scale-110 shadow-md' : 'hover:scale-105'
                               }`}
-                              style={{ left: point.x, top: point.y, width: nodeRadius * 2.4, height: nodeRadius * 2.4 }}
+                              style={{ left: `${(point.x / circleSize) * 100}%`, top: `${(point.y / circleSize) * 100}%`, width: `${(nodeRadius * 2.4 / circleSize) * 100}%`, aspectRatio: '1 / 1' }}
                             >
                               {point.element}
                             </button>
@@ -1180,7 +1180,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                         })}
 
                         <div className="absolute -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gray-300 bg-white px-4 py-3 text-center"
-                          style={{ left: center, top: center }}>
+                          style={{ left: '50%', top: '50%' }}>
                           <p className="text-xs text-gray-500">目前聚焦</p>
                           <p className="text-2xl font-bold text-gray-700">{lesson1SelectedElement}</p>
                           <p className="text-xs text-gray-600 mt-1">
@@ -1221,7 +1221,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
                     <p className="text-sm text-indigo-800 font-semibold mb-3">Lesson 1 Mastery Board</p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
                       {boardItems.map((item) => (
                         <div key={item.label} className="rounded-xl border border-indigo-100 bg-white px-3 py-2 flex items-center gap-2">
                           <span className={`text-lg ${item.done ? 'text-green-600' : 'text-gray-300'}`}>{item.done ? '✓' : '○'}</span>
@@ -1230,14 +1230,14 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       ))}
                     </div>
                   </div>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                     {LESSON1_ELEMENT_ORDER.map((element) => {
                       const style = ELEMENT_STYLES[element] ?? ELEMENT_STYLES['木'];
                       const done = lesson1CollectedElements.includes(element);
                       return (
-                        <div key={element} className={`rounded-lg border ${style.border} ${done ? style.bg : 'bg-gray-50'} px-3 py-2 text-center`}>
+                    <div key={element} className={`rounded-lg border ${style.border} ${done ? style.bg : 'bg-gray-50'} px-1.5 py-2 text-center sm:px-3`}>
                           <p className={`text-xl font-bold ${done ? style.text : 'text-gray-400'}`}>{element}</p>
-                          <p className="text-[11px] text-gray-500">{done ? '已解鎖' : '待探索'}</p>
+                      <p className="hidden text-[11px] text-gray-500 sm:block">{done ? '已解鎖' : '待探索'}</p>
                         </div>
                       );
                     })}
@@ -1281,7 +1281,16 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               return m ? { month: m[1], branch: m[2], terms: m[3], approx: m[4] } : { month: b, branch: '', terms: '', approx: '' };
             });
             return (
-              <div className="overflow-x-auto">
+              <div>
+              <div className="space-y-2 sm:hidden">
+                {parsed.map((row, idx) => (
+                  <article key={idx} className={`rounded-xl border p-3 ${ROW_STYLES[idx]}`}>
+                    <div className="flex items-center justify-between gap-2"><strong>{row.month}・{row.branch}</strong><span className="text-xs font-semibold">約 {row.approx}</span></div>
+                    <p className="mt-1 text-sm leading-6">節氣跨度：{row.terms}</p>
+                  </article>
+                ))}
+              </div>
+              <div className="hidden overflow-x-auto sm:block">
                 <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="bg-gray-100 text-gray-600">
@@ -1302,6 +1311,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     ))}
                   </tbody>
                 </table>
+              </div>
               </div>
             );
           })() : lessonId === 5 && currentStep.id === 25 && currentStep.bullets ? (() => {
@@ -1359,7 +1369,15 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     </div>
                   ))}
                 </div>
-                <div className="overflow-x-auto">
+                <div className="space-y-2 sm:hidden">
+                  {ROWS.map((row) => (
+                    <article key={row.rel} className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                      <p className="font-bold text-gray-700">{row.rel}</p>
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-sm"><span className="rounded-lg bg-indigo-50 px-2 py-1.5 font-bold text-indigo-700">同陰陽・{row.yang}</span><span className="rounded-lg bg-rose-50 px-2 py-1.5 font-bold text-rose-700">異陰陽・{row.yin}</span></div>
+                    </article>
+                  ))}
+                </div>
+                <div className="hidden overflow-x-auto sm:block">
                   <table className="w-full text-sm border-collapse">
                     <thead>
                       <tr className="bg-gray-100 text-gray-600">
@@ -1441,7 +1459,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               { label: '無透無根', desc: '有名無勢，不能放大解讀', bg: 'bg-gray-50',    border: 'border-gray-200',   text: 'text-gray-500',   badge: 'bg-gray-100'  },
             ];
             return (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {QUAD.map((q) => (
                   <div key={q.label} className={`rounded-xl border ${q.border} ${q.bg} p-4 flex flex-col gap-2`}>
                     <span className={`text-sm font-bold px-2 py-0.5 rounded-full self-start ${q.badge} ${q.text}`}>{q.label}</span>
@@ -1454,8 +1472,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             /* L5 id:71 — 體用分層: 3-tier ladder */
             const TIERS = [
               { label: '本命層',     indent: 'ml-0',   size: 'text-base', bg: 'bg-indigo-50',  border: 'border-indigo-200',  text: 'text-indigo-700'  },
-              { label: '大運流年層', indent: 'ml-4',   size: 'text-sm',   bg: 'bg-purple-50',  border: 'border-purple-200',  text: 'text-purple-700'  },
-              { label: '流月流日層', indent: 'ml-8',   size: 'text-xs',   bg: 'bg-pink-50',    border: 'border-pink-200',    text: 'text-pink-700'    },
+              { label: '大運流年層', indent: 'ml-2 sm:ml-4',   size: 'text-sm',   bg: 'bg-purple-50',  border: 'border-purple-200',  text: 'text-purple-700'  },
+              { label: '流月流日層', indent: 'ml-4 sm:ml-8',   size: 'text-xs',   bg: 'bg-pink-50',    border: 'border-pink-200',    text: 'text-pink-700'    },
             ];
             const bullets = currentStep.bullets ?? [];
             return (
@@ -1534,13 +1552,13 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               <div className="space-y-4">
                 {isCombinedOverview ? (
                   <div className="space-y-1">
-                    <div className="grid grid-cols-12 gap-1">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-6 lg:grid-cols-12 lg:gap-1">
                       {parsedCards.map((item, idx) => {
                         const { branchName, stemChars, primary, primaryStyle } = item;
                         return (
-                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-1 space-y-1`}>
+                        <div key={idx} className={`rounded-lg border-2 ${primaryStyle.border} ${primaryStyle.bg} p-1.5 space-y-1 sm:p-1`}>
                           {/* Branch name - large */}
-                          <div className={`text-xl font-bold ${primaryStyle.text} text-center`}>{branchName}</div>
+                          <div className={`text-lg font-bold ${primaryStyle.text} text-center sm:text-xl`}>{branchName}</div>
                           {/* Primary stem - emphasized with label */}
                           <div className={`text-sm font-bold ${primaryStyle.text} text-center`}>
                             {primary}
@@ -1564,7 +1582,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                     })}
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                       {COMBINED_SEASON_BOXES.map((season) => (
                         <div key={season.name} className={`rounded-lg border ${season.border} ${season.bg} px-2 py-1.5 text-center`}>
                           <p className={`text-xs sm:text-sm font-bold ${season.color}`}>{season.name}</p>
@@ -1583,8 +1601,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <div className="grid grid-cols-4 gap-2 md:gap-3 min-w-[320px] sm:min-w-0">
+                    <div>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
                         {parsedCards.map((item, idx) => {
                           const { branchName, stemChars, primary, primaryStyle } = item;
                           return (
@@ -1616,39 +1634,43 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 )}
 
                 {lessonId === 6 && currentStep.id === 2 && (
-                  <EarthlyBranchRing 
-                    showStems={true} 
-                    highlightedBranches={['子', '午', '卯', '酉']}
-                    showSeasons={true}
-                    title="十二地支四季參考環（四專純）"
+                    <EarthlyBranchRing
+                      showStems={true}
+                      highlightedBranches={['子', '午', '卯', '酉']}
+                      showSeasons={true}
+                      compactOnMobile
+                      title="十二地支四季參考環（四專純）"
                   />
                 )}
 
                 {lessonId === 6 && currentStep.id === 3 && (
-                  <EarthlyBranchRing 
-                    showStems={true} 
-                    highlightedBranches={['寅', '申', '巳', '亥']}
-                    showSeasons={true}
-                    title="十二地支四季參考環（四長生）"
+                    <EarthlyBranchRing
+                      showStems={true}
+                      highlightedBranches={['寅', '申', '巳', '亥']}
+                      showSeasons={true}
+                      compactOnMobile
+                      title="十二地支四季參考環（四長生）"
                   />
                 )}
 
                 {lessonId === 6 && currentStep.id === 4 && (
-                  <EarthlyBranchRing 
-                    showStems={true} 
-                    highlightedBranches={['辰', '戌', '丑', '未']}
-                    showSeasons={true}
-                    title="十二地支四季參考環（四墓庫）"
+                    <EarthlyBranchRing
+                      showStems={true}
+                      highlightedBranches={['辰', '戌', '丑', '未']}
+                      showSeasons={true}
+                      compactOnMobile
+                      title="十二地支四季參考環（四墓庫）"
                   />
                 )}
 
                 {lessonId === 6 && currentStep.id === 41 && (
-                  <EarthlyBranchRing 
-                    showStems={true}
-                    showSeasons={true}
-                    showTrinityLines={true}
-                    showTrinityLegend={true}
-                    title="十二地支四季參考環（綜合總覽）"
+                    <EarthlyBranchRing
+                      showStems={true}
+                      showSeasons={true}
+                      showTrinityLines={true}
+                      showTrinityLegend={true}
+                      compactOnMobile
+                      title="十二地支四季參考環（綜合總覽）"
                   />
                 )}
               </div>
@@ -1720,7 +1742,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             };
             const bullets = currentStep.bullets ?? [];
             return (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {bullets.map((bullet, idx) => {
                   // '子丑合土 - 鼠牛合，智慧與穩重結合'
                   const pairMatch = bullet.match(/^(.)(.)\s*合([木火土金水])/);
@@ -1801,7 +1823,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                   <text x={cx2} y={cy2 + 8} textAnchor="middle" fontSize="9" fill="#cbd5e1">對沖圖</text>
                 </svg>
                 {/* Pair legend — two-column scan on mobile, stacked reference on desktop */}
-                <div className="grid grid-cols-2 gap-1.5 lg:flex lg:flex-1 lg:flex-col lg:gap-1 lg:min-w-0">
+                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:flex lg:flex-1 lg:flex-col lg:gap-1 lg:min-w-0">
                   {pairs.map((p, i) => (
                     <div key={i} className="flex items-center gap-1 bg-gray-50 rounded-lg px-1.5 py-1 border border-gray-100">
                       <span style={{ color: EL_FILL[p.el1] }} className="text-lg font-bold leading-none">{p.b1}</span>
