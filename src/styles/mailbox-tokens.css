@@ -1,6 +1,6 @@
 /*
  * Style: 「封緘研習信箱」— private correspondence within the 五行研習桌 system.
- * Keep the public correspondence header compact so the task flow, not the banner, leads the page.
+ * Keep the public correspondence header compact so the task flow, not the banner, leads the page; permanent deletion must stay in a clearly isolated danger zone.
  */
 
 @layer components {
@@ -633,6 +633,24 @@
 
   .mailbox-reply-composer__footer .mailbox-action {
     @apply shrink-0;
+  }
+
+  .mailbox-reply-composer__buttons {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .mailbox-admin-danger-zone {
+    @apply mt-6 flex flex-col gap-4 border border-mailbox-danger/35 bg-mailbox-dangerBg/55 p-5 sm:flex-row sm:items-center sm:justify-between;
+    border-left-width: 4px;
+    border-radius: theme('borderRadius.paper');
+  }
+
+  .mailbox-admin-danger-zone h3 {
+    @apply mt-1 font-serif text-lg font-extrabold text-mailbox-danger;
+  }
+
+  .mailbox-admin-danger-zone p:not(.mailbox-kicker) {
+    @apply mt-2 max-w-2xl text-sm leading-6 text-ink-muted;
   }
 
   .mailbox-reply-minimum,

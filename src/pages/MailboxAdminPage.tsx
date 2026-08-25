@@ -1,4 +1,5 @@
 /* 封緘研習信箱管理端：以案卷側欄與專注回覆面板呈現五行研習桌的沉靜、清楚、私密工作流。 */
+/* 五行研習桌設計提醒：管理端的案卷操作按風險分層；永久刪除必須以明確危險區、二次確認與中性私密文案呈現。 */
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase, supabaseClientConfigured } from '../lib/supabaseClient';
@@ -156,6 +157,65 @@ export function MailboxAdminPage() {
     }
   };
 
+  const confirmDangerousAction = (firstPrompt: string, secondPrompt: string) =>
+    window.confirm(firstPrompt) && window.confirm(secondPrompt);
+
+  const deleteSelectedReply = async () => {
+    if (!selected || selected.status !== 'replied') return;
+    const selectedRow = inquiries.find((item) => item.public_id === selected.publicId);
+    if (!selectedRow) {
+      setError('這封案卷已不在目前清單中，請先重新整理。');
+      return;
+    }
+    if (!confirmDangerousAction(
+      `確定刪除案卷 ${selected.publicId} 的已發布回覆嗎？案卷會退回「處理中」，之後可重新撰寫。`,
+      '請再次確認：此操作會令取件者暫時看不到原本回覆。'
+    )) return;
+
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      const result = await callAdmin<{ inquiry: InquiryDetail }>('admin-delete-reply', { id: selectedRow.id });
+      setSelected(result.inquiry);
+      setReply('');
+      setNotice('已刪除私密回覆，案卷已退回處理中。');
+      await loadList(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '未能刪除私密回覆。');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const deleteSelectedInquiry = async () => {
+    if (!selected) return;
+    const selectedRow = inquiries.find((item) => item.public_id === selected.publicId);
+    if (!selectedRow) {
+      setError('這封案卷已不在目前清單中，請先重新整理。');
+      return;
+    }
+    if (!confirmDangerousAction(
+      `確定永久刪除案卷 ${selected.publicId} 嗎？提問、回覆與相關紀錄均會一併移除。`,
+      `請再次確認：永久刪除後無法從管理端復原案卷 ${selected.publicId}。`
+    )) return;
+
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      await callAdmin<{ deleted: true }>('admin-delete-inquiry', { id: selectedRow.id });
+      setSelected(null);
+      setReply('');
+      setNotice(`案卷 ${selected.publicId} 已永久刪除。`);
+      await loadList(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '未能永久刪除案卷。');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (!canUseAdmin) {
     return (
       <main className="mailbox-shell">
@@ -268,10 +328,28 @@ export function MailboxAdminPage() {
                 </label>
                 <footer className="mailbox-reply-composer__footer">
                   <p>{selected.status === 'replied' ? '此案已回覆。如要補充，請在另開案卷中處理。' : replyReady ? '回覆會立即寫入私密信箱，並由取件碼保護。' : '請至少輸入 20 個字元後發布私密回覆。'}</p>
-                  <button className="mailbox-action mailbox-action--primary" disabled={busy || !replyReady} type="button" onClick={() => void perform('admin-reply', { body: reply })}>
-                    {busy ? '正在保存…' : '發布私密回覆'}
-                  </button>
+                  <div className="mailbox-reply-composer__buttons">
+                    {selected.status === 'replied' && (
+                      <button className="mailbox-action mailbox-action--danger" disabled={busy} type="button" onClick={() => void deleteSelectedReply()}>
+                        刪除已發布回覆
+                      </button>
+                    )}
+                    <button className="mailbox-action mailbox-action--primary" disabled={busy || !replyReady} type="button" onClick={() => void perform('admin-reply', { body: reply })}>
+                      {busy ? '正在保存…' : '發布私密回覆'}
+                    </button>
+                  </div>
                 </footer>
+              </section>
+
+              <section className="mailbox-admin-danger-zone" aria-labelledby="mailbox-delete-heading">
+                <div>
+                  <p className="mailbox-kicker">危險操作</p>
+                  <h3 id="mailbox-delete-heading">永久刪除此案</h3>
+                  <p>此操作會永久移除提問、已發布回覆與相關紀錄，無法從管理端復原。</p>
+                </div>
+                <button className="mailbox-action mailbox-action--danger" disabled={busy} type="button" onClick={() => void deleteSelectedInquiry()}>
+                  永久刪除案卷
+                </button>
               </section>
             </div>
           ) : (

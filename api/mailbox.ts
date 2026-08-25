@@ -234,6 +234,39 @@ class InlineSupabaseMailboxService {
     return this.getAdminInquiry(id);
   }
 
+  async deleteAdminReply(id: string, adminId: string) {
+    const current = await this.getAdminInquiry(id);
+    if (!current || current.status !== 'replied') return null;
+
+    const now = new Date();
+    const { error: answerError } = await this.client.from('mailbox_answers').delete().eq('inquiry_id', id);
+    if (answerError) throw answerError;
+
+    const { error: inquiryError } = await this.client
+      .from('mailbox_inquiries')
+      .update({
+        status: 'reviewing',
+        answered_at: null,
+        reply_due_at: addBusinessDays(now, 7).toISOString(),
+        expires_at: addDays(now, current.inquiryType === 'personal_case' ? 14 : 30).toISOString(),
+      })
+      .eq('id', id);
+    if (inquiryError) throw inquiryError;
+
+    await this.audit(id, adminId, 'reply_deleted_reopened');
+    return this.getAdminInquiry(id);
+  }
+
+  async deleteAdminInquiry(id: string, adminId: string) {
+    const current = await this.getAdminInquiry(id);
+    if (!current) return false;
+
+    await this.audit(id, adminId, 'admin_deleted_inquiry');
+    const { error } = await this.client.from('mailbox_inquiries').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+
   async decline(id: string, adminId: string, reason: unknown) {
     const allowed: DeclineReason[] = ['sensitive_data', 'out_of_scope', 'safety', 'capacity'];
     if (!allowed.includes(reason as DeclineReason)) throw new MailboxValidationError('Invalid decline reason');
@@ -372,6 +405,16 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     if (operation === 'admin-reply') {
       const inquiry = await mailbox.reply(String(body.id ?? ''), adminId, body.body);
       response.status(inquiry ? 200 : 404).json(inquiry ? { ok: true, inquiry, requiredReplyDisclosure: REQUIRED_REPLY_DISCLOSURE } : { message: 'Not found' });
+      return;
+    }
+    if (operation === 'admin-delete-reply') {
+      const inquiry = await mailbox.deleteAdminReply(String(body.id ?? ''), adminId);
+      response.status(inquiry ? 200 : 404).json(inquiry ? { ok: true, inquiry } : { message: 'Not found or reply is unavailable' });
+      return;
+    }
+    if (operation === 'admin-delete-inquiry') {
+      const deleted = await mailbox.deleteAdminInquiry(String(body.id ?? ''), adminId);
+      response.status(deleted ? 200 : 404).json(deleted ? { ok: true, deleted: true } : { message: 'Not found' });
       return;
     }
     if (operation === 'admin-decline') {

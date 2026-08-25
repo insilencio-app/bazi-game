@@ -359,6 +359,39 @@ export class SupabaseMailboxService {
     return this.getAdminInquiry(id);
   }
 
+  async deleteAdminReply(id: string, adminId: string) {
+    const current = await this.getAdminInquiry(id);
+    if (!current || current.status !== 'replied') return null;
+
+    const now = new Date();
+    const { error: answerError } = await this.client.from('mailbox_answers').delete().eq('inquiry_id', id);
+    if (answerError) throw answerError;
+
+    const { error: inquiryError } = await this.client
+      .from('mailbox_inquiries')
+      .update({
+        status: 'reviewing',
+        answered_at: null,
+        reply_due_at: addBusinessDays(now, 7).toISOString(),
+        expires_at: addDays(now, UNANSWERED_RETENTION_DAYS[current.inquiryType]).toISOString(),
+      })
+      .eq('id', id);
+    if (inquiryError) throw inquiryError;
+
+    await this.audit(id, adminId, 'reply_deleted_reopened');
+    return this.getAdminInquiry(id);
+  }
+
+  async deleteAdminInquiry(id: string, adminId: string) {
+    const current = await this.getAdminInquiry(id);
+    if (!current) return false;
+
+    await this.audit(id, adminId, 'admin_deleted_inquiry');
+    const { error } = await this.client.from('mailbox_inquiries').delete().eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+
   async decline(id: string, adminId: string, reason: unknown) {
     const reasons: DeclineReason[] = ['sensitive_data', 'out_of_scope', 'safety', 'capacity'];
     if (!reasons.includes(reason as DeclineReason)) throw new MailboxValidationError('Invalid decline reason');
