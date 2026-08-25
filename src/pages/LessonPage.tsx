@@ -519,6 +519,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   const lessonOneSectionLabel = lessonOneStage
     ? ({ intro: '課前定位', elements: '五行速覽', relations: '關係圖譜', practice: '導師帶做', recap: '重點回顧' } as Record<LessonOneAtlasStage, string>)[lessonOneStage]
     : '正式測驗';
+  const isGuideLesson = lessonId === 0;
   const lessonSectionLabel = lessonOneStage
     ? lessonOneSectionLabel
     : currentStep?.type === 'content'
@@ -526,7 +527,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     : currentStep?.type === 'cards'
     ? '概念索引'
     : currentStep?.type === 'mcq'
-    ? '正式測驗'
+    ? isGuideLesson
+    ? '快速自檢'
+    : '正式測驗'
     : currentStep?.type === 'truefalse'
     ? '判別練習'
     : '關係配對';
@@ -777,6 +780,17 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     setMatchMessage(null);
   };
 
+  const handleGuideReview = () => {
+    if (!isGuideLesson || !currentStep || !isScoredLessonStep(currentStep)) return;
+    const prompt = currentStep.type === 'match' ? currentStep.prompt : currentStep.question;
+    const reviewStepIndex = /日主|十神/.test(prompt) ? 1 : /月令|合沖|判讀|喜忌|神煞/.test(prompt) ? 2 : 0;
+    setCurrentStepIndex(reviewStepIndex);
+    setSelectedAnswer(null);
+    setAnswered(false);
+    setShowFeedback(false);
+    setShowHint(false);
+  };
+
   const handleMatchLeft = (value: string, index: number) => {
     if (currentStep?.type !== 'match') return;
     const uniqueKey = `${value}-${index}`;
@@ -820,8 +834,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   if (finished) {
     return (
       <div className="lesson-atlas-shell lesson-atlas-finish">
-        <h2 className="text-5xl font-bold mb-4">課程完成！</h2>
-        <p className="lesson-atlas-finish-copy text-xl mb-6">做得很好！你已完成此課程的所有步驟。</p>
+        <h2 className="text-5xl font-bold mb-4">{isGuideLesson ? '導讀完成・第一張地圖已建立' : '課程完成！'}</h2>
+        <p className="lesson-atlas-finish-copy text-xl mb-6">{isGuideLesson ? '你已認識四柱、找到日主，並完成第一輪快速自檢。' : '做得很好！你已完成此課程的所有步驟。'}</p>
+        {isGuideLesson && <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900">回到研習桌後，會收錄第一枚「初學者」研習印記；下一步可開始第 1 課五行基礎。</p>}
         {totalQuestions > 0 && (
           <div className="lesson-atlas-score p-8 mb-6">
             <p className="text-5xl font-bold text-green-700 mb-2">{score} / {totalQuestions}</p>
@@ -829,7 +844,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           </div>
         )}
         <QuizActionButton
-          label="返回主頁"
+          label={isGuideLesson ? '回到研習桌，收錄印記' : '返回主頁'}
           onClick={() => onComplete(lessonId, score, totalQuestions)}
           fullWidth
           className={lessonAtlasActionClass('primary')}
@@ -2173,8 +2188,9 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
       {(currentStep?.type === 'mcq' || currentStep?.type === 'truefalse') && answered && (
         <div className={isLessonOneAtlas ? 'lesson-atlas-actions' : 'flex flex-wrap gap-3'}>
               <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
+              {isGuideLesson && currentQuestionRecord && !currentQuestionRecord.isCorrect && <QuizActionButton label="回看重點" onClick={handleGuideReview} variant="accent" className={lessonAtlasActionClass('skip')} />}
               <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
-              <p className="text-xs sm:text-sm text-slate-600 basis-full text-center">此題答案已記錄；返回可回看解析，不會再次計分。</p>
+              <p className="text-xs sm:text-sm text-slate-600 basis-full text-center">{isGuideLesson ? '這是快速自檢；答錯可回看相應重點，答案不會再次計分。' : '此題答案已記錄；返回可回看解析，不會再次計分。'}</p>
             </div>
       )}
 
@@ -2200,7 +2216,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
           <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
           {canSkipToQuiz && (
-            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
+            <QuizActionButton label={isGuideLesson ? '先做自檢' : '跳到測驗'} onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
           )}
         </div>
       )}
@@ -2210,7 +2226,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
           <QuizActionButton label="上一步" onClick={handlePrevious} disabled={currentStepIndex === 0} variant="secondary" className={lessonAtlasActionClass('previous')} />
           <QuizActionButton label="繼續" onClick={handleNext} className={lessonAtlasActionClass('primary')} />
           {canSkipToQuiz && (
-            <QuizActionButton label="跳到測驗" onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
+            <QuizActionButton label={isGuideLesson ? '先做自檢' : '跳到測驗'} onClick={handleSkipToQuiz} variant="accent" className={lessonAtlasActionClass('skip')} />
           )}
         </div>
       )}

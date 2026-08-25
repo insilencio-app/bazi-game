@@ -3657,6 +3657,31 @@ body {
   line-height: 1.6;
 }
 
+.desktop-atlas-next__starter-path {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  max-width: 38rem;
+  margin-top: 0.85rem;
+}
+
+.desktop-atlas-next__starter-path span {
+  border: 1px solid #e0d2bc;
+  background: #fbf7ee;
+  padding: 0.46rem 0.55rem;
+  color: #153756;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.desktop-atlas-next__starter-path b {
+  grid-column: 1 / -1;
+  color: #765b2d;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 .desktop-atlas-next__actions {
   display: grid;
   gap: 0.5rem;
