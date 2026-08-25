@@ -76,13 +76,8 @@ export const EarthlyBranchJourney: React.FC<EarthlyBranchJourneyProps> = ({ stag
           <span>由子開始，順時針走完十二格。</span>
           <span className="font-semibold text-indigo-700">生肖是記憶掛鉤</span>
         </div>
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-          {orderedBranches.map((branch) => renderBranchChip(branch.name_cn))}
-        </div>
-        <div className="hidden md:block">
-          <EarthlyBranchRing title="十二地支循環圖：由子開始，走完一天與一年" showSeasons />
-        </div>
-        <p className="text-center text-sm text-gray-600 md:hidden">在手機先記住「子、卯、午、酉」四個方向點；下一步再把它們連到一天的時辰。</p>
+        <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" title="十二地支循環圖：由子開始，走完一天與一年" showSeasons />
+        <p className="text-center text-sm text-gray-600">先在鐘面找到「子、卯、午、酉」四個方向點；再點選其中一支，把它連到生肖、時辰與五行。</p>
       </div>
     );
   }

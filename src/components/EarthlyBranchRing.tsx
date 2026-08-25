@@ -2,6 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { mockEarthlyBranches, ELEMENT_STYLES } from '../data/mockData';
 
+export interface BranchClockRelationGroup {
+  id: string;
+  label: string;
+  branches: string[];
+  color: string;
+  note?: string;
+}
+
 interface EarthlyBranchRingProps {
   showStems?: boolean;
   highlightedBranches?: string[];
@@ -9,6 +17,11 @@ interface EarthlyBranchRingProps {
   showTrinityLines?: boolean;
   showTrinityLegend?: boolean;
   compactOnMobile?: boolean;
+  mobileDetailMode?: 'hidden-stems' | 'branch-basics';
+  selectedBranch?: string;
+  onBranchSelect?: (branchName: string) => void;
+  relationshipGroups?: BranchClockRelationGroup[];
+  relationshipLabel?: string;
   title?: string;
 }
 
@@ -19,6 +32,11 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
   showTrinityLines = false,
   showTrinityLegend = false,
   compactOnMobile = false,
+  mobileDetailMode = 'hidden-stems',
+  selectedBranch,
+  onBranchSelect,
+  relationshipGroups = [],
+  relationshipLabel = '關係圖層',
   title,
 }) => {
   const SIZE = 380;
@@ -53,14 +71,28 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
   };
 
   const getStemForBranch = (branchNumber: number) => branchToStemMap[branchNumber] || '?';
-  const isHighlighted = (branchName: string) => highlightedBranches.length === 0 || highlightedBranches.includes(branchName);
   const initialMobileBranch = highlightedBranches[0] ?? mockEarthlyBranches[0]?.name_cn ?? '子';
   const highlightedKey = highlightedBranches.join('|');
+  const relationshipKey = relationshipGroups.map((group) => `${group.id}:${group.branches.join('')}`).join('|');
   const [mobileSelectedBranch, setMobileSelectedBranch] = useState(initialMobileBranch);
+  const [selectedRelationshipId, setSelectedRelationshipId] = useState(relationshipGroups[0]?.id ?? '');
+
+  const activeRelationship = relationshipGroups.find((group) => group.id === selectedRelationshipId) ?? relationshipGroups[0];
+  const focusedBranches = activeRelationship?.branches ?? highlightedBranches;
+  const isHighlighted = (branchName: string) => focusedBranches.length === 0 || focusedBranches.includes(branchName);
+  const activeMobileBranch = selectedBranch ?? mobileSelectedBranch;
+  const selectMobileBranch = (branchName: string) => {
+    setMobileSelectedBranch(branchName);
+    onBranchSelect?.(branchName);
+  };
 
   useEffect(() => {
-    setMobileSelectedBranch(highlightedBranches[0] ?? mockEarthlyBranches[0]?.name_cn ?? '子');
-  }, [highlightedKey]);
+    setSelectedRelationshipId(relationshipGroups[0]?.id ?? '');
+  }, [relationshipKey]);
+
+  useEffect(() => {
+    setMobileSelectedBranch(activeRelationship?.branches[0] ?? highlightedBranches[0] ?? mockEarthlyBranches[0]?.name_cn ?? '子');
+  }, [highlightedKey, activeRelationship?.id]);
 
   const seasonArcs = [
     { name: '春', branches: '寅卯辰', elementNote: '木旺', color: '#22c55e', startDeg: -45, endDeg: 45, labelDeg: 0 },
@@ -102,6 +134,13 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
     };
   };
 
+  const getDesktopNodePoint = (branchName: string) => {
+    const index = mockEarthlyBranches.findIndex((branch) => branch.name_cn === branchName);
+    if (index < 0) return null;
+    const angleRad = ((index * 30 - 90) * Math.PI) / 180;
+    return { x: cx + RADIUS * Math.cos(angleRad), y: cy + RADIUS * Math.sin(angleRad) };
+  };
+
   const trinityColorByBranch: Record<string, string> = {};
   trinityGroups.forEach((group) => {
     group.branches.forEach((b) => {
@@ -109,7 +148,7 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
     });
   });
 
-  const mobileSelected = mockEarthlyBranches.find((branch) => branch.name_cn === mobileSelectedBranch) ?? mockEarthlyBranches[0];
+  const mobileSelected = mockEarthlyBranches.find((branch) => branch.name_cn === activeMobileBranch) ?? mockEarthlyBranches[0];
   const mobileSelectedStyle = mobileSelected
     ? ELEMENT_STYLES[mobileSelected.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' }
     : { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
@@ -124,6 +163,12 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
       left: ((mobileCenter + MOBILE_RADIUS * Math.cos(angleRad)) / MOBILE_SIZE) * 100,
       top: ((mobileCenter + MOBILE_RADIUS * Math.sin(angleRad)) / MOBILE_SIZE) * 100,
     };
+  };
+  const getMobileNodePoint = (branchName: string) => {
+    const index = mockEarthlyBranches.findIndex((branch) => branch.name_cn === branchName);
+    if (index < 0) return null;
+    const angleRad = ((index * 30 - 90) * Math.PI) / 180;
+    return { x: mobileCenter + MOBILE_RADIUS * Math.cos(angleRad), y: mobileCenter + MOBILE_RADIUS * Math.sin(angleRad) };
   };
   const describeMobileArc = (radius: number, startDeg: number, endDeg: number) => {
     const normalizedEnd = endDeg < startDeg ? endDeg + 360 : endDeg;
@@ -140,6 +185,22 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
   return (
     <div className={title ? 'rounded-2xl border border-indigo-200 bg-indigo-50 p-3 sm:p-4' : ''}>
       {title && <p className="text-xs sm:text-sm font-semibold text-indigo-800 mb-2">{title}</p>}
+      {relationshipGroups.length > 0 && activeRelationship && (
+        <div className="mb-3 rounded-xl border border-slate-200 bg-white/80 p-2.5">
+          <p className="text-xs font-bold tracking-[0.1em] text-slate-500">{relationshipLabel}</p>
+          <div className="mt-2 flex snap-x gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
+            {relationshipGroups.map((group) => {
+              const isActive = group.id === activeRelationship.id;
+              return (
+                <button key={group.id} type="button" onClick={() => setSelectedRelationshipId(group.id)} className={`shrink-0 snap-start rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${isActive ? 'border-indigo-700 bg-indigo-700 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
+                  {group.label}
+                </button>
+              );
+            })}
+          </div>
+          {activeRelationship.note && <p className="mt-2 text-xs leading-5 text-slate-600">{activeRelationship.note}</p>}
+        </div>
+      )}
       {compactOnMobile && mobileSelected && (
         <section className="sm:hidden" aria-label="手機版十二地支互動聚焦環">
           <p className="mb-2 text-xs font-semibold leading-5 text-indigo-700">順時針由子讀到亥；點選一支，再查看它的藏干線索。</p>
@@ -174,6 +235,12 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
                   </text>
                 );
               })}
+              {activeRelationship && (() => {
+                const points = activeRelationship.branches.map(getMobileNodePoint).filter((point): point is { x: number; y: number } => point !== null);
+                if (points.length < 2) return null;
+                const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ') + (points.length > 2 ? ' Z' : '');
+                return <path d={path} fill={points.length > 2 ? `${activeRelationship.color}18` : 'none'} stroke={activeRelationship.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.82" />;
+              })()}
             </svg>
             <div className="absolute left-1/2 top-1/2 z-0 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-indigo-200 bg-white/90 text-center shadow-sm">
               <span className="text-[10px] font-semibold tracking-[0.12em] text-indigo-600">地支循環</span>
@@ -183,12 +250,12 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
               const style = ELEMENT_STYLES[branch.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
               const point = getMobilePoint(index);
               const highlighted = isHighlighted(branch.name_cn);
-              const isSelected = mobileSelectedBranch === branch.name_cn;
+              const isSelected = activeMobileBranch === branch.name_cn;
               return (
                 <button
                   key={`mobile-ring-${branch.id}`}
                   type="button"
-                  onClick={() => setMobileSelectedBranch(branch.name_cn)}
+                  onClick={() => selectMobileBranch(branch.name_cn)}
                   aria-pressed={isSelected}
                   aria-label={`查看${branch.name_cn}的藏干`}
                   className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-lg font-black transition-all ${style.border} ${isSelected ? `${style.bg} ${style.text} scale-110 shadow-md ring-2 ring-white` : highlighted ? `bg-white ${style.text} shadow-sm` : 'border-slate-200 bg-white/80 text-slate-400 opacity-55'}`}
@@ -203,15 +270,20 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className={`flex h-9 w-9 items-center justify-center rounded-full bg-white/90 font-serif text-2xl font-black ${mobileSelectedStyle.text}`}>{mobileSelected.name_cn}</span>
-                <div><p className={`text-sm font-black ${mobileSelectedStyle.text}`}>{mobileSelected.name_cn}・藏干證據</p><p className="text-xs text-slate-600">{mobileSelected.yin_yang === 'yang' ? '陽' : '陰'}・{mobileSelected.element}</p></div>
+                <div><p className={`text-sm font-black ${mobileSelectedStyle.text}`}>{mobileSelected.name_cn}・{activeRelationship?.branches.includes(mobileSelected.name_cn) ? activeRelationship.label : mobileDetailMode === 'hidden-stems' ? '藏干證據' : '定位線索'}</p><p className="text-xs text-slate-600">{mobileSelected.yin_yang === 'yang' ? '陽' : '陰'}・{mobileSelected.element}</p></div>
               </div>
-              {!isHighlighted(mobileSelected.name_cn) && <span className="rounded-full border border-slate-200 bg-white/80 px-2 py-1 text-[10px] font-semibold text-slate-500">延伸定位</span>}
+              <span className="rounded-full border border-slate-200 bg-white/80 px-2 py-1 text-[10px] font-semibold text-slate-500">{activeRelationship?.branches.includes(mobileSelected.name_cn) ? '目前關係支位' : isHighlighted(mobileSelected.name_cn) ? '本步焦點' : '延伸定位'}</span>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-1.5 text-center text-xs">
-              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">本氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[0]}</p></div>
-              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">中氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[1] ?? '—'}</p></div>
-              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">餘氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[2] ?? '—'}</p></div>
-              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">本步位置</p><p className={`mt-0.5 text-sm font-black ${mobileSelectedStyle.text}`}>{isHighlighted(mobileSelected.name_cn) ? '重點支位' : '循環定位'}</p></div>
+              {mobileDetailMode === 'hidden-stems' ? <>
+                <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">本氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[0]}</p></div>
+                <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">中氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[1] ?? '—'}</p></div>
+                <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">餘氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[2] ?? '—'}</p></div>
+              </> : <>
+                <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">生肖</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileSelected.zodiac_animal}</p></div>
+                <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className={`mt-0.5 text-sm font-black ${mobileSelectedStyle.text}`}>{fmtTime(mobileSelected.hour_range)}</p><p className="mt-0.5 text-[10px] text-slate-500">時辰</p></div>
+                <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className={`mt-0.5 text-sm font-black ${mobileSelectedStyle.text}`}>{mobileSelected.yin_yang === 'yang' ? '陽' : '陰'}・{mobileSelected.element}</p><p className="mt-0.5 text-[10px] text-slate-500">陰陽五行</p></div>
+              </>}
             </div>
           </div>
         </section>
@@ -260,6 +332,13 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
                 })}
               </svg>
             )}
+
+            {activeRelationship && (() => {
+              const points = activeRelationship.branches.map(getDesktopNodePoint).filter((point): point is { x: number; y: number } => point !== null);
+              if (points.length < 2) return null;
+              const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ') + (points.length > 2 ? ' Z' : '');
+              return <svg className="absolute inset-0 z-[5] h-full w-full pointer-events-none" viewBox={`0 0 ${SIZE} ${SIZE}`}><path d={path} fill={points.length > 2 ? `${activeRelationship.color}18` : 'none'} stroke={activeRelationship.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.82" /></svg>;
+            })()}
 
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-20" viewBox={`0 0 ${SIZE} ${SIZE}`}>
             {showSeasons && seasonArcs.map((season) => (
