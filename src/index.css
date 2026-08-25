@@ -2942,6 +2942,414 @@ body {
   padding-bottom: 0.65rem;
 }
 
+/* 第 2 課十天干：五行分組優先，陰陽成對；每個內容步驟保持一張主圖、一張焦點卡與一個不計分任務。 */
+.lesson-two-atlas {
+  border: 1px solid #d8c9af;
+  padding: clamp(1rem, 3vw, 2.2rem);
+}
+
+.lesson-two-atlas--light {
+  background: #fffdf7;
+}
+
+.lesson-two-atlas--tracks,
+.lesson-two-atlas--combines {
+  border-color: #e1c178;
+  background: #0d2a4a;
+}
+
+.lesson-two-pair-map {
+  display: grid;
+  gap: 0.42rem;
+  margin-top: 1rem;
+}
+
+.lesson-two-pair-row {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr 1fr;
+  min-height: 3.3rem;
+  border: 1px solid #d8c9af;
+  background: #ffffff;
+  color: #102b48;
+  text-align: center;
+}
+
+.lesson-two-pair-row.is-active {
+  outline: 2px solid #d9ab58;
+  outline-offset: 1px;
+}
+
+.lesson-two-pair-row > span {
+  display: grid;
+  place-content: center;
+  border-left: 1px solid #d8c9af;
+}
+
+.lesson-two-pair-row__element {
+  border-left: 0 !important;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.lesson-two-pair-row b {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.lesson-two-pair-row em {
+  margin-top: 0.12rem;
+  color: #526272;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.lesson-two-tone--木 .lesson-two-pair-row__element,
+.lesson-two-pair-row.lesson-two-tone--木 .lesson-two-pair-row__element { background: #dff7ee; color: #136b4a; }
+.lesson-two-tone--火 .lesson-two-pair-row__element,
+.lesson-two-pair-row.lesson-two-tone--火 .lesson-two-pair-row__element { background: #ffe2e3; color: #a63036; }
+.lesson-two-tone--土 .lesson-two-pair-row__element,
+.lesson-two-pair-row.lesson-two-tone--土 .lesson-two-pair-row__element { background: #fff0c9; color: #8b6214; }
+.lesson-two-tone--金 .lesson-two-pair-row__element,
+.lesson-two-pair-row.lesson-two-tone--金 .lesson-two-pair-row__element { background: #ececef; color: #495160; }
+.lesson-two-tone--水 .lesson-two-pair-row__element,
+.lesson-two-pair-row.lesson-two-tone--水 .lesson-two-pair-row__element { background: #ddefff; color: #1d5e91; }
+
+.lesson-two-positioning-foot,
+.lesson-two-dual-ring-layout {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.lesson-two-focus {
+  min-height: 7.8rem;
+  border: 1px solid #d8c9af;
+  padding: 0.85rem;
+  text-align: center;
+}
+
+.lesson-two-focus > p {
+  color: #765b2d;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.lesson-two-focus h3 {
+  margin-top: 0.15rem;
+  color: #102b48;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.lesson-two-focus strong {
+  display: block;
+  margin-top: 0.28rem;
+  color: #153756;
+  font-size: 0.82rem;
+}
+
+.lesson-two-focus div {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 0.42rem;
+  color: #526272;
+  font-size: 0.66rem;
+}
+
+.lesson-two-focus b {
+  margin-left: 0.1rem;
+  color: #102b48;
+}
+
+.lesson-two-task {
+  border: 1px solid #d8c9af;
+  border-left: 4px solid #d9ab58;
+  background: #f7f1e5;
+  padding: 0.8rem 0.95rem;
+}
+
+.lesson-two-task > p {
+  color: #9b7330;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.lesson-two-task > b,
+.lesson-two-task > span,
+.lesson-two-task > em {
+  display: block;
+}
+
+.lesson-two-task > b {
+  margin-top: 0.25rem;
+  color: #102b48;
+  font-size: 0.92rem;
+}
+
+.lesson-two-task > span {
+  margin-top: 0.18rem;
+  color: #526272;
+  font-size: 0.72rem;
+}
+
+.lesson-two-task > em,
+.lesson-two-track-focus > em {
+  margin-top: 0.45rem;
+  color: #765b2d;
+  font-size: 0.74rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.lesson-two-task > em.is-correct,
+.lesson-two-track-focus > em.is-correct { color: #147453; }
+
+.lesson-two-task button,
+.lesson-two-track-focus button {
+  min-height: 2.25rem;
+  margin-top: 0.55rem;
+  border: 1px solid #0d2a4a;
+  background: #fffdf7;
+  color: #102b48;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.lesson-two-task details,
+.lesson-two-combine-focus details {
+  margin-top: 0.55rem;
+  border-top: 1px solid #d8c9af;
+  color: #526272;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.lesson-two-task summary,
+.lesson-two-combine-focus summary {
+  padding-top: 0.45rem;
+  cursor: pointer;
+  color: #153756;
+  font-weight: 900;
+}
+
+.lesson-two-task details p,
+.lesson-two-combine-focus details p { padding-top: 0.28rem; }
+
+.lesson-two-dual-ring {
+  position: relative;
+  width: min(100%, 18rem);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 1px dashed #d8c9af;
+  border-radius: 50%;
+  background: #f7f1e5;
+}
+
+.lesson-two-dual-ring__node {
+  --angle: var(--ring-angle);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 4.55rem;
+  min-height: 3.85rem;
+  place-content: center;
+  border: 1px solid #d8c9af;
+  background: #fffdf7;
+  color: #102b48;
+  transform: rotate(var(--angle)) translateY(-7rem) rotate(calc(-1 * var(--angle))) translate(-50%, -50%);
+}
+
+.lesson-two-dual-ring__node.is-active {
+  outline: 2px solid #d9ab58;
+  outline-offset: 2px;
+}
+
+.lesson-two-dual-ring__node span {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.lesson-two-dual-ring__node b {
+  margin-top: 0.16rem;
+  font-size: 0.68rem;
+}
+
+.lesson-two-dual-ring .lesson-two-focus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8.2rem;
+  min-height: 8.2rem;
+  transform: translate(-50%, -50%);
+  background: #fffdf7;
+}
+
+.lesson-two-tracks {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.lesson-two-track {
+  display: grid;
+  grid-template-columns: 4.2rem repeat(5, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(255, 248, 233, 0.34);
+}
+
+.lesson-two-track__label,
+.lesson-two-track button {
+  min-height: 4rem;
+  border-left: 1px solid rgba(255, 248, 233, 0.27);
+}
+
+.lesson-two-track__label {
+  display: grid;
+  place-content: center;
+  background: #e1c178;
+  color: #102b48;
+  text-align: center;
+}
+
+.lesson-two-track--yin .lesson-two-track__label { background: #ef9a86; }
+
+.lesson-two-track__label b {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1.25rem;
+}
+
+.lesson-two-track__label span,
+.lesson-two-track button span {
+  margin-top: 0.12rem;
+  font-size: 0.54rem;
+  font-weight: 900;
+}
+
+.lesson-two-track button {
+  background: rgba(255, 253, 247, 0.04);
+  color: #fffdf7;
+}
+
+.lesson-two-track button.is-active { background: rgba(255, 253, 247, 0.22); }
+
+.lesson-two-track button b,
+.lesson-two-track button span { display: block; }
+.lesson-two-track button b { font-family: 'Noto Serif TC', serif; font-size: 1.35rem; }
+
+.lesson-two-track-focus {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(255, 248, 233, 0.34);
+  background: rgba(255, 253, 247, 0.08);
+  padding: 0.8rem;
+  color: #fffdf7;
+  text-align: center;
+}
+
+.lesson-two-track-focus > b,
+.lesson-two-track-focus > span { display: block; }
+.lesson-two-track-focus > b { font-family: 'Noto Serif TC', serif; font-size: 1.1rem; }
+.lesson-two-track-focus > span { margin-top: 0.25rem; color: #d6e1e8; font-size: 0.74rem; }
+.lesson-two-track-focus button { display: block; width: 100%; max-width: 12rem; margin-left: auto; margin-right: auto; }
+
+.lesson-two-combine-board {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.lesson-two-combine-board button {
+  display: grid;
+  grid-template-columns: 3.3rem 1fr 3.3rem;
+  min-height: 3rem;
+  border: 1px solid rgba(255, 248, 233, 0.32);
+  background: rgba(255, 253, 247, 0.04);
+  color: #fffdf7;
+}
+
+.lesson-two-combine-board button.is-active { border-color: #ef9a86; background: rgba(239, 154, 134, 0.2); }
+.lesson-two-combine-board b { display: grid; place-content: center; font-family: 'Noto Serif TC', serif; font-size: 1.35rem; }
+.lesson-two-combine-board span { display: grid; place-content: center; color: #e1c178; font-size: 0.66rem; font-weight: 900; letter-spacing: 0.1em; }
+
+.lesson-two-combine-focus {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(255, 248, 233, 0.34);
+  background: rgba(255, 253, 247, 0.08);
+  padding: 0.85rem;
+  color: #fffdf7;
+  text-align: center;
+}
+
+.lesson-two-combine-focus > span,
+.lesson-two-combine-focus > b { display: block; }
+.lesson-two-combine-focus > span { color: #e1c178; font-size: 0.66rem; font-weight: 900; letter-spacing: 0.1em; }
+.lesson-two-combine-focus > b { margin-top: 0.25rem; font-family: 'Noto Serif TC', serif; font-size: 1.08rem; }
+.lesson-two-combine-focus > p { margin-top: 0.38rem; color: #ffd9d0; font-size: 0.75rem; font-weight: 800; }
+.lesson-two-combine-focus details { border-color: rgba(255, 248, 233, 0.3); color: #d6e1e8; text-align: left; }
+.lesson-two-combine-focus summary { color: #fffdf7; }
+
+.lesson-two-reading-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.lesson-two-reading-grid__item,
+.lesson-two-reading-core {
+  min-height: 7.2rem;
+  border: 1px solid #d8c9af;
+  background: #fff;
+  padding: 0.72rem;
+  text-align: left;
+}
+
+.lesson-two-reading-grid__item.is-active { outline: 2px solid #d9ab58; outline-offset: 1px; background: #f7f1e5; }
+.lesson-two-reading-grid__item span,
+.lesson-two-reading-grid__item b,
+.lesson-two-reading-grid__item em { display: block; }
+.lesson-two-reading-grid__item span { color: #9b7330; font-size: 0.62rem; font-weight: 900; letter-spacing: 0.1em; }
+.lesson-two-reading-grid__item b { margin-top: 0.3rem; color: #102b48; font-family: 'Noto Serif TC', serif; font-size: 1.35rem; }
+.lesson-two-reading-grid__item em { margin-top: 0.28rem; color: #526272; font-size: 0.72rem; font-style: normal; line-height: 1.35; }
+.lesson-two-reading-core { display: grid; place-content: center; background: #0d2a4a; color: #fffdf7; text-align: center; }
+.lesson-two-reading-core span { color: #e1c178; font-size: 0.63rem; font-weight: 900; letter-spacing: 0.1em; }
+.lesson-two-reading-core b { margin-top: 0.3rem; font-family: 'Noto Serif TC', serif; font-size: 1.2rem; }
+
+.lesson-two-reading-focus {
+  margin-top: 0.72rem;
+  border: 1px solid #d8c9af;
+  background: #f7f1e5;
+  padding: 0.75rem;
+}
+
+.lesson-two-reading-focus b,
+.lesson-two-reading-focus span { display: block; }
+.lesson-two-reading-focus b { color: #102b48; font-family: 'Noto Serif TC', serif; font-size: 1rem; }
+.lesson-two-reading-focus span { margin-top: 0.2rem; color: #526272; font-size: 0.74rem; }
+.lesson-two-reading-focus p { margin-top: 0.42rem; color: #765b2d; font-size: 0.71rem; font-weight: 800; }
+
+@media (min-width: 768px) {
+  .lesson-two-pair-map { grid-template-columns: repeat(5, 1fr); }
+  .lesson-two-pair-row { grid-template-columns: 1fr; min-height: 10.5rem; }
+  .lesson-two-pair-row > span { border-left: 0; border-top: 1px solid #d8c9af; }
+  .lesson-two-pair-row__element { border-top: 0 !important; }
+  .lesson-two-positioning-foot { grid-template-columns: 0.75fr 1.25fr; }
+  .lesson-two-dual-ring-layout { grid-template-columns: 0.85fr 1.15fr; align-items: center; }
+  .lesson-two-tracks { gap: 0.85rem; }
+  .lesson-two-track__label, .lesson-two-track button { min-height: 5rem; }
+  .lesson-two-combine-board { grid-template-columns: 1fr 1fr; }
+  .lesson-two-reading-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .lesson-two-reading-core { grid-column: 2; }
+}
+
 .lesson-atlas-actions {
   display: flex;
   flex-wrap: wrap;
