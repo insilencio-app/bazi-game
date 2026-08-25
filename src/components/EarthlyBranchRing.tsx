@@ -1,5 +1,5 @@
-import React from 'react';
-/* 五行研習桌設計提醒：完整十二地支環保留給平板與桌面；手機先以本步聚焦支位的摘要卡閱讀，避免固定環圖壓過課堂文字。 */
+/* 五行研習桌設計提醒：手機仍保留完整十二地支時鐘以建立循環定位；環內只顯示支字與四季方位，藏干證據由點選後的單一卡片承載。 */
+import React, { useEffect, useState } from 'react';
 import { mockEarthlyBranches, ELEMENT_STYLES } from '../data/mockData';
 
 interface EarthlyBranchRingProps {
@@ -48,12 +48,19 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
     11: '戊', // 戌
     12: '壬', // 亥
   };
+  const hiddenStemsByBranch: Record<string, [string, string?, string?]> = {
+    子: ['癸'], 丑: ['己', '癸', '辛'], 寅: ['甲', '丙', '戊'], 卯: ['乙'], 辰: ['戊', '乙', '癸'], 巳: ['丙', '戊', '庚'], 午: ['丁', '己'], 未: ['己', '丁', '乙'], 申: ['庚', '壬', '戊'], 酉: ['辛'], 戌: ['戊', '辛', '丁'], 亥: ['壬', '甲'],
+  };
 
   const getStemForBranch = (branchNumber: number) => branchToStemMap[branchNumber] || '?';
   const isHighlighted = (branchName: string) => highlightedBranches.length === 0 || highlightedBranches.includes(branchName);
-  const mobileBranches = highlightedBranches.length > 0
-    ? mockEarthlyBranches.filter((branch) => highlightedBranches.includes(branch.name_cn))
-    : mockEarthlyBranches;
+  const initialMobileBranch = highlightedBranches[0] ?? mockEarthlyBranches[0]?.name_cn ?? '子';
+  const highlightedKey = highlightedBranches.join('|');
+  const [mobileSelectedBranch, setMobileSelectedBranch] = useState(initialMobileBranch);
+
+  useEffect(() => {
+    setMobileSelectedBranch(highlightedBranches[0] ?? mockEarthlyBranches[0]?.name_cn ?? '子');
+  }, [highlightedKey]);
 
   const seasonArcs = [
     { name: '春', branches: '寅卯辰', elementNote: '木旺', color: '#22c55e', startDeg: -45, endDeg: 45, labelDeg: 0 },
@@ -102,23 +109,110 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
     });
   });
 
+  const mobileSelected = mockEarthlyBranches.find((branch) => branch.name_cn === mobileSelectedBranch) ?? mockEarthlyBranches[0];
+  const mobileSelectedStyle = mobileSelected
+    ? ELEMENT_STYLES[mobileSelected.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' }
+    : { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+  const MOBILE_SIZE = 280;
+  const MOBILE_RADIUS = 100;
+  const MOBILE_NODE = 38;
+  const mobileCenter = MOBILE_SIZE / 2;
+
+  const getMobilePoint = (index: number) => {
+    const angleRad = ((index * 30 - 90) * Math.PI) / 180;
+    return {
+      left: ((mobileCenter + MOBILE_RADIUS * Math.cos(angleRad)) / MOBILE_SIZE) * 100,
+      top: ((mobileCenter + MOBILE_RADIUS * Math.sin(angleRad)) / MOBILE_SIZE) * 100,
+    };
+  };
+  const describeMobileArc = (radius: number, startDeg: number, endDeg: number) => {
+    const normalizedEnd = endDeg < startDeg ? endDeg + 360 : endDeg;
+    const startRad = (startDeg * Math.PI) / 180;
+    const endRad = (normalizedEnd * Math.PI) / 180;
+    const startX = mobileCenter + radius * Math.cos(startRad);
+    const startY = mobileCenter + radius * Math.sin(startRad);
+    const endX = mobileCenter + radius * Math.cos(endRad);
+    const endY = mobileCenter + radius * Math.sin(endRad);
+    return `M ${startX} ${startY} A ${radius} ${radius} 0 ${normalizedEnd - startDeg > 180 ? 1 : 0} 1 ${endX} ${endY}`;
+  };
+  const mobileHiddenStems = hiddenStemsByBranch[mobileSelected?.name_cn ?? '子'] ?? [getStemForBranch(mobileSelected?.branch_number ?? 1)];
+
   return (
     <div className={title ? 'rounded-2xl border border-indigo-200 bg-indigo-50 p-3 sm:p-4' : ''}>
       {title && <p className="text-xs sm:text-sm font-semibold text-indigo-800 mb-2">{title}</p>}
-      {compactOnMobile && (
-        <section className="sm:hidden" aria-label="手機版地支摘要">
-          <p className="mb-2 text-xs font-semibold leading-5 text-indigo-700">手機先看本步聚焦支位；完整環圖會在平板與桌面顯示。</p>
-          <div className={`grid gap-2 ${mobileBranches.length > 8 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-            {mobileBranches.map((branch) => {
+      {compactOnMobile && mobileSelected && (
+        <section className="sm:hidden" aria-label="手機版十二地支互動聚焦環">
+          <p className="mb-2 text-xs font-semibold leading-5 text-indigo-700">順時針由子讀到亥；點選一支，再查看它的藏干線索。</p>
+          <div className="relative mx-auto aspect-square w-full max-w-[280px]" aria-label="十二地支時鐘">
+            <svg className="absolute inset-0 h-full w-full pointer-events-none" viewBox={`0 0 ${MOBILE_SIZE} ${MOBILE_SIZE}`}>
+              {showSeasons && seasonArcs.map((season) => (
+                <path
+                  key={`mobile-${season.name}`}
+                  d={describeMobileArc(MOBILE_SIZE / 2 - 14, season.startDeg, season.endDeg)}
+                  fill="none"
+                  stroke={season.color}
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                  opacity="0.22"
+                />
+              ))}
+              {showSeasons && seasonArcs.map((season) => {
+                const degree = (season.labelDeg * Math.PI) / 180;
+                const labelRadius = MOBILE_SIZE / 2 - 6;
+                return (
+                  <text
+                    key={`mobile-label-${season.name}`}
+                    x={mobileCenter + labelRadius * Math.cos(degree)}
+                    y={mobileCenter + labelRadius * Math.sin(degree)}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize="12"
+                    fontWeight="700"
+                    fill={season.color}
+                  >
+                    {season.name}
+                  </text>
+                );
+              })}
+            </svg>
+            <div className="absolute left-1/2 top-1/2 z-0 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-indigo-200 bg-white/90 text-center shadow-sm">
+              <span className="text-[10px] font-semibold tracking-[0.12em] text-indigo-600">地支循環</span>
+              <span className="mt-0.5 text-xs text-slate-500">子 → 亥</span>
+            </div>
+            {mockEarthlyBranches.map((branch, index) => {
               const style = ELEMENT_STYLES[branch.element] ?? { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+              const point = getMobilePoint(index);
+              const highlighted = isHighlighted(branch.name_cn);
+              const isSelected = mobileSelectedBranch === branch.name_cn;
               return (
-                <div key={`mobile-${branch.id}`} className={`rounded-xl border ${style.border} ${style.bg} px-2.5 py-2 text-center`}>
-                  <span className={`font-serif text-2xl font-black ${style.text}`}>{branch.name_cn}</span>
-                  <p className={`mt-0.5 text-xs font-bold ${style.text}`}>本氣・{getStemForBranch(branch.branch_number)}</p>
-                  <p className="mt-0.5 text-[11px] text-slate-600">{branch.yin_yang === 'yang' ? '陽' : '陰'}・{branch.element}</p>
-                </div>
+                <button
+                  key={`mobile-ring-${branch.id}`}
+                  type="button"
+                  onClick={() => setMobileSelectedBranch(branch.name_cn)}
+                  aria-pressed={isSelected}
+                  aria-label={`查看${branch.name_cn}的藏干`}
+                  className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-lg font-black transition-all ${style.border} ${isSelected ? `${style.bg} ${style.text} scale-110 shadow-md ring-2 ring-white` : highlighted ? `bg-white ${style.text} shadow-sm` : 'border-slate-200 bg-white/80 text-slate-400 opacity-55'}`}
+                  style={{ left: `${point.left}%`, top: `${point.top}%`, width: MOBILE_NODE, height: MOBILE_NODE }}
+                >
+                  {branch.name_cn}
+                </button>
               );
             })}
+          </div>
+          <div className={`mt-3 rounded-xl border ${mobileSelectedStyle.border} ${mobileSelectedStyle.bg} p-3`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className={`flex h-9 w-9 items-center justify-center rounded-full bg-white/90 font-serif text-2xl font-black ${mobileSelectedStyle.text}`}>{mobileSelected.name_cn}</span>
+                <div><p className={`text-sm font-black ${mobileSelectedStyle.text}`}>{mobileSelected.name_cn}・藏干證據</p><p className="text-xs text-slate-600">{mobileSelected.yin_yang === 'yang' ? '陽' : '陰'}・{mobileSelected.element}</p></div>
+              </div>
+              {!isHighlighted(mobileSelected.name_cn) && <span className="rounded-full border border-slate-200 bg-white/80 px-2 py-1 text-[10px] font-semibold text-slate-500">延伸定位</span>}
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-1.5 text-center text-xs">
+              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">本氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[0]}</p></div>
+              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">中氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[1] ?? '—'}</p></div>
+              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">餘氣</p><p className={`mt-0.5 text-base font-black ${mobileSelectedStyle.text}`}>{mobileHiddenStems[2] ?? '—'}</p></div>
+              <div className="rounded-lg border border-white/80 bg-white/80 px-1.5 py-2"><p className="text-[10px] text-slate-500">本步位置</p><p className={`mt-0.5 text-sm font-black ${mobileSelectedStyle.text}`}>{isHighlighted(mobileSelected.name_cn) ? '重點支位' : '循環定位'}</p></div>
+            </div>
           </div>
         </section>
       )}
