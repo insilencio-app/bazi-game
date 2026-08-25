@@ -187,12 +187,12 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
       {title && <p className="text-xs sm:text-sm font-semibold text-indigo-800 mb-2">{title}</p>}
       {relationshipGroups.length > 0 && activeRelationship && (
         <div className="mb-3 rounded-xl border border-slate-200 bg-white/80 p-2.5">
-          <p className="text-xs font-bold tracking-[0.1em] text-slate-500">{relationshipLabel}</p>
-          <div className="mt-2 flex snap-x gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
+          <p className="text-xs font-bold tracking-[0.1em] text-slate-500">{relationshipLabel}・點選組合換線</p>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {relationshipGroups.map((group) => {
               const isActive = group.id === activeRelationship.id;
               return (
-                <button key={group.id} type="button" onClick={() => setSelectedRelationshipId(group.id)} className={`shrink-0 snap-start rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${isActive ? 'border-indigo-700 bg-indigo-700 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
+                <button key={group.id} type="button" onClick={() => setSelectedRelationshipId(group.id)} className={`min-h-11 rounded-lg border px-2 py-1.5 text-xs font-bold leading-4 transition-colors ${isActive ? 'border-indigo-700 bg-indigo-700 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
                   {group.label}
                 </button>
               );
@@ -203,7 +203,7 @@ export const EarthlyBranchRing: React.FC<EarthlyBranchRingProps> = ({
       )}
       {compactOnMobile && mobileSelected && (
         <section className="sm:hidden" aria-label="手機版十二地支互動聚焦環">
-          <p className="mb-2 text-xs font-semibold leading-5 text-indigo-700">順時針由子讀到亥；點選一支，再查看它的藏干線索。</p>
+          <p className="mb-2 text-xs font-semibold leading-5 text-indigo-700">順時針由子讀到亥；點選一支，再查看它的{mobileDetailMode === 'hidden-stems' ? '藏干' : '位置'}線索。</p>
           <div className="relative mx-auto aspect-square w-full max-w-[280px]" aria-label="十二地支時鐘">
             <svg className="absolute inset-0 h-full w-full pointer-events-none" viewBox={`0 0 ${MOBILE_SIZE} ${MOBILE_SIZE}`}>
               {showSeasons && seasonArcs.map((season) => (

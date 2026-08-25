@@ -1743,83 +1743,29 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               </div>
             );
           })() : lessonId === 7 && currentStep.id === 2 && currentStep.bullets ? (() => {
-            /* L7 id:2 — 三合局: 4 trinity formation cards */
-            const TRINITY_META = [
-              { branches: ['寅','午','戌'], element: '火', color: 'bg-red-50 border-red-300',   text: 'text-red-700',   badge: 'bg-red-100 text-red-700'   },
-              { branches: ['申','子','辰'], element: '水', color: 'bg-blue-50 border-blue-300',  text: 'text-blue-700',  badge: 'bg-blue-100 text-blue-700'  },
-              { branches: ['亥','卯','未'], element: '木', color: 'bg-green-50 border-green-300', text: 'text-green-700', badge: 'bg-green-100 text-green-700' },
-              { branches: ['巳','酉','丑'], element: '金', color: 'bg-slate-50 border-slate-300', text: 'text-slate-600',  badge: 'bg-slate-100 text-slate-600'  },
-            ];
+            /* L7 id:2 — 三合局: one clock, all four formations listed directly above it */
             const bullets = currentStep.bullets ?? [];
+            const trinityGroups = [
+              { id: 'fire', label: '寅午戌・火局', branches: ['寅', '午', '戌'], color: '#ef4444' },
+              { id: 'water', label: '申子辰・水局', branches: ['申', '子', '辰'], color: '#3b82f6' },
+              { id: 'wood', label: '亥卯未・木局', branches: ['亥', '卯', '未'], color: '#16a34a' },
+              { id: 'metal', label: '巳酉丑・金局', branches: ['巳', '酉', '丑'], color: '#64748b' },
+            ].map((group, index) => ({ ...group, note: (bullets[index] ?? '').replace(/^.+? - /, '') || `${group.label}的三點成局。` }));
             return (
-              <div className="space-y-4">
-                <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" showSeasons title="三合局・在地支時鐘上看三點成局" relationshipLabel="三合圖層" relationshipGroups={[
-                  { id: 'fire', label: '寅午戌・火局', branches: ['寅', '午', '戌'], color: '#ef4444', note: '寅、午、戌三點連成火局；先辨位置，再辨五行。' },
-                  { id: 'water', label: '申子辰・水局', branches: ['申', '子', '辰'], color: '#3b82f6', note: '申、子、辰三點連成水局。' },
-                  { id: 'wood', label: '亥卯未・木局', branches: ['亥', '卯', '未'], color: '#16a34a', note: '亥、卯、未三點連成木局。' },
-                  { id: 'metal', label: '巳酉丑・金局', branches: ['巳', '酉', '丑'], color: '#64748b', note: '巳、酉、丑三點連成金局。' },
-                ]} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {TRINITY_META.map((tri, idx) => {
-                  const desc = (bullets[idx] ?? '').replace(/^.+? - /, '');
-                  return (
-                    <div key={idx} className={`rounded-xl border-2 ${tri.color} p-4`}>
-                      <div className="flex items-center justify-center gap-2 mb-3">
-                        {tri.branches.map((b, i) => (
-                          <React.Fragment key={b}>
-                            <span className={`text-2xl font-bold ${tri.text} w-10 h-10 flex items-center justify-center rounded-full border-2 ${tri.color}`}>{b}</span>
-                            {i < 2 && <span className={`text-sm ${tri.text}`}>＋</span>}
-                          </React.Fragment>
-                        ))}
-                        <span className={`text-sm ${tri.text} mx-1`}>→</span>
-                        <span className={`text-xl font-bold px-3 py-1 rounded-full ${tri.badge}`}>{tri.element}局</span>
-                      </div>
-                      <p className={`text-sm text-center ${tri.text}`}>{desc}</p>
-                    </div>
-                  );
-                })}
-                </div>
-              </div>
+              <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" showSeasons title="三合局・在地支時鐘上看三點成局" relationshipLabel="三合圖層" relationshipGroups={trinityGroups} />
             );
           })() : lessonId === 7 && currentStep.id === 3 && currentStep.bullets ? (() => {
-            /* L7 id:3 — 六合: 6 harmony pair cards */
-            const SIX_HE_ELEMENT: Record<string, { bg: string; text: string; border: string }> = {
-              '土': ELEMENT_STYLES['土'], '木': ELEMENT_STYLES['木'],
-              '火': ELEMENT_STYLES['火'], '金': ELEMENT_STYLES['金'], '水': ELEMENT_STYLES['水'],
-            };
+            /* L7 id:3 — 六合: all six pairings live in the common clock selector */
             const bullets = currentStep.bullets ?? [];
+            const harmonyColors: Record<string, string> = { 土: '#d97706', 木: '#16a34a', 火: '#ef4444', 金: '#64748b', 水: '#3b82f6' };
+            const harmonyGroups = bullets.flatMap((bullet, index) => {
+              const match = bullet.match(/^(.)(.)\s*合([木火土金水])/);
+              if (!match) return [];
+              const [, first, second, element] = match;
+              return [{ id: `harmony-${index}`, label: `${first}${second}・${element}`, branches: [first, second], color: harmonyColors[element], note: bullet.replace(/^.+? - /, '').replace(/^.+?合，/, '') || `${first}${second}合${element}。` }];
+            });
             return (
-              <div className="space-y-4">
-                <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" showSeasons title="六合・在地支時鐘上辨兩支相合" relationshipLabel="六合圖層" relationshipGroups={[
-                  { id: 'zichou', label: '子丑・土', branches: ['子', '丑'], color: '#d97706', note: '子丑合土。' },
-                  { id: 'yinhai', label: '寅亥・木', branches: ['寅', '亥'], color: '#16a34a', note: '寅亥合木。' },
-                  { id: 'maoxu', label: '卯戌・火', branches: ['卯', '戌'], color: '#ef4444', note: '卯戌合火。' },
-                  { id: 'chenyou', label: '辰酉・金', branches: ['辰', '酉'], color: '#64748b', note: '辰酉合金。' },
-                  { id: 'sishen', label: '巳申・水', branches: ['巳', '申'], color: '#3b82f6', note: '巳申合水。' },
-                  { id: 'wuwei', label: '午未・土', branches: ['午', '未'], color: '#d97706', note: '午未合土。' },
-                ]} />
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {bullets.map((bullet, idx) => {
-                  // '子丑合土 - 鼠牛合，智慧與穩重結合'
-                  const pairMatch = bullet.match(/^(.)(.)\s*合([木火土金水])/);
-                  if (!pairMatch) return null;
-                  const [, b1, b2, el] = pairMatch;
-                  const style = SIX_HE_ELEMENT[el] || ELEMENT_STYLES['木'];
-                  const desc = bullet.replace(/^.+? - /, '').replace(/^.+?合，/, '');
-                  return (
-                    <div key={idx} className={`rounded-xl border-2 ${style.border} ${style.bg} p-3 text-center`}>
-                      <div className="flex items-center justify-center gap-1 mb-2">
-                        <span className={`text-2xl font-bold ${style.text}`}>{b1}</span>
-                        <span className="text-gray-400 text-sm">＋</span>
-                        <span className={`text-2xl font-bold ${style.text}`}>{b2}</span>
-                        <span className={`text-sm ${style.text} ml-1`}>→ {el}</span>
-                      </div>
-                      <p className={`text-xs ${style.text}`}>{desc}</p>
-                    </div>
-                  );
-                })}
-                </div>
-              </div>
+              <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" showSeasons title="六合・在地支時鐘上辨兩支相合" relationshipLabel="六合圖層" relationshipGroups={harmonyGroups} />
             );
           })() : lessonId === 7 && currentStep.id === 4 && currentStep.bullets ? (() => {
             /* L7 id:4 — 六沖: zodiac clock */
@@ -1827,9 +1773,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火',
               '午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水',
             };
-            const EL_FILL: Record<string, string> = {
-              '木':'#16a34a','火':'#ef4444','土':'#d97706','金':'#64748b','水':'#3b82f6',
-            };
+            const clashColors = ['#a855f7', '#0891b2', '#16a34a', '#f97316', '#e11d48', '#6366f1'];
             // parse pair descriptions from bullets for the legend
             const bullets = currentStep.bullets ?? [];
             const pairs: { b1: string; b2: string; desc: string; el1: string; el2: string }[] = [];
@@ -1841,26 +1785,7 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
                 el1: em ? em[1] : BRANCH_EL[m[1]] ?? '', el2: em ? em[2] : BRANCH_EL[m[2]] ?? '' });
             });
             return (
-              <div className="space-y-4">
-                <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" showSeasons title="六沖・在地支時鐘上辨對向兩支" relationshipLabel="六沖圖層" relationshipGroups={[
-                  { id: 'ziwu', label: '子午沖', branches: ['子', '午'], color: '#a855f7', note: '子午相對。' },
-                  { id: 'chouwei', label: '丑未沖', branches: ['丑', '未'], color: '#0891b2', note: '丑未相對。' },
-                  { id: 'yinshen', label: '寅申沖', branches: ['寅', '申'], color: '#16a34a', note: '寅申相對。' },
-                  { id: 'maoyou', label: '卯酉沖', branches: ['卯', '酉'], color: '#f97316', note: '卯酉相對。' },
-                  { id: 'chenxu', label: '辰戌沖', branches: ['辰', '戌'], color: '#e11d48', note: '辰戌相對。' },
-                  { id: 'sihai', label: '巳亥沖', branches: ['巳', '亥'], color: '#6366f1', note: '巳亥相對。' },
-                ]} />
-                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                  {pairs.map((p, i) => (
-                    <div key={i} className="flex items-center gap-1 bg-gray-50 rounded-lg px-1.5 py-1 border border-gray-100">
-                      <span style={{ color: EL_FILL[p.el1] }} className="text-lg font-bold leading-none">{p.b1}</span>
-                      <span className="text-red-400 text-xs">⚡</span>
-                      <span style={{ color: EL_FILL[p.el2] }} className="text-lg font-bold leading-none">{p.b2}</span>
-                      <span className="text-xs text-gray-400 ml-auto whitespace-nowrap">{p.el1}沖{p.el2}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <EarthlyBranchRing compactOnMobile mobileDetailMode="branch-basics" showSeasons title="六沖・在地支時鐘上辨對向兩支" relationshipLabel="六沖圖層" relationshipGroups={pairs.map((pair, index) => ({ id: `clash-${index}`, label: `${pair.b1}${pair.b2}沖`, branches: [pair.b1, pair.b2], color: clashColors[index] ?? '#64748b', note: pair.desc || `${pair.b1}${pair.b2}相沖。` }))} />
             );
           })() : lessonId === 7 && currentStep.id === 9 && currentStep.bullets ? (() => {
             /* L7 id:9 — Relationship reading cards, not a deterministic strength ranking */
