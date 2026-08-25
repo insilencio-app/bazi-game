@@ -2,9 +2,9 @@
  * Style: 「五行研習桌」— Lesson 1 uses an open parchment desk, a focused element file,
  * and a full-canvas relationship map. Teaching interactions remain local; quiz logic stays in LessonPage.
  */
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
-export type LessonOneAtlasStage = 'intro' | 'elements' | 'relations' | 'practice' | 'recap';
+export type LessonOneAtlasStage = 'intro' | 'elements' | 'sheng' | 'ke' | 'practice' | 'recap';
 
 type ElementName = '木' | '火' | '土' | '金' | '水';
 type MapMode = 'sheng' | 'ke';
@@ -52,13 +52,13 @@ function AtlasHeading({ number, eyebrow, title, children, inverse = false }: { n
   );
 }
 
-function RelationDiagram({ mode, activeRelation, onSelect }: { mode: MapMode; activeRelation: string; onSelect: (id: string) => void }) {
+function RelationDiagram({ mode, activeRelation, onSelect, compact = false }: { mode: MapMode; activeRelation: string; onSelect: (id: string) => void; compact?: boolean }) {
   const relations = RELATIONS[mode];
   const accent = mode === 'sheng' ? '#E7C477' : '#EF9A86';
   const active = relations.find((relation) => relation.id === activeRelation) ?? relations[0];
 
   return (
-    <div className="atlas-relation-diagram">
+    <div className={`atlas-relation-diagram ${compact ? 'atlas-relation-diagram--compact' : ''}`}>
       <svg viewBox="0 0 100 100" role="img" aria-label="五行關係互動圖解">
         <defs>
           <marker id="lesson-one-atlas-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
@@ -79,16 +79,15 @@ function RelationDiagram({ mode, activeRelation, onSelect }: { mode: MapMode; ac
 
 export function LessonOneAtlas({ stage }: { stage: LessonOneAtlasStage }) {
   const [selectedElement, setSelectedElement] = useState<ElementName>('木');
-  const [mapMode, setMapMode] = useState<MapMode>('sheng');
   const [activeRelation, setActiveRelation] = useState('wood-fire');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState<string | null>(null);
   const selected = useMemo(() => ELEMENTS.find((element) => element.name === selectedElement) ?? ELEMENTS[0], [selectedElement]);
 
-  const chooseMode = (mode: MapMode) => {
-    setMapMode(mode);
-    setActiveRelation(RELATIONS[mode][0].id);
-  };
+  useEffect(() => {
+    if (stage === 'sheng') setActiveRelation(RELATIONS.sheng[0].id);
+    if (stage === 'ke') setActiveRelation(RELATIONS.ke[0].id);
+  }, [stage]);
 
   const answer = (question: 'waterWood' | 'waterFire', choice: '相生' | '相剋') => {
     const expected = question === 'waterWood' ? '相生' : '相剋';
@@ -128,26 +127,29 @@ export function LessonOneAtlas({ stage }: { stage: LessonOneAtlasStage }) {
     </section>;
   }
 
-  if (stage === 'relations') {
-    const relations = RELATIONS[mapMode];
-    return <section className="atlas-study-scene atlas-relations-scene">
-      <div className="atlas-relations-intro">
-        <AtlasHeading number="03" eyebrow="關係圖譜" inverse title={mapMode === 'sheng' ? '相生，是支持與延續。' : '相剋，是制約與平衡。'}><p>不必一次背下整個循環。先選一條線，再看箭頭由哪裡出發、指向哪裡。</p></AtlasHeading>
-        <div className="atlas-relation-modes"><button type="button" onClick={() => chooseMode('sheng')} aria-pressed={mapMode === 'sheng'} className={mapMode === 'sheng' ? 'is-active' : ''}>相生：支持與延續</button><button type="button" onClick={() => chooseMode('ke')} aria-pressed={mapMode === 'ke'} className={mapMode === 'ke' ? 'is-active is-ke' : ''}>相剋：制約與平衡</button></div>
+  if (stage === 'sheng' || stage === 'ke') {
+    const mode: MapMode = stage === 'sheng' ? 'sheng' : 'ke';
+    const relations = RELATIONS[mode];
+    const isSheng = mode === 'sheng';
+    return <section className={`atlas-study-scene atlas-relations-scene atlas-relations-scene--single ${isSheng ? 'is-sheng' : 'is-ke'}`}>
+      <div className="atlas-relations-intro atlas-relations-intro--single">
+        <AtlasHeading number={isSheng ? '03' : '04'} eyebrow={isSheng ? '五行相生' : '五行相剋'} inverse title={isSheng ? '相生：沿箭頭走一步。' : '相剋：找出制約方向。'}><p>{isSheng ? '每次只看一條「誰生誰」的線。' : '每次只看一條「誰剋誰」的線。'}</p></AtlasHeading>
       </div>
-      <div className="atlas-relation-workbench">
-        <div className="atlas-relation-index">
-          {relations.map((relation, index) => <button key={relation.id} type="button" onClick={() => setActiveRelation(relation.id)} aria-pressed={activeRelation === relation.id} className={activeRelation === relation.id ? 'is-active' : ''}><span>{String(index + 1).padStart(2, '0')}</span><b>{relation.from} <i>{mapMode === 'sheng' ? '生' : '剋'} →</i> {relation.to}</b><em>{activeRelation === relation.id ? '正在檢視' : '選擇關係'}</em></button>)}
+      <div className="atlas-relation-workbench atlas-relation-workbench--single">
+        <RelationDiagram mode={mode} activeRelation={activeRelation} onSelect={setActiveRelation} compact />
+        <div className="atlas-relation-chip-grid" role="group" aria-label={isSheng ? '五行相生關係' : '五行相剋關係'}>
+          {relations.map((relation) => <button key={relation.id} type="button" onClick={() => setActiveRelation(relation.id)} aria-pressed={activeRelation === relation.id} className={activeRelation === relation.id ? 'is-active' : ''}><b>{relation.from}</b><span>{isSheng ? '生' : '剋'} →</span><b>{relation.to}</b></button>)}
         </div>
-        <RelationDiagram mode={mapMode} activeRelation={activeRelation} onSelect={setActiveRelation} />
       </div>
+      <p className="atlas-relation-micro-task">小任務：點選一條線，先讀「{isSheng ? '誰生誰' : '誰剋誰'}」，不用急著背完整循環。</p>
+      <details className="atlas-relation-details"><summary>展開本頁記憶線索</summary><p>{isSheng ? '相生可先理解為支持與延續；相剋可先理解為制約與平衡。兩者都只是關係線索，不等於單獨的吉凶判決。' : '相剋可先理解為制約與平衡；它與相生一樣是關係線索，不等於單獨的吉凶判決。'}</p></details>
     </section>;
   }
 
   if (stage === 'practice') {
     const card = (id: 'waterWood' | 'waterFire', target: ElementName) => <article className="border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[6px_6px_0_#EEE2CE]"><div className="flex items-center gap-3"><span className="font-serif text-4xl text-sky-800">水</span><span className="text-xl text-[#B48A43]">→</span><span className={`font-serif text-4xl ${target === '木' ? 'text-emerald-800' : 'text-rose-800'}`}>{target}</span></div><h3 className="mt-3 font-serif text-[22px] font-bold text-[#183452]">水對{target}</h3><p className="mt-2 text-[15px] leading-6 text-slate-600">先判斷方向，再看導師解釋。</p><div className="mt-5 grid grid-cols-2 gap-2"><button onClick={() => answer(id, '相生')} className={`min-h-11 border px-3 py-2 text-base font-bold transition-colors ${answers[id] === '相生' ? 'border-[#B48A43] bg-[#F2E6CC] text-[#765B2D]' : 'border-[#DDD2BF] bg-[#FBF8F1] text-slate-600 hover:border-[#B48A43]'}`}>相生</button><button onClick={() => answer(id, '相剋')} className={`min-h-11 border px-3 py-2 text-base font-bold transition-colors ${answers[id] === '相剋' ? 'border-[#C76756] bg-[#F5E4DF] text-[#8B4037]' : 'border-[#DDD2BF] bg-[#FBF8F1] text-slate-600 hover:border-[#C76756]'}`}>相剋</button></div></article>;
-    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="04" eyebrow="導師帶做" title="同一個「水」，對象不同，關係便不同。"><p>這兩題不計入最後分數；它們用來讓你在進入正式測驗前，先把方向看清楚。</p></AtlasHeading><div className="grid gap-4 sm:grid-cols-2">{card('waterWood', '木')}{card('waterFire', '火')}</div>{feedback && <div className="mt-5 border-l-4 border-emerald-500 bg-emerald-50 px-4 py-3 text-[15px] font-semibold text-emerald-800">{feedback}</div>}</div>;
+    return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="05" eyebrow="導師帶做" title="同一個「水」，對象不同，關係便不同。"><p>這兩題不計入最後分數；它們用來讓你在進入正式測驗前，先把方向看清楚。</p></AtlasHeading><div className="grid gap-4 sm:grid-cols-2">{card('waterWood', '木')}{card('waterFire', '火')}</div>{feedback && <div className="mt-5 border-l-4 border-emerald-500 bg-emerald-50 px-4 py-3 text-[15px] font-semibold text-emerald-800">{feedback}</div>}</div>;
   }
 
-  return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="05" eyebrow="重點回顧" title="把這三句帶走，然後進入正式測驗。"><p>以下重點卡是進入原有測驗前的最後一次快速整理。下一步開始後，題庫、分數、提示與完成流程仍會完全沿用你現有的系統。</p></AtlasHeading><div className="grid gap-3 sm:grid-cols-3"><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">一</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">五行</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">木・火・土・金・水</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">二</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相生</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">支持與延續</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">三</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相剋</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">制約與平衡</span></div></div></div>;
+  return <div className="rounded-[1.35rem] border border-[#DDD2BF] bg-[#FFFDF7] p-5 shadow-[8px_8px_0_#EEE2CE] sm:p-7"><AtlasHeading number="06" eyebrow="重點回顧" title="把這三句帶走，然後進入正式測驗。"><p>以下重點卡是進入原有測驗前的最後一次快速整理。下一步開始後，題庫、分數、提示與完成流程仍會完全沿用你現有的系統。</p></AtlasHeading><div className="grid gap-3 sm:grid-cols-3"><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">一</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">五行</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">木・火・土・金・水</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">二</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相生</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">支持與延續</span></div><div className="border border-[#DCCFB8] bg-[#FBF7EE] p-5"><span className="font-serif text-sm text-[#B48A43]">三</span><b className="mt-2 block font-serif text-[28px] text-[#102E4C]">相剋</b><span className="mt-2 block text-[15px] font-semibold text-slate-600">制約與平衡</span></div></div></div>;
 }

@@ -2650,6 +2650,104 @@ body {
   text-align: center;
 }
 
+.atlas-relations-scene--single {
+  padding: clamp(1rem, 3vw, 2.2rem);
+}
+
+.atlas-relations-intro--single .atlas-study-heading h2 {
+  font-size: clamp(1.6rem, 6vw, 2.3rem);
+}
+
+.atlas-relation-workbench--single {
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.atlas-relation-diagram--compact {
+  min-height: 0;
+  padding: 0.75rem;
+}
+
+.atlas-relation-diagram--compact svg {
+  width: min(100%, 13.5rem);
+}
+
+.atlas-relation-diagram--compact > p {
+  display: none;
+}
+
+.atlas-relation-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.atlas-relation-chip-grid button {
+  min-height: 3.25rem;
+  border: 1px solid rgba(255, 248, 233, 0.22);
+  background: rgba(255, 253, 247, 0.04);
+  color: #e9edf0;
+  text-align: center;
+  transition: background-color 160ms cubic-bezier(0.23, 1, 0.32, 1), transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.atlas-relation-chip-grid button:hover,
+.atlas-relation-chip-grid button.is-active {
+  border-color: #e7c477;
+  background: rgba(231, 196, 119, 0.19);
+  transform: translateY(-0.12rem);
+}
+
+.atlas-relations-scene--single.is-ke .atlas-relation-chip-grid button:hover,
+.atlas-relations-scene--single.is-ke .atlas-relation-chip-grid button.is-active {
+  border-color: #ef9a86;
+  background: rgba(239, 154, 134, 0.2);
+}
+
+.atlas-relation-chip-grid b,
+.atlas-relation-chip-grid span {
+  display: block;
+}
+
+.atlas-relation-chip-grid b {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+}
+
+.atlas-relation-chip-grid span {
+  margin: 0.04rem 0;
+  color: #d7dfe4;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.atlas-relation-micro-task {
+  margin-top: 0.75rem;
+  color: #e7c477;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.atlas-relation-details {
+  margin-top: 0.55rem;
+  border-top: 1px solid rgba(255, 248, 233, 0.2);
+  color: #c8d4dc;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.atlas-relation-details summary {
+  padding: 0.55rem 0;
+  color: #e9edf0;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.atlas-relation-details p {
+  padding-bottom: 0.65rem;
+}
+
 .lesson-atlas-actions {
   display: flex;
   flex-wrap: wrap;

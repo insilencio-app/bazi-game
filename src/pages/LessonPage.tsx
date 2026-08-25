@@ -515,12 +515,12 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
     [questionRecords, totalQuestions]
   );
   const lessonOneStage: LessonOneAtlasStage | null = lessonId === 1 && currentStep
-    ? ({ 1: 'intro', 2: 'elements', 3: 'relations', 4: 'practice', 5: 'recap' } as Record<number, LessonOneAtlasStage>)[currentStep.id] ?? null
+    ? ({ 1: 'intro', 2: 'elements', 3: 'sheng', 4: 'ke', 5: 'practice', 6: 'recap' } as Record<number, LessonOneAtlasStage>)[currentStep.id] ?? null
     : null;
   // The archival atlas chrome is now shared by every course; `lessonOneStage` below still gates Lesson 1's bespoke interactive scenes.
   const isLessonOneAtlas = true;
   const lessonOneSectionLabel = lessonOneStage
-    ? ({ intro: '課前定位', elements: '五行速覽', relations: '關係圖譜', practice: '導師帶做', recap: '重點回顧' } as Record<LessonOneAtlasStage, string>)[lessonOneStage]
+    ? ({ intro: '課前定位', elements: '五行速覽', sheng: '五行相生', ke: '五行相剋', practice: '導師帶做', recap: '重點回顧' } as Record<LessonOneAtlasStage, string>)[lessonOneStage]
     : '正式測驗';
   const isGuideLesson = lessonId === 0;
   const lessonSectionLabel = lessonOneStage

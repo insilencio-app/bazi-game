@@ -605,14 +605,21 @@ const mockLessonsBase = [
       {
         id: 3,
         type: 'content',
-        title: '相生相剋',
+        title: '五行相生',
         bullets: [
           '相生：木生火、火生土、土生金、金生水、水生木',
-          '相剋：木剋土、火剋金、土剋水、金剋木、水剋火',
         ],
       },
       {
         id: 4,
+        type: 'content',
+        title: '五行相剋',
+        bullets: [
+          '相剋：木剋土、火剋金、土剋水、金剋木、水剋火',
+        ],
+      },
+      {
+        id: 5,
         type: 'content',
         title: '五行的情感對應',
         bullets: [
@@ -624,7 +631,7 @@ const mockLessonsBase = [
         ],
       },
       {
-        id: 5,
+        id: 6,
         type: 'content',
         title: '五行重點回顧',
         paragraphs: [
