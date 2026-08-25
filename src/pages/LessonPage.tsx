@@ -743,9 +743,10 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
   };
 
   const handleUseHint = () => {
-    if (userXp >= 50 && !showHint) {
+    const canOpenHint = lessonId === 0 || userXp >= 50;
+    if (canOpenHint && !showHint) {
       setShowHint(true);
-      onUseHint();
+      if (lessonId !== 0) onUseHint();
     }
   };
 
@@ -2020,8 +2021,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
             hint={currentStep.hint}
             showHint={showHint}
             onUseHint={handleUseHint}
-            canUseHint={userXp >= 50}
-            hintXpCost={50}
+            canUseHint={lessonId === 0 || userXp >= 50}
+            hintXpCost={lessonId === 0 ? 0 : 50}
             size="large"
             appearance="atlas"
           />
@@ -2038,8 +2039,8 @@ export const LessonPage: React.FC<LessonProps> = ({ lessonId, onComplete, onExit
               answered={answered}
               showHint={showHint}
               onUseHint={handleUseHint}
-              canUseHint={userXp >= 50}
-              hintXpCost={50}
+              canUseHint={lessonId === 0 || userXp >= 50}
+              hintXpCost={lessonId === 0 ? 0 : 50}
               appearance="atlas"
             />
           )}
