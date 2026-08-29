@@ -15,6 +15,7 @@ type InquiryRow = {
   reply_due_at: string;
   created_at: string;
   answered_at: string | null;
+  read_at: string | null;
 };
 
 type InquiryDetail = {
@@ -24,6 +25,7 @@ type InquiryDetail = {
   personalCase?: { birthDate: string; birthTime: string | null; timezone: string };
   status: string;
   answer: string | null;
+  readAt: string | null;
   replyDueAt: string;
   createdAt: string;
   expiresAt: string;
@@ -283,7 +285,7 @@ export function MailboxAdminPage() {
               <span>{item.public_id}</span>
               <strong>{item.inquiry_type === 'personal_case' ? '個人命例' : '概念問題'}</strong>
               <small>{dateText(item.created_at)}</small>
-              <em className={`mailbox-status mailbox-status--${item.status}`}>{item.status}</em>
+              <em className={`mailbox-status mailbox-status--${item.status}`}>{item.read_at ? `已讀 ${dateText(item.read_at)}` : item.status}</em>
             </button>
           ))}
           {inquiries.length === 0 && <p className="mailbox-empty">目前沒有案卷。新提問會自動同步，也可按「重新整理」。</p>}
@@ -295,7 +297,10 @@ export function MailboxAdminPage() {
               <header className="mailbox-admin-detail__header">
                 <p className="mailbox-kicker">{selected.publicId}</p>
                 <h2>{selected.inquiryType === 'personal_case' ? '個人命例學習' : '課程概念問題'}</h2>
-                <p>提交：{dateText(selected.createdAt)}　回覆目標：{dateText(selected.replyDueAt)}</p>
+                <p>
+                  提交：{dateText(selected.createdAt)}　回覆目標：{dateText(selected.replyDueAt)}
+                  {selected.readAt ? `　已讀：${dateText(selected.readAt)}` : '　尚未讀取'}
+                </p>
               </header>
 
               <section className="mailbox-admin-question">

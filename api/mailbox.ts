@@ -7,6 +7,22 @@ type DeclineReason = 'sensitive_data' | 'out_of_scope' | 'safety' | 'capacity';
 type PersonalCase = { calendar: 'solar' | 'lunar'; birthDate: string; birthTime: string | null; timeUncertain: boolean; timezone: string; calculationSex: 'male' | 'female' | null };
 type MailboxAnswer = { body: string; created_at: string };
 
+type MailboxInquiryRow = {
+  id: string;
+  public_id: string;
+  inquiry_type: InquiryType;
+  category: string;
+  body: string;
+  personal_case_ciphertext: string | null;
+  status: InquiryStatus;
+  decline_reason: DeclineReason | null;
+  reply_due_at: string;
+  expires_at: string;
+  created_at: string;
+  answered_at: string | null;
+  read_at: string | null;
+};
+
 export const REQUIRED_REPLY_DISCLOSURE =
   '免責聲明：八字及其他玄學屬傳統文化與詮釋性觀點，並非精密科學，也不能保證預測結果。本回覆由真人按你提供的有限資料作出，只供學習及參考。請勿過份迷信，亦不要把它作為醫療、心理健康、法律、投資、婚姻、職業、教育或其他重大人生決定的唯一或主要依據；需要時請向合資格專業人士尋求協助。';
 
@@ -117,6 +133,7 @@ class InlineSupabaseMailboxService {
       expiresAt: row.expires_at,
       createdAt: row.created_at,
       answeredAt: row.answered_at,
+      readAt: row.read_at ?? null,
       answer: answer?.body ?? null,
       answerCreatedAt: answer?.created_at ?? null,
     };
@@ -178,6 +195,12 @@ class InlineSupabaseMailboxService {
     const { data, error } = await this.client.from('mailbox_inquiries').select('*').eq('public_id', publicId).gt('expires_at', new Date().toISOString()).maybeSingle();
     if (error) throw error;
     if (!data || !codesMatch(accessCode, data.access_code_hash, this.pepper)) return null;
+    const now = new Date().toISOString();
+    if (data.status === 'replied' && !data.read_at) {
+      const { data: updated, error: updateError } = await this.client.from('mailbox_inquiries').update({ read_at: now }).eq('id', data.id).select('*').single();
+      if (updateError) throw updateError;
+      data.read_at = updated.read_at;
+    }
     return this.toPublic(data, true, await this.getAnswer(data.id));
   }
 
@@ -200,7 +223,7 @@ class InlineSupabaseMailboxService {
   }
 
   async listAdmin(status?: InquiryStatus) {
-    let query = this.client.from('mailbox_inquiries').select('id, public_id, inquiry_type, category, body, status, reply_due_at, expires_at, created_at, answered_at').order('created_at', { ascending: false });
+    let query = this.client.from('mailbox_inquiries').select('id, public_id, inquiry_type, category, body, status, reply_due_at, expires_at, created_at, answered_at, read_at').order('created_at', { ascending: false });
     if (status) query = query.eq('status', status);
     const { data, error } = await query;
     if (error) throw error;
@@ -228,7 +251,7 @@ class InlineSupabaseMailboxService {
     const now = new Date();
     const { error: answerError } = await this.client.from('mailbox_answers').upsert({ inquiry_id: id, body: body.trim(), answered_by: adminId, updated_at: now.toISOString() });
     if (answerError) throw answerError;
-    const { error: inquiryError } = await this.client.from('mailbox_inquiries').update({ status: 'replied', answered_at: now.toISOString(), expires_at: addDays(now, current.inquiryType === 'personal_case' ? 30 : 90).toISOString() }).eq('id', id);
+    const { error: inquiryError } = await this.client.from('mailbox_inquiries').update({ status: 'replied', answered_at: now.toISOString(), read_at: null, expires_at: addDays(now, current.inquiryType === 'personal_case' ? 30 : 90).toISOString() }).eq('id', id);
     if (inquiryError) throw inquiryError;
     await this.audit(id, adminId, 'replied');
     return this.getAdminInquiry(id);
@@ -247,6 +270,7 @@ class InlineSupabaseMailboxService {
       .update({
         status: 'reviewing',
         answered_at: null,
+        read_at: null,
         reply_due_at: addBusinessDays(now, 7).toISOString(),
         expires_at: addDays(now, current.inquiryType === 'personal_case' ? 14 : 30).toISOString(),
       })
@@ -270,7 +294,7 @@ class InlineSupabaseMailboxService {
   async decline(id: string, adminId: string, reason: unknown) {
     const allowed: DeclineReason[] = ['sensitive_data', 'out_of_scope', 'safety', 'capacity'];
     if (!allowed.includes(reason as DeclineReason)) throw new MailboxValidationError('Invalid decline reason');
-    const { data, error } = await this.client.from('mailbox_inquiries').update({ status: 'declined', decline_reason: reason, expires_at: addDays(new Date(), 7).toISOString() }).eq('id', id).select('*').maybeSingle();
+    const { data, error } = await this.client.from('mailbox_inquiries').update({ status: 'declined', decline_reason: reason, read_at: null, expires_at: addDays(new Date(), 7).toISOString() }).eq('id', id).select('*').maybeSingle();
     if (error) throw error;
     if (!data) return null;
     await this.audit(id, adminId, `declined:${reason}`);

@@ -40,6 +40,7 @@ create table if not exists public.mailbox_inquiries (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   answered_at timestamptz,
+  read_at timestamptz,
   constraint mailbox_personal_case_ciphertext_check check (
     (inquiry_type = 'personal_case' and personal_case_ciphertext is not null)
     or (inquiry_type = 'concept' and personal_case_ciphertext is null)

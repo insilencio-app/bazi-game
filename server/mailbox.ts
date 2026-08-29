@@ -62,13 +62,14 @@ type InquiryRow = {
   created_at: string;
   updated_at: string;
   answered_at: string | null;
+  read_at: string | null;
   answer_body: string | null;
   answer_created_at: string | null;
 };
 
 type InquiryPreviewRow = Pick<
   InquiryRow,
-  'id' | 'public_id' | 'inquiry_type' | 'category' | 'status' | 'reply_due_at' | 'expires_at' | 'created_at'
+  'id' | 'public_id' | 'inquiry_type' | 'category' | 'status' | 'reply_due_at' | 'expires_at' | 'created_at' | 'read_at'
 > & { body_preview: string };
 
 export type SubmitInquiryInput = {
@@ -94,6 +95,7 @@ export type MailboxInquiry = {
   expiresAt: string;
   createdAt: string;
   answeredAt: string | null;
+  readAt: string | null;
   answer: string | null;
   answerCreatedAt: string | null;
   isOverdue: boolean;
@@ -115,7 +117,8 @@ CREATE TABLE IF NOT EXISTS mailbox_inquiries (
   expires_at TEXT NOT NULL,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
-  answered_at TEXT
+  answered_at TEXT,
+  read_at TEXT
 );
 CREATE TABLE IF NOT EXISTS mailbox_answers (
   inquiry_id TEXT PRIMARY KEY,
@@ -251,6 +254,7 @@ const mapInquiry = (row: InquiryRow, config: MailboxConfig, now: Date): MailboxI
   expiresAt: row.expires_at,
   createdAt: row.created_at,
   answeredAt: row.answered_at,
+  readAt: row.read_at,
   answer: row.answer_body,
   answerCreatedAt: row.answer_created_at,
   isOverdue: ['received', 'reviewing'].includes(row.status) && new Date(row.reply_due_at).getTime() < now.getTime(),
@@ -383,6 +387,11 @@ export const createMailboxService = (db: Database.Database, config: MailboxConfi
     runMaintenance(now);
     const row = selectInquiryBy(db, 'public_id', publicId.trim());
     if (!row || !safeEquals(row.access_code_hash, hashWithPepper(normalizeAccessCode(accessCode)))) return null;
+    if (row.status === 'replied' && row.read_at === null) {
+      const readAt = now.toISOString();
+      db.prepare('UPDATE mailbox_inquiries SET read_at = ?, updated_at = ? WHERE id = ?').run(readAt, readAt, row.id);
+      row.read_at = readAt;
+    }
     return mapInquiry(row, config, now);
   };
 
@@ -399,7 +408,7 @@ export const createMailboxService = (db: Database.Database, config: MailboxConfi
 
   const listAdmin = (status?: InquiryStatus, now = new Date()) => {
     runMaintenance(now);
-    const baseSql = `SELECT id, public_id, inquiry_type, category, status, reply_due_at, expires_at, created_at,
+    const baseSql = `SELECT id, public_id, inquiry_type, category, status, reply_due_at, expires_at, created_at, read_at,
       substr(body, 1, 180) AS body_preview FROM mailbox_inquiries`;
     const rows = status
       ? (db.prepare(`${baseSql} WHERE status = ? ORDER BY created_at ASC`).all(status) as InquiryPreviewRow[])
@@ -415,6 +424,7 @@ export const createMailboxService = (db: Database.Database, config: MailboxConfi
       createdAt: row.created_at,
       replyDueAt: row.reply_due_at,
       expiresAt: row.expires_at,
+      readAt: row.read_at,
       isOverdue: ['received', 'reviewing'].includes(row.status) && new Date(row.reply_due_at).getTime() < now.getTime(),
     }));
   };
@@ -450,7 +460,7 @@ export const createMailboxService = (db: Database.Database, config: MailboxConfi
          ON CONFLICT(inquiry_id) DO UPDATE SET body = excluded.body, updated_at = excluded.updated_at`
       ).run(id, answer, nowIso, nowIso);
       db.prepare(
-        'UPDATE mailbox_inquiries SET status = ?, expires_at = ?, updated_at = ?, answered_at = ? WHERE id = ?'
+        'UPDATE mailbox_inquiries SET status = ?, expires_at = ?, updated_at = ?, answered_at = ?, read_at = NULL WHERE id = ?'
       ).run('replied', expiresAt, nowIso, nowIso, id);
       addAudit(id, 'owner', 'replied', now);
     });
@@ -467,7 +477,7 @@ export const createMailboxService = (db: Database.Database, config: MailboxConfi
     const nowIso = now.toISOString();
     const expiresAt = addCalendarDays(now, 14).toISOString();
     db.prepare(
-      'UPDATE mailbox_inquiries SET status = ?, decline_reason = ?, expires_at = ?, updated_at = ? WHERE id = ?'
+      'UPDATE mailbox_inquiries SET status = ?, decline_reason = ?, expires_at = ?, updated_at = ?, read_at = NULL WHERE id = ?'
     ).run('declined', reason, expiresAt, nowIso, id);
     addAudit(id, 'owner', `declined:${reason}`, now);
     return getAdminInquiry(id, now);

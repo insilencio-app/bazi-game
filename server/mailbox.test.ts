@@ -95,6 +95,33 @@ describe('private mailbox', () => {
     expect(mailbox.getByAccessCode(created.publicId, created.accessCode)?.answer).toContain('日主為中心');
   });
 
+  it('records a read timestamp when a user opens a replied inquiry', () => {
+    const { mailbox } = createTestMailbox();
+    const created = mailbox.submit({
+      inquiryType: 'concept',
+      category: 'course',
+      body: '請問我如何判斷十神與日主的相生相剋關係？',
+      disclosureAccepted: true,
+      clientFingerprint: 'test-client-three',
+      now: new Date('2026-08-20T09:00:00.000Z'),
+    });
+    const adminInquiry = mailbox.listAdmin()[0];
+    expect(adminInquiry).toBeDefined();
+
+    mailbox.reply(
+      adminInquiry.id,
+      '先看日主為中心，確認強弱與局勢，再依次檢查十神在月令與地支中的作用。這是學習判讀的基本順序。',
+      new Date('2026-08-24T09:00:00.000Z')
+    );
+
+    const firstOpen = mailbox.getByAccessCode(created.publicId, created.accessCode, new Date('2026-08-26T10:30:00.000Z'));
+    expect(firstOpen?.readAt).toBe('2026-08-26T10:30:00.000Z');
+
+    const secondOpen = mailbox.getByAccessCode(created.publicId, created.accessCode, new Date('2026-08-27T08:00:00.000Z'));
+    expect(secondOpen?.readAt).toBe('2026-08-26T10:30:00.000Z');
+    expect(mailbox.listAdmin()[0].readAt).toBe('2026-08-26T10:30:00.000Z');
+  });
+
   it('cleans expired private records through the maintenance handler', () => {
     const { mailbox } = createTestMailbox();
     const created = mailbox.submit({
