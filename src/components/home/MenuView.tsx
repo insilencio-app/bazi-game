@@ -91,11 +91,11 @@ function MobileHome({
   const completedCount = allRequiredLessonSteps.filter((step) => completedLessonIds.has(step.id)).length;
   const isFirstJourney = completedCount === 0;
   const learningAction = isAllLessonsCompleted ? totalQuizStep?.onClick : nextLessonStep?.onClick;
-  const learningTitle = isAllLessonsCompleted ? '挑戰總測驗' : isFirstJourney ? '用 12 分鐘建立八字地圖' : `繼續${nextLessonStep?.title ?? '下一課'}`;
+  const learningTitle = isAllLessonsCompleted ? '挑戰總測驗' : isFirstJourney ? '先建立八字地圖' : `繼續${nextLessonStep?.title ?? '下一課'}`;
   const learningDescription = isAllLessonsCompleted
     ? '所有課程已完成，現在可整合所學並接受檢驗。'
     : isFirstJourney
-    ? '先認四柱、找到日主，再完成一段不計分的 30 秒定位練習。'
+    ? '先認識四柱，找到你的日主；這一步先建立基本觀念，不用急著計算結果。'
     : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。';
 
   return (
@@ -123,22 +123,22 @@ function MobileHome({
           <p className="mt-2 text-[15px] leading-6 text-slate-600">{learningDescription}</p>
           {isFirstJourney ? <div className="mt-4 border-y border-[#e2d7c5] py-3"><p className="text-xs font-bold tracking-[0.14em] text-[#9b7330]">12 分鐘新手路徑</p><ol className="mt-2 grid grid-cols-3 gap-2 text-center text-xs font-bold text-[#153756]"><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">01</span>認識四柱</li><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">02</span>找到日主</li><li><span className="block font-['Noto_Serif_TC',serif] text-lg text-[#a77e34]">03</span>定位練習</li></ol><p className="mt-3 text-xs font-bold text-[#765b2d]">完成導讀後，收錄第一枚「初學者」研習印記。</p></div> : !isAllLessonsCompleted && nextLessonStep && <p className="mt-4 border-y border-[#e2d7c5] py-2 text-sm font-bold text-[#765b2d]">課程進度：第 {completedCount + 1} / {requiredCount} 課</p>}
           <button type="button" onClick={learningAction} className="mt-4 flex min-h-12 w-full items-center justify-between bg-[#0d2a4a] px-4 text-left font-bold text-white shadow-[3px_3px_0_#d9ab58] transition-transform active:translate-y-0.5">
-            <span>{isAllLessonsCompleted ? '開始總測驗' : isFirstJourney ? '開始 12 分鐘導讀' : '從這裡繼續'}</span><span aria-hidden="true">→</span>
+            <span>{isAllLessonsCompleted ? '開始總測驗' : isFirstJourney ? '立即開始' : '從這裡開始'}</span><span aria-hidden="true">→</span>
           </button>
           {!isFirstJourney && <button type="button" onClick={() => setIsProfileOpen(true)} className="mt-3 w-full py-1 text-sm font-bold text-[#765b2d] underline decoration-[#d9ab58] underline-offset-4">查看學習檔案與完整紀錄</button>}
         </section>
-
-        <a href="/mailbox" className="mt-4 block border border-[#d9ccb6] bg-[#fbf7ee] p-4 shadow-[3px_3px_0_rgba(173,145,91,.16)] transition-colors hover:bg-[#fffdf7]">
-          <span className="text-xs font-bold tracking-[0.14em] text-[#9b7330]">封緘研習信箱</span>
-          <span className="mt-1 block font-['Noto_Serif_TC',serif] text-lg font-black text-[#102b48]">有問題，交給真人導師</span>
-          <span className="mt-1 block text-sm leading-6 text-slate-600">匿名提問、秘密取件碼、一般七個工作天內盡量回覆。</span>
-          <span className="mt-3 block text-sm font-bold text-[#765b2d]">寫一封私密信 →</span>
-        </a>
 
         <section className="mt-6 border border-[#d9ccb6] bg-[#fbf7ee] p-4">
           <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-bold tracking-[0.12em] text-[#9b7330]">主線進度</p><p className="mt-1 font-['Noto_Serif_TC',serif] text-xl font-black text-[#102b48]">已完成 {completedCount} / {requiredCount} 課</p></div><span className="font-['Noto_Serif_TC',serif] text-2xl font-black text-[#9b7330]">{Math.round((completedCount / requiredCount) * 100)}%</span></div>
           <div className="mt-3 h-1.5 overflow-hidden bg-[#e8ddc8]"><div className="h-full bg-[#d9ab58] transition-[width] duration-300" style={{ width: `${(completedCount / requiredCount) * 100}%` }} /></div>
         </section>
+
+        <a href="/mailbox" className="mt-5 block border border-[#d9ccb6] bg-[#fffdf7] p-4 shadow-[3px_3px_0_rgba(173,145,91,.16)] transition-colors hover:bg-[#fffdf7]">
+          <span className="text-xs font-bold tracking-[0.14em] text-[#9b7330]">卡住了嗎？</span>
+          <span className="mt-1 block font-['Noto_Serif_TC',serif] text-lg font-black text-[#102b48]">有疑問，交給真人導師</span>
+          <span className="mt-1 block text-sm leading-6 text-slate-600">匿名提問、私密回覆；如果你在學習中卡住，這裡可以直接請教。</span>
+          <span className="mt-3 block text-sm font-bold text-[#765b2d]">寫一封私密信 →</span>
+        </a>
 
         <section className="mt-7">
           <div className="mb-3 flex items-end justify-between"><div><p className="text-xs font-bold tracking-[0.15em] text-[#9b7330]">課程目錄</p><h2 className="mt-1 font-['Noto_Serif_TC',serif] text-2xl font-black text-[#102b48]">按階段研習</h2></div><p className="text-xs text-slate-500">點選階段展開</p></div>
@@ -226,18 +226,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
         <section className="desktop-atlas-next" aria-labelledby="desktop-next-title">
           <div className="desktop-atlas-next__copy">
             <p>今日下一步</p>
-            <h2 id="desktop-next-title">{isAllLessonsCompleted ? '把所有路徑收束為一次總測驗。' : isFirstJourney ? '用 12 分鐘建立第一張八字地圖。' : `從${nextLessonStep?.title ?? '下一課'}繼續。`}</h2>
-            <span>{isAllLessonsCompleted ? '所有主線課程已完成，現在可整合所學並接受檢驗。' : isFirstJourney ? '先認四柱、找到日主，再完成一段不計分的 30 秒定位練習。' : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。'}</span>
+            <h2 id="desktop-next-title">{isAllLessonsCompleted ? '把所有路徑收束為一次總測驗。' : isFirstJourney ? '先建立八字地圖。' : `從${nextLessonStep?.title ?? '下一課'}繼續。`}</h2>
+            <span>{isAllLessonsCompleted ? '所有主線課程已完成，現在可整合所學並接受檢驗。' : isFirstJourney ? '先認識四柱，找到你的日主；這一步先建立基本觀念，不用急著計算結果。' : nextLessonStep?.subtitle ?? '由第一課開始建立八字學習基礎。'}</span>
             {isFirstJourney && <div className="desktop-atlas-next__starter-path"><span>01 認識四柱</span><span>02 找到日主</span><span>03 定位練習</span><b>完成導讀後，收錄「初學者」研習印記。</b></div>}
           </div>
           <div className="desktop-atlas-next__actions">
             <button type="button" onClick={() => (isAllLessonsCompleted ? totalQuizStep?.onClick() : nextLessonStep?.onClick())} className="desktop-atlas-action desktop-atlas-action--primary">
-              <span><small>{isAllLessonsCompleted ? 'INTEGRATED REVIEW' : isFirstJourney ? 'FIRST 12 MINUTES' : 'CONTINUE LEARNING'}</small><b>{isAllLessonsCompleted ? '挑戰總測驗' : isFirstJourney ? '開始 12 分鐘導讀' : '從這裡繼續'}</b></span><i aria-hidden="true">→</i>
+              <span><small>{isAllLessonsCompleted ? 'INTEGRATED REVIEW' : isFirstJourney ? 'START HERE' : 'CONTINUE LEARNING'}</small><b>{isAllLessonsCompleted ? '挑戰總測驗' : isFirstJourney ? '立即開始' : '從這裡開始'}</b></span><i aria-hidden="true">→</i>
             </button>
           </div>
-          <a href="/mailbox" className="desktop-atlas-mailbox">
-            <span><small>封緘研習信箱</small><b>有問題，交給真人導師。</b></span><em>匿名提問・私密取件</em><i aria-hidden="true">→</i>
-          </a>
         </section>
 
         <section className="desktop-atlas-progress" aria-labelledby="desktop-progress-title">
@@ -272,6 +269,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
           <div className="desktop-atlas-metrics">
             {[[userProgress.correctAnswers, '累計答對'], [userProgress.hintsUsed, '使用提示'], [userProgress.bestStreak, '最佳連勝'], [levelProgress.level, '當前等級'], [userProgress.dailyStreak, '連玩天數'], [userProgress.totalXp, '累計經驗值']].map(([value, label]) => <div key={label as string}><b>{value}</b><span>{label}</span></div>)}
           </div>
+          <a href="/mailbox" className="desktop-atlas-mailbox mt-4">
+            <span><small>卡住了嗎？</small><b>有疑問，交給真人導師。</b></span><em>匿名提問・私密回覆</em><i aria-hidden="true">→</i>
+          </a>
         </section>
         <section className="desktop-atlas-catalog mb-8" aria-labelledby="desktop-catalog-title">
           <div className="desktop-atlas-catalog__header"><div><p>課程目錄</p><h2 id="desktop-catalog-title">按階段研習</h2><span>與手機版使用相同的學習地圖與完成規則。</span></div><p>點選課堂開始或繼續學習</p></div>
